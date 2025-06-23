@@ -89,7 +89,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #'
 #' @export
 #'
-perform_independence_test <- function(X1, X2, nBootstrap)
+perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
@@ -107,7 +107,10 @@ perform_independence_test <- function(X1, X2, nBootstrap)
   n = length(X1)
 
   # Parameters of the grid
-  my_grid = seq(min(X1,X2), max(X1,X2), length.out = 100)
+  if (is.null(my_grid)){
+    my_grid = seq(min(X1,X2), max(X1,X2), length.out = 100)
+  }
+
   nGrid = length(my_grid)
 
   # Estimation of the product of the marginal CDFs
