@@ -87,7 +87,9 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #' result = independence_test(X1, X2, nBootstrap = 100)
 #' result$pvals_df
 #'
-independence_test <- function(X1, X2, nBootstrap)
+#' @export
+#'
+perform_independence_test <- function(X1, X2, nBootstrap)
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
