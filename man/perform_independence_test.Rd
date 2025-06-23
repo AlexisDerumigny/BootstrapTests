@@ -4,17 +4,17 @@
 \alias{perform_independence_test}
 \title{Perform a test of independence}
 \usage{
-perform_independence_test(X1, X2, nBootstrap)
+perform_independence_test(X1, X2, my_grid = NULL, nBootstrap)
 }
 \arguments{
 \item{X1, X2}{numerical vectors of the same size. The independence test tests
 whether X1 is independent from X2.}
 
-\item{nBootstrap}{number of bootstrap repetitions.}
-
 \item{my_grid}{the grid on which the empirical CDFs are estimated.
 TODO: implement a different grid for X1 and X2.
 TODO: can the grid be chosen automatically? For example quantiles of X1, X2?}
+
+\item{nBootstrap}{number of bootstrap repetitions.}
 }
 \value{
 A list with components \itemize{
@@ -48,13 +48,13 @@ n = 100
 # Under H1
 X1 = rnorm(n)
 X2 = X1 + rnorm(n)
-result = independence_test(X1, X2, nBootstrap = 100)
+result = perform_independence_test(X1, X2, nBootstrap = 100)
 result$pvals_df
 #
 # Under H0
 X1 = rnorm(n)
 X2 = rnorm(n)
-result = independence_test(X1, X2, nBootstrap = 100)
+result = perform_independence_test(X1, X2, nBootstrap = 100)
 result$pvals_df
 
 }

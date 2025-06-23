@@ -130,7 +130,7 @@ perform_regression_test <- function(X, Y, nBootstrap){
 
   dataframe<- data.frame(X = X, Y = Y)
 
-  model<- lm(Y~X, data = dataframe)
+  model<- stats::lm(Y~X, data = dataframe)
   # obtain estimates for parameters and residuals from the model
   a_hat = model$coefficients[[1]]
   b_hat = model$coefficients[[2]]
@@ -182,7 +182,7 @@ perform_regression_test <- function(X, Y, nBootstrap){
 
       # Fit linear regression model on bootstrap data
       bootstrap_sample <- data.frame(X_st = X_st,Y_st = Y_st)
-      bootstrap_model <- lm(Y_st~X_st, data = bootstrap_sample)
+      bootstrap_model <- stats::lm(Y_st~X_st, data = bootstrap_sample)
 
       # Calculate bootstrap test statistics T_n_^*, centered and equivalent
       b_hat_st = bootstrap_model$coefficients[[2]]

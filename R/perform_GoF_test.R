@@ -13,7 +13,7 @@ generate_initial_params <- function(data, parametric_fam = "normal"){
 
   switch (parametric_fam,
           "normal" = {
-            initial_params = c( mu = mean(data), sigma = sd(data) )
+            initial_params = c( mu = mean(data), sigma = stats::sd(data) )
           },
 
           {
@@ -47,9 +47,9 @@ param_distr <- function(grid_points, parametric_fam = "normal", param){
     fitted_sigma = param[[2]]
     # If sigma is negative, set it to 1
     if(fitted_sigma < 0) {fitted_sigma = abs(fitted_sigma)}
-    fitted_cdf_vals <- pnorm(grid_points,
-                             mean = fitted_mu, sd = fitted_sigma)
-    generated_vals <- rnorm(n, mean = fitted_mu, sd = fitted_sigma)
+    fitted_cdf_vals <- stats::pnorm(grid_points,
+                                    mean = fitted_mu, sd = fitted_sigma)
+    generated_vals <- stats::rnorm(n, mean = fitted_mu, sd = fitted_sigma)
     if( is.na(fitted_mu) | is.na(fitted_sigma) | anyNA(fitted_cdf_vals) | anyNA(generated_vals) ){
       print(c(fitted_mu, fitted_sigma))
       print(grid_points)
@@ -75,7 +75,7 @@ infinity_norm_distance <- function(grid_points, observed_data,
 
   # Calculate the empirical CDF values at grid_points, after fitting it on
   # the observed_data
-  empirical_cdf_values <- ecdf(observed_data)(grid_points)
+  empirical_cdf_values <- stats::ecdf(observed_data)(grid_points)
 
   # Calculate the parametrized CDF values at these points
   parametrized_cdf_values <- param_distr(grid_points, parametric_fam = parametric_fam,
@@ -102,8 +102,8 @@ infinity_norm_distance_MD <- function(grid_points, bs_data,
                                       parametric_fam = "normal") {
 
   # Calculate the empirical CDF values at these points
-  empirical_cdf_values <- ecdf(observed_data)(grid_points)
-  empirical_cdf_values_st <- ecdf(bs_data)(grid_points)
+  empirical_cdf_values <- stats::ecdf(observed_data)(grid_points)
+  empirical_cdf_values_st <- stats::ecdf(bs_data)(grid_points)
 
   # Calculate the parametrized CDF values at these points
   parametrized_cdf_values <- param_distr(grid_points, parametric_fam = parametric_fam,
@@ -194,12 +194,12 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #' # Under H1
 #' X_data = rgamma(n,2,3)
-#' result = GoF_test(X_data, nBootstrap = 30)
+#' result = perform_GoF_test(X_data, nBootstrap = 30)
 #' result$pvals_df
 #' #
 #' # Under H0
 #' X_data = rnorm(n)
-#' result = GoF_test(X_data, nBootstrap = 30)
+#' result = perform_GoF_test(X_data, nBootstrap = 30)
 #' result$pvals_df
 #'
 #' @export
@@ -229,18 +229,18 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
   # Initial guesses for the parameters
   initial_params <- generate_initial_params(X_data)
 
-  # Use the 'optim' function to minimize the infinity norm between ecdf and
+  # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
   # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
-  fit <- optim(initial_params, infinity_norm_distance,
-               observed_data = X_data,
-               grid_points = grid_points,
-               parametric_fam = parametric_fam)
+  fit <- stats::optim(initial_params, infinity_norm_distance,
+                      observed_data = X_data,
+                      grid_points = grid_points,
+                      parametric_fam = parametric_fam)
 
   # Extract the fitted parameters (for normal family the mean and variance)
   estimated_param <- fit$par
 
   # Calculate the empirical CDF values at the grid of X points
-  ecdf_values <- ecdf(X_data)(grid_points)
+  ecdf_values <- stats::ecdf(X_data)(grid_points)
 
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values <- param_distr(grid_points = grid_points,
@@ -283,19 +283,19 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
       # Initial guesses for the mean and sd parameters
       initial_params_st <- generate_initial_params(X_st)
 
-      # Use the 'optim' function to minimize the dist. funct for the param. distri.
-      fit_st <- optim(initial_params_st, infinity_norm_distance,
-                      grid_points = grid_points,
-                      observed_data = X_st,
-                      parametric_fam = parametric_fam)
+      # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
+      fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
+                             grid_points = grid_points,
+                             observed_data = X_st,
+                             parametric_fam = parametric_fam)
 
       # Fitting the centered MD estimator for the NP bootstrap scheme
-      fit_st_MD <- optim(initial_params_st, infinity_norm_distance_MD,
-                         grid_points = grid_points,
-                         bs_data = X_st,
-                         observed_data = X_data,
-                         params = estimated_param,
-                         parametric_fam = parametric_fam)
+      fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
+                                grid_points = grid_points,
+                                bs_data = X_st,
+                                observed_data = X_data,
+                                params = estimated_param,
+                                parametric_fam = parametric_fam)
 
       # Extract the fitted `bootstrap-based` parameters
       estimated_param_st <- fit_st$par
@@ -303,7 +303,7 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
 
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
-      ecdf_values_st <- ecdf(X_st)(grid_points)
+      ecdf_values_st <- stats::ecdf(X_st)(grid_points)
 
       # Calculate the parametric CDF values at the grid of X_st points
       parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
