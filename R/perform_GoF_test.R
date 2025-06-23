@@ -78,7 +78,8 @@ infinity_norm_distance <- function(grid_points, observed_data,
   empirical_cdf_values <- ecdf(observed_data)(grid_points)
 
   # Calculate the parametrized CDF values at these points
-  parametrized_cdf_values <- param_distr(grid_points, params)$fitted_cdf_vals
+  parametrized_cdf_values <- param_distr(grid_points, parametric_fam = parametric_fam,
+                                         params)$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   inf_norm <- max(abs(empirical_cdf_values - parametrized_cdf_values))
@@ -105,8 +106,11 @@ infinity_norm_distance_MD <- function(grid_points, bs_data,
   empirical_cdf_values_st <- ecdf(bs_data)(grid_points)
 
   # Calculate the parametrized CDF values at these points
-  parametrized_cdf_values <- param_distr(grid_points, params)$fitted_cdf_vals
-  parametrized_cdf_values_st <- param_distr(grid_points, params_st)$fitted_cdf_vals
+  parametrized_cdf_values <- param_distr(grid_points, parametric_fam = parametric_fam,
+                                         params)$fitted_cdf_vals
+
+  parametrized_cdf_values_st <- param_distr(grid_points, parametric_fam = parametric_fam,
+                                            params_st)$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   inf_norm_MD <- max(abs(empirical_cdf_values_st - parametrized_cdf_values_st
@@ -140,7 +144,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
     type_boot,
 
     "null" = {
-      estim_distr <- param_distr(grid_points = X_data, param)
+      estim_distr <- param_distr(grid_points = X_data, parametric_fam = parametric_fam, param)
       X_st = estim_distr$generated_vals
     },
 
@@ -229,7 +233,8 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
   # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
   fit <- optim(initial_params, infinity_norm_distance,
                observed_data = X_data,
-               grid_points = grid_points)
+               grid_points = grid_points,
+               parametric_fam = parametric_fam)
 
   # Extract the fitted parameters (for normal family the mean and variance)
   estimated_param <- fit$par
@@ -238,8 +243,9 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
   ecdf_values <- ecdf(X_data)(grid_points)
 
   # Calculate the parametrised CDF values at the grid of X points
-  parametrized_cdf_values <- param_distr(grid_points,
-                                         estimated_param )$fitted_cdf_vals
+  parametrized_cdf_values <- param_distr(grid_points = grid_points,
+                                         parametric_fam = parametric_fam,
+                                         param = estimated_param )$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
@@ -280,14 +286,16 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
       # Use the 'optim' function to minimize the dist. funct for the param. distri.
       fit_st <- optim(initial_params_st, infinity_norm_distance,
                       grid_points = grid_points,
-                      observed_data = X_st)
+                      observed_data = X_st,
+                      parametric_fam = parametric_fam)
 
       # Fitting the centered MD estimator for the NP bootstrap scheme
       fit_st_MD <- optim(initial_params_st, infinity_norm_distance_MD,
                          grid_points = grid_points,
                          bs_data = X_st,
                          observed_data = X_data,
-                         params = estimated_param)
+                         params = estimated_param,
+                         parametric_fam = parametric_fam)
 
       # Extract the fitted `bootstrap-based` parameters
       estimated_param_st <- fit_st$par
@@ -298,10 +306,12 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
       ecdf_values_st <- ecdf(X_st)(grid_points)
 
       # Calculate the parametric CDF values at the grid of X_st points
-      parametrized_cdf_values_st <- param_distr(grid_points,
-                                                estimated_param_st )$fitted_cdf_vals
+      parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
+                                                parametric_fam = parametric_fam,
+                                                param = estimated_param_st )$fitted_cdf_vals
 
       parametrized_cdf_values_st_MD <- param_distr(grid_points,
+                                                   parametric_fam = parametric_fam,
                                                    estimated_param_st_MD )$fitted_cdf_vals
 
       # Calculate the infinity norm (sup norm): maximum absolute difference
@@ -315,11 +325,13 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
 
       max_diff_eq_st <- infinity_norm_distance(grid_points,
                                                X_st,
-                                               estimated_param_st)
+                                               estimated_param_st,
+                                               parametric_fam = parametric_fam)
 
       max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
                                                   X_st,
-                                                  estimated_param_st_MD)
+                                                  estimated_param_st_MD,
+                                                  parametric_fam = parametric_fam)
 
       # Calculating bootstrap test statistics
       stat_st_cent[iBootstrap]    = max_diff_cent_st * sqrt(n)
