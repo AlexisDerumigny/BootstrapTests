@@ -51,8 +51,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #' @param nBootstrap number of bootstrap repetitions.
 #'
 #' @return A list with components \itemize{
-#'    \item
-#'    # pvals_df: df of p-values and bootstrapped test statistics:
+#'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 #'
 #'    pval_NP_eq_L2, pval_NP_cent_L2,
 #'    pval_indep_cent_L2, pval_indep_eq_L2,
@@ -68,7 +67,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #'    stat_st_indep_cent_KS, stat_st_indep_eq_KS.
 #'    These are the vectors of bootstrap test statistics for each of the combinations.
 #'
-#'    \item true_stats, a named vector of size 2 containing the true test
+#'    \item \code{true_stats} a named vector of size 2 containing the true test
 #'    statistics for the L2 and KS distances.
 #' }
 #'
