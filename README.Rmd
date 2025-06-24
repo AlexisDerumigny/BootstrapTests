@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# BootstrapTests
+# Package BootstrapTests
 
 <!-- badges: start -->
 <!-- badges: end -->
