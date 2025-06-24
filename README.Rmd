@@ -18,25 +18,78 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of BootstrapTests is to ...
+This package BootstrapTests implements several methods to perform bootstrap-based 
+hypothesis testing procedures on three statistical problems: independence testing,
+testing the slope in a linear regression setting and goodness-of-fit testing.
 
 ## Installation
 
-You can install the development version of BootstrapTests from [GitHub](https://github.com/) with:
+You can install the development version of BootstrapTests from [GitHub](https://github.com/)
+using the `devtools` package with:
 
 ``` r
-# install.packages("pak")
-pak::pak("AlexisDerumigny/BootstrapTests")
+# install.packages("devtools")
+devtools::install_github("AlexisDerumigny/BootstrapTests")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
 
-```{r example}
+## Independence testing
+
+```{r example independence}
 library(BootstrapTests)
 ## basic example code
+ n = 100
+
+ # Under H1
+ X1 = rnorm(n)
+ X2 = X1 + rnorm(n)
+ result = perform_independence_test(X1, X2, nBootstrap = 100)
+ result$pvals_df
+ 
+ # Under H0
+ X1 = rnorm(n)
+ X2 = rnorm(n)
+ result = perform_independence_test(X1, X2, nBootstrap = 100)
+ result$pvals_df
 ```
+
+
+## Slope testing in linear regression setting
+
+```{r example linear regression}
+library(BootstrapTests)
+## basic example code
+
+ n = 100
+  # Under H1
+  X_data = rgamma(n,2,3)
+  result = perform_GoF_test(X_data, nBootstrap = 30)
+  
+   # Under H0
+  X_data = rnorm(n)
+  result = perform_GoF_test(X_data, nBootstrap = 30)
+```
+
+
+## Goodness-of-fit testing
+
+```{r example GOF}
+library(BootstrapTests)
+## basic example code
+
+ n = 100
+  # Under H1
+  X_data = rgamma(n,2,3)
+  result = perform_GoF_test(X_data, nBootstrap = 30)
+  
+   # Under H0
+  X_data = rnorm(n)
+  result = perform_GoF_test(X_data, nBootstrap = 30)
+```
+
+
 
 What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
