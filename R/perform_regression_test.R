@@ -1,23 +1,23 @@
 
 
+#' Generating bootstrap samples in the regression setting
+#'
+#' @param X numeric input vector
+#' @param Y numeric input vector
+#' @param a_hat estimated intercept, from the regression model
+#' @param b_hat estimated slope, from the regression model
+#' @param epsilon_hat estimated residuals, from the regression model
+#' @param resampling_type string of the bootstrap resampling scheme to be used.
+#                  choose from \code{"indep_bs"}, \code{empirical_bs}, \code{res_bs},
+#                  \code{fixed_design_bs_Hnull}, \code{fixed_design_bs},
+#                  \code{hybrid_null_bs}
+#'
+#' @return bsdata named list of X_st and Y_st, i.e. the resampled
+#          bootstrap data for X,Y.
+#' @noRd
+#'
 generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
                                     epsilon_hat = NA, resampling_type)
-
-  # INPUT
-  # X: numeric input vector
-  # Y: numeric input vector
-  # n: numeric value of sample size, i.e. dimension of input vectors X, Y
-  # a_hat: estimated intercept, from the regression model
-  # b_hat: estimated slope, from the regression model
-  # epsilon_hat: estimated residuals, from the regression model
-  # resampling_type: string of the bootstrap resampling scheme to be used.
-  #                  choose from indep_bs, empirical_bs, res_bs,
-  #                  fixed_design_bs_Hnull, fixed_design_bs,
-  #                  hybrid_null_bs
-
-  # OUTPUT
-  # bsdata: named list of X_st and Y_st, i.e. the resampled
-  #         bootstrap data for X,Y.
 
 {
 
@@ -113,14 +113,42 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' stores all the corresponding p-values and bootstrapped test statistics in a
 #' dataframe to keep track of the outputs.
 #'
-#' @param X numeric input vector
-#' @param Y numeric input vector
+#' @param X numeric univariate input vector resembling the independent variables
+#' @param Y numeric univariate input vector the dependent variables
 #' @param nBootstrap numeric value of the amount of bootstrap resamples
 #'
 #' @returns a named list with `pvals_df` the df of p-values, with the vectors of
 #' bootstrapped test statistics T_n^* included and `true_stat` the true test statistic.
 #'
-#' @seealso \code{\link{perform_GoF_test}()}
+#' @return A list with components \itemize{
+#'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
+#'
+#'    These are the p-values for the combinations of bootstrap resampling schemes,
+#'    test statistics (centered and equivalent).
+#'
+#'    It also contains the vectors of bootstrap test statistics
+#'    for each of the combinations.
+#'
+#'    \item \code{true_stat} a named vector of size 1 containing the true test
+#'    statistic.
+#' }
+#'
+#' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}
+#'
+#' @examples
+#' n = 100
+#'
+#' # Under H1
+#' X_data = rnorm(n)
+#' Y_data =  X_data + rnorm(n)   #Y = X + epsilon
+#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+#' result
+#'
+#' # Under H0
+#' X_data = rnorm(n)
+#' Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+#' result
 #'
 #' @export
 perform_regression_test <- function(X, Y, nBootstrap){

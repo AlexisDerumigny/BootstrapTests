@@ -7,15 +7,28 @@
 perform_regression_test(X, Y, nBootstrap)
 }
 \arguments{
-\item{X}{numeric input vector}
+\item{X}{numeric univariate input vector resembling the independent variables}
 
-\item{Y}{numeric input vector}
+\item{Y}{numeric univariate input vector the dependent variables}
 
 \item{nBootstrap}{numeric value of the amount of bootstrap resamples}
 }
 \value{
 a named list with `pvals_df` the df of p-values, with the vectors of
 bootstrapped test statistics T_n^* included and `true_stat` the true test statistic.
+
+A list with components \itemize{
+   \item \code{pvals_df} df of p-values and bootstrapped test statistics:
+
+   These are the p-values for the combinations of bootstrap resampling schemes,
+   test statistics (centered and equivalent).
+
+   It also contains the vectors of bootstrap test statistics
+   for each of the combinations.
+
+   \item \code{true_stat} a named vector of size 1 containing the true test
+   statistic.
+}
 }
 \description{
 This function performs the bootstrap regression test for given data X,Y. It
@@ -24,6 +37,22 @@ hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap and
 stores all the corresponding p-values and bootstrapped test statistics in a
 dataframe to keep track of the outputs.
 }
+\examples{
+n = 100
+
+# Under H1
+X_data = rnorm(n)
+Y_data =  X_data + rnorm(n)   #Y = X + epsilon
+result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+result
+
+# Under H0
+X_data = rnorm(n)
+Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+result
+
+}
 \seealso{
-\code{\link{perform_GoF_test}()}
+\code{\link{perform_GoF_test},\link{perform_independence_test}}
 }
