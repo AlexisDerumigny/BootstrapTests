@@ -189,6 +189,8 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'    statistic.
 #' }
 #'
+#' @seealso \code{\link{perform_regression_test},\link{perform_independence_test}}
+#'
 #' @examples
 #' n = 100
 #'

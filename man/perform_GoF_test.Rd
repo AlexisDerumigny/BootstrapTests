@@ -47,3 +47,6 @@ result = perform_GoF_test(X_data, nBootstrap = 30)
 result$pvals_df
 
 }
+\seealso{
+\code{\link{perform_regression_test},\link{perform_independence_test}}
+}
