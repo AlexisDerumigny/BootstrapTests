@@ -1,18 +1,24 @@
-Package: BootstrapTests
 Type: Package
-Title: This package \code{BootstrapTests} implements several methods to perform bootstrap-based hypothesis testing procedures.
+Package: BootstrapTests
+Title: Use Several Methods To Perform Bootstrap-based Hypothesis Testing
+    Procedures
 Version: 0.1.0
 Authors@R: c(
-    person("Alexis", "Derumigny", , email = "a.f.f.derumigny@tudelft.nl", role = c("aut"), comment = c(ORCID = "0000-0002-6163-8097")),
-    person("Wieger", "Schipper", , email = "W.R.Schipper@tudelft.nl", role = c("aut", "cre"))
+    person("Alexis", "Derumigny", , "A.F.F.Derumigny@tudelft.nl", role = "aut",
+           comment = c(ORCID = "0000-0002-6163-8097")),
+    person("Wieger", "Schipper", , "W.R.Schipper@tudelft.nl", role = c("aut", "cre"))
   )
-Description: This package \code{BootstrapTests} implements several methods to 
-             perform bootstrap-based hypothesis testing procedures.
+Description: Perform bootstrap-based hypothesis testing procedures on
+    three statistical problems. In particular, it covers independence
+    testing, testing the slope in a linear regression setting, and
+    goodness-of-fit testing.
 License: What license is it under?
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.3.2
-Roxygen: list(markdown = FALSE)
+Imports: 
+    stats (>= 4.4.0)
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = FALSE)
+RoxygenNote: 7.3.2
