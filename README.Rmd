@@ -46,20 +46,19 @@ and goodness-of-fit testing. In particular, we will show the use of the function
 
 ```{r example independence}
 library(BootstrapTests)
-## basic example code
- n = 100
+n = 100
 
- # Under H1
- X1 = rnorm(n)
- X2 = X1 + rnorm(n)
- result = perform_independence_test(X1, X2, nBootstrap = 100)
- result$pvals_df
- 
- # Under H0
- X1 = rnorm(n)
- X2 = rnorm(n)
- result = perform_independence_test(X1, X2, nBootstrap = 100)
- result$pvals_df
+# Under H1
+X1 = rnorm(n)
+X2 = X1 + rnorm(n)
+result = perform_independence_test(X1, X2, nBootstrap = 100)
+result$pvals_df
+
+# Under H0
+X1 = rnorm(n)
+X2 = rnorm(n)
+result = perform_independence_test(X1, X2, nBootstrap = 100)
+result$pvals_df
 ```
 
 
@@ -67,18 +66,20 @@ library(BootstrapTests)
 
 ```{r example linear regression}
 library(BootstrapTests)
-## basic example code
 
- n = 100
-  # Under H1
-  X_data = rgamma(n,2,3)
-  result_H1 = perform_GoF_test(X_data, nBootstrap = 30)
-  result_H1
-  
-   # Under H0
-  X_data = rnorm(n)
-  result_H0 = perform_GoF_test(X_data, nBootstrap = 30)
-  result_H0
+n = 100
+
+# Under H1
+X_data = rnorm(n)
+Y_data =  X_data + rnorm(n)   #Y = X + epsilon
+result_H1 = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+result_H1
+
+# Under H0
+X_data = rnorm(n)
+Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+result_H0 = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+result_H0
 ```
 
 
