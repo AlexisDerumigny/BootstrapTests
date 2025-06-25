@@ -18,19 +18,10 @@ whether \code{X1} is independent from \code{X2}.}
 A list with components \itemize{
    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 
-   pval_NP_eq_L2, pval_NP_cent_L2,
-   pval_indep_cent_L2, pval_indep_eq_L2,
-   pval_NP_eq_KS, pval_NP_cent_KS,
-   pval_indep_cent_KS, pval_indep_eq_KS.
    These are the p-values for the 8 combinations of bootstrap resampling schemes
    (nonparametric and independent), test statistics (centered and equivalent),
-   and Kolmogorov-Smirnov or L2-type of true test statistic,
-
-   stat_st_NP_cent_L2, stat_st_NP_eq_L2,
-   stat_st_indep_cent_L2, stat_st_indep_eq_L2,
-   stat_st_NP_cent_KS, stat_st_NP_eq_KS,
-   stat_st_indep_cent_KS, stat_st_indep_eq_KS.
-   These are the vectors of bootstrap test statistics for each of the combinations.
+   and Kolmogorov-Smirnov or L2-type of true test statistic. The column 'bootstrapped_tests'
+   contains vectors of bootstrap test statistics.
 
    \item \code{true_stats} a named vector of size 2 containing the true test
    statistics for the L2 and KS distances.
@@ -46,12 +37,12 @@ n = 100
 X1 = rnorm(n)
 X2 = X1 + rnorm(n)
 result = perform_independence_test(X1, X2, nBootstrap = 100)
-result$pvals_df
+result
 #
 # Under H0
 X1 = rnorm(n)
 X2 = rnorm(n)
 result = perform_independence_test(X1, X2, nBootstrap = 100)
-result$pvals_df
+result
 
 }
