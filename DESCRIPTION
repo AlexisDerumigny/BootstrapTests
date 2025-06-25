@@ -1,13 +1,13 @@
 Package: BootstrapTests
 Type: Package
-Title: What the Package Does (Title Case)
+Title: This package \code{BootstrapTests} implements several methods to perform bootstrap-based hypothesis testing procedures.
 Version: 0.1.0
 Authors@R: c(
     person("Alexis", "Derumigny", , email = "a.f.f.derumigny@tudelft.nl", role = c("aut"), comment = c(ORCID = "0000-0002-6163-8097")),
     person("Wieger", "Schipper", , email = "W.R.Schipper@tudelft.nl", role = c("aut", "cre"))
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: This package \code{BootstrapTests} implements several methods to 
+             perform bootstrap-based hypothesis testing procedures.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
