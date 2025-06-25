@@ -26,11 +26,11 @@ devtools::install_github("AlexisDerumigny/BootstrapTests")
 The following three subsections will showcase the use of the
 ‘BootstrapTests’ package for the independence testing, testing the slope
 in a linear regression setting, and goodness-of-fit testing. In
-particular, we will show the use of the functions:”
+particular, we will show the use of the functions:
 
-- ‘perform_regression_test.R’
-- ‘perform_independence_test.R’
-- ‘perform_GoF_test.R’
+- `perform_regression_test.R`
+- `perform_independence_test.R`
+- `perform_GoF_test.R`
 
 ### Independence testing
 
@@ -45,14 +45,14 @@ library(BootstrapTests)
  result = perform_independence_test(X1, X2, nBootstrap = 100)
  result$pvals_df
 #>   type_boot type_stat norm_type bootstrapped_tests pvalues theoretically_valid
-#> 1     indep      cent        L2       121.1739....    0.66               FALSE
-#> 2     indep      cent        KS       0.1857, ....    0.76               FALSE
-#> 3     indep        eq        L2       6.107756....    0.00                TRUE
-#> 4     indep        eq        KS       0.052, 0....    0.00                TRUE
-#> 5        NP      cent        L2       5.147545....    0.00                TRUE
-#> 6        NP      cent        KS       0.053, 0....    0.00                TRUE
-#> 7        NP        eq        L2       90.10248....    0.55               FALSE
-#> 8        NP        eq        KS       0.1597, ....    0.77               FALSE
+#> 1     indep      cent        L2       201.0342....    0.56               FALSE
+#> 2     indep      cent        KS       0.1682, ....    0.87               FALSE
+#> 3     indep        eq        L2       9.641677....    0.00                TRUE
+#> 4     indep        eq        KS       0.048, 0....    0.00                TRUE
+#> 5        NP      cent        L2       12.50736....    0.00                TRUE
+#> 6        NP      cent        KS       0.0551, ....    0.00                TRUE
+#> 7        NP        eq        L2       140.7076....    0.60               FALSE
+#> 8        NP        eq        KS       0.1414, ....    0.88               FALSE
  
  # Under H0
  X1 = rnorm(n)
@@ -60,14 +60,14 @@ library(BootstrapTests)
  result = perform_independence_test(X1, X2, nBootstrap = 100)
  result$pvals_df
 #>   type_boot type_stat norm_type bootstrapped_tests pvalues theoretically_valid
-#> 1     indep      cent        L2       12.70475....    1.00               FALSE
-#> 2     indep      cent        KS       0.0536, ....    1.00               FALSE
-#> 3     indep        eq        L2       5.176731....    0.62                TRUE
-#> 4     indep        eq        KS       0.0436, ....    0.57                TRUE
-#> 5        NP      cent        L2       4.805981....    0.59                TRUE
-#> 6        NP      cent        KS       0.0419, ....    0.69                TRUE
-#> 7        NP        eq        L2       10.30805....    0.98               FALSE
-#> 8        NP        eq        KS       0.0524, ....    0.98               FALSE
+#> 1     indep      cent        L2       12.03751....    1.00               FALSE
+#> 2     indep      cent        KS       0.0592, ....    1.00               FALSE
+#> 3     indep        eq        L2       6.791147....    1.00                TRUE
+#> 4     indep        eq        KS       0.0416, ....    1.00                TRUE
+#> 5        NP      cent        L2       6.555012....    0.98                TRUE
+#> 6        NP      cent        KS       0.028, 0....    0.98                TRUE
+#> 7        NP        eq        L2       12.14011....    1.00               FALSE
+#> 8        NP        eq        KS       0.044, 0....    1.00               FALSE
 ```
 
 ### Slope testing in linear regression setting
@@ -83,18 +83,18 @@ library(BootstrapTests)
   result_H1
 #> $pvals_df
 #>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
-#> 1      null      cent       MD       1.181773.... 0.9666667               FALSE
-#> 2      null      cent  MD-cent       0.968614.... 0.7000000               FALSE
-#> 3      null        eq       MD       0.443629.... 0.0000000                TRUE
-#> 4      null        eq  MD-cent       0.696895.... 0.2000000               FALSE
-#> 5        NP      cent       MD       0.237417.... 0.2333333               FALSE
-#> 6        NP      cent  MD-cent       0.201939.... 0.0000000                TRUE
-#> 7        NP        eq       MD       0.845134.... 0.8333333               FALSE
-#> 8        NP        eq  MD-cent       0.907363.... 0.9666667               FALSE
+#> 1      null      cent       MD       1.030299.... 0.9666667               FALSE
+#> 2      null      cent  MD-cent       0.880199.... 0.8000000               FALSE
+#> 3      null        eq       MD       0.457955.... 0.0000000                TRUE
+#> 4      null        eq  MD-cent       0.553973.... 0.2666667               FALSE
+#> 5        NP      cent       MD       0.458079.... 0.2666667               FALSE
+#> 6        NP      cent  MD-cent       0.248360.... 0.0000000                TRUE
+#> 7        NP        eq       MD       0.686428.... 0.8666667               FALSE
+#> 8        NP        eq  MD-cent       0.830352.... 1.0000000               FALSE
 #> 
 #> $true_stat
-#>      sup 
-#> 0.738144
+#>       sup 
+#> 0.5882752
   
    # Under H0
   X_data = rnorm(n)
@@ -102,18 +102,18 @@ library(BootstrapTests)
   result_H0
 #> $pvals_df
 #>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
-#> 1      null      cent       MD       0.537862.... 1.0000000               FALSE
-#> 2      null      cent  MD-cent       0.476629.... 1.0000000               FALSE
-#> 3      null        eq       MD       0.334839.... 1.0000000                TRUE
-#> 4      null        eq  MD-cent       0.422519.... 1.0000000               FALSE
-#> 5        NP      cent       MD       0.544356.... 1.0000000               FALSE
-#> 6        NP      cent  MD-cent       0.433659.... 0.9666667                TRUE
-#> 7        NP        eq       MD       0.572083.... 1.0000000               FALSE
-#> 8        NP        eq  MD-cent       0.691304.... 1.0000000               FALSE
+#> 1      null      cent       MD       0.673032.... 1.0000000               FALSE
+#> 2      null      cent  MD-cent       0.575452.... 0.9333333               FALSE
+#> 3      null        eq       MD       0.329802.... 0.4333333                TRUE
+#> 4      null        eq  MD-cent       0.501727.... 0.8000000               FALSE
+#> 5        NP      cent       MD       0.446467.... 0.7000000               FALSE
+#> 6        NP      cent  MD-cent       0.311159.... 0.3333333                TRUE
+#> 7        NP        eq       MD       0.605169.... 0.9000000               FALSE
+#> 8        NP        eq  MD-cent       0.726714.... 0.9666667               FALSE
 #> 
 #> $true_stat
 #>       sup 
-#> 0.2576449
+#> 0.4268942
 ```
 
 ### Goodness-of-fit testing
@@ -127,37 +127,46 @@ library(BootstrapTests)
   X_data = rgamma(n,2,3)
   perform_GoF_test(X_data, nBootstrap = 30)
 #> $pvals_df
-#>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
-#> 1      null      cent       MD       1.034243.... 0.9333333               FALSE
-#> 2      null      cent  MD-cent       0.758614.... 0.6666667               FALSE
-#> 3      null        eq       MD       0.425485.... 0.0000000                TRUE
-#> 4      null        eq  MD-cent       0.746183.... 0.1000000               FALSE
-#> 5        NP      cent       MD       0.569392.... 0.2666667               FALSE
-#> 6        NP      cent  MD-cent       0.359043.... 0.0000000                TRUE
-#> 7        NP        eq       MD       0.871202.... 0.8000000               FALSE
-#> 8        NP        eq  MD-cent       1.081597.... 0.9333333               FALSE
+#>   type_boot type_stat param_bs bootstrapped_tests    pvalues
+#> 1      null      cent       MD       1.074937.... 1.00000000
+#> 2      null      cent  MD-cent       0.980478.... 0.86666667
+#> 3      null        eq       MD       0.372681.... 0.00000000
+#> 4      null        eq  MD-cent       0.553987.... 0.13333333
+#> 5        NP      cent       MD       0.459689.... 0.23333333
+#> 6        NP      cent  MD-cent       0.395522.... 0.03333333
+#> 7        NP        eq       MD       1.002338.... 0.90000000
+#> 8        NP        eq  MD-cent       1.049557.... 0.96666667
+#>   theoretically_valid
+#> 1               FALSE
+#> 2               FALSE
+#> 3                TRUE
+#> 4               FALSE
+#> 5               FALSE
+#> 6                TRUE
+#> 7               FALSE
+#> 8               FALSE
 #> 
 #> $true_stat
-#>       sup 
-#> 0.7503946
+#>     sup 
+#> 0.70727
   
    # Under H0
   X_data = rnorm(n)
   perform_GoF_test(X_data, nBootstrap = 30)
 #> $pvals_df
 #>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
-#> 1      null      cent       MD       0.553140.... 1.0000000               FALSE
-#> 2      null      cent  MD-cent       0.506466.... 1.0000000               FALSE
-#> 3      null        eq       MD       0.378099.... 0.9000000                TRUE
-#> 4      null        eq  MD-cent       0.402968.... 0.9666667               FALSE
-#> 5        NP      cent       MD       0.461855.... 0.9666667               FALSE
-#> 6        NP      cent  MD-cent       0.407739.... 0.9333333                TRUE
-#> 7        NP        eq       MD       0.531333.... 1.0000000               FALSE
-#> 8        NP        eq  MD-cent       0.576894.... 1.0000000               FALSE
+#> 1      null      cent       MD       0.774044.... 1.0000000               FALSE
+#> 2      null      cent  MD-cent       0.633241.... 1.0000000               FALSE
+#> 3      null        eq       MD       0.437073.... 0.8666667                TRUE
+#> 4      null        eq  MD-cent       0.627883.... 0.9666667               FALSE
+#> 5        NP      cent       MD       0.392387.... 0.9333333               FALSE
+#> 6        NP      cent  MD-cent       0.252147.... 0.6666667                TRUE
+#> 7        NP        eq       MD       0.362972.... 1.0000000               FALSE
+#> 8        NP        eq  MD-cent       0.470902.... 1.0000000               FALSE
 #> 
 #> $true_stat
 #>      sup 
-#> 0.313057
+#> 0.336971
 ```
 
 ## References
