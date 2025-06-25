@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 This package BootstrapTests implements several methods to perform bootstrap-based 
 hypothesis testing procedures on three statistical problems: independence testing,
-testing the slope in a linear regression setting and goodness-of-fit testing.
+testing the slope in a linear regression setting, and goodness-of-fit testing.
 
 ## Installation
 
@@ -34,8 +34,15 @@ devtools::install_github("AlexisDerumigny/BootstrapTests")
 
 ## Examples
 
+The following three subsections will showcase the use of the \code{BootstrapTests}
+package for the independence testing, testing the slope in a linear regression setting, 
+and goodness-of-fit testing. In particular, we will show the use of the functions:"
 
-## Independence testing
+- \code{perform_regression_test.R}
+- \code{perform_independence_test.R}
+- \code{perform_GoF_test.R}
+
+### Independence testing
 
 ```{r example independence}
 library(BootstrapTests)
@@ -56,7 +63,7 @@ library(BootstrapTests)
 ```
 
 
-## Slope testing in linear regression setting
+### Slope testing in linear regression setting
 
 ```{r example linear regression}
 library(BootstrapTests)
@@ -75,7 +82,7 @@ library(BootstrapTests)
 ```
 
 
-## Goodness-of-fit testing
+### Goodness-of-fit testing
 
 ```{r example GOF}
 library(BootstrapTests)
