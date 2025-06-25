@@ -34,13 +34,13 @@ devtools::install_github("AlexisDerumigny/BootstrapTests")
 
 ## Examples
 
-The following three subsections will showcase the use of the \code{BootstrapTests}
+The following three subsections will showcase the use of the 'BootstrapTests'
 package for the independence testing, testing the slope in a linear regression setting, 
 and goodness-of-fit testing. In particular, we will show the use of the functions:"
 
-- \code{perform_regression_test.R}
-- \code{perform_independence_test.R}
-- \code{perform_GoF_test.R}
+- 'perform_regression_test.R'
+- 'perform_independence_test.R'
+- 'perform_GoF_test.R'
 
 ### Independence testing
 
