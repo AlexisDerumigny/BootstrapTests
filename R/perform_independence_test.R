@@ -1,8 +1,18 @@
 
-
+#' This function generates bootstrap samples for the independence testing, by
+#' inputting the \code{X1} and \code{X2} data and the type_boot (the type of
+#' bootstrap to be performed)
+#'
+#' @param X1 univariate data vector
+#' @param X2 univariate data vector
+#' @param type_boot type of bootstrap to resample the data, either  \code{"indep"}
+#'        for independence bootstrap or \code{"NP"} for non-parametric bootstrap.
+#'
+#' @returns a list with two items, the bootstrap samples \code{X1_st}, \code{X2_st}.
+#'
+#' @noRd
+#'
 generateBootstrapSamples <- function(X1, X2, type_boot){
-  # This function generates bootstrap samples for the independence testing, by
-  # inputting the data and the type_boot (the type of bootstrap to be performed)
   n=length(X1)
   switch (
     type_boot,
@@ -28,9 +38,17 @@ generateBootstrapSamples <- function(X1, X2, type_boot){
 }
 
 
-compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
-  # Function to compute empirical joint CDF at each point (x, y) in the grid
-  # Use outer to compute the empirical joint CDF in a vectorized way
+#' Function to compute empirical joint CDF at each point (x, y) in the grid
+#' Use \code{outer} to compute the empirical joint CDF in a vectorized way
+#'
+#' @param X1 univariate data vector
+#' @param X2 univariate data vector
+#' @param my_grid grid to evaluate the ecdf on, equal for \code{X1} and \code{X2}
+#'
+#' @return joint ECDF
+#' @noRd
+#'
+compute_joint_ecdf <- function(X1, X2, my_grid) {
   FX12_joint <- outer(my_grid, my_grid, Vectorize(function(x, y) {
     mean(X1 <= x & X2 <= y)
   }))
@@ -42,30 +60,21 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #' Perform a test of independence
 #'
 #' @param X1,X2 numerical vectors of the same size. The independence test tests
-#' whether X1 is independent from X2.
+#' whether \code{X1} is independent from \code{X2}.
 #'
 #' @param my_grid the grid on which the empirical CDFs are estimated.
-#' TODO: implement a different grid for X1 and X2.
-#' TODO: can the grid be chosen automatically? For example quantiles of X1, X2?
+#  TODO: implement a different grid for X1 and X2.
+#  TODO: can the grid be chosen automatically? For example quantiles of X1, X2?
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
 #' @return A list with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 #'
-#'    pval_NP_eq_L2, pval_NP_cent_L2,
-#'    pval_indep_cent_L2, pval_indep_eq_L2,
-#'    pval_NP_eq_KS, pval_NP_cent_KS,
-#'    pval_indep_cent_KS, pval_indep_eq_KS.
 #'    These are the p-values for the 8 combinations of bootstrap resampling schemes
 #'    (nonparametric and independent), test statistics (centered and equivalent),
-#'    and Kolmogorov-Smirnov or L2-type of true test statistic,
-#'
-#'    stat_st_NP_cent_L2, stat_st_NP_eq_L2,
-#'    stat_st_indep_cent_L2, stat_st_indep_eq_L2,
-#'    stat_st_NP_cent_KS, stat_st_NP_eq_KS,
-#'    stat_st_indep_cent_KS, stat_st_indep_eq_KS.
-#'    These are the vectors of bootstrap test statistics for each of the combinations.
+#'    and Kolmogorov-Smirnov or L2-type of true test statistic. The column 'bootstrapped_tests'
+#'    contains vectors of bootstrap test statistics.
 #'
 #'    \item \code{true_stats} a named vector of size 2 containing the true test
 #'    statistics for the L2 and KS distances.
@@ -78,13 +87,13 @@ compute_joint_ecdf <- function(X1, X2, my_grid, nGrid) {
 #' X1 = rnorm(n)
 #' X2 = X1 + rnorm(n)
 #' result = perform_independence_test(X1, X2, nBootstrap = 100)
-#' result$pvals_df
+#' result
 #' #
 #' # Under H0
 #' X1 = rnorm(n)
 #' X2 = rnorm(n)
 #' result = perform_independence_test(X1, X2, nBootstrap = 100)
-#' result$pvals_df
+#' result
 #'
 #' @export
 #'

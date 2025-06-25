@@ -8,11 +8,9 @@ perform_independence_test(X1, X2, my_grid = NULL, nBootstrap)
 }
 \arguments{
 \item{X1, X2}{numerical vectors of the same size. The independence test tests
-whether X1 is independent from X2.}
+whether \code{X1} is independent from \code{X2}.}
 
-\item{my_grid}{the grid on which the empirical CDFs are estimated.
-TODO: implement a different grid for X1 and X2.
-TODO: can the grid be chosen automatically? For example quantiles of X1, X2?}
+\item{my_grid}{the grid on which the empirical CDFs are estimated.}
 
 \item{nBootstrap}{number of bootstrap repetitions.}
 }
