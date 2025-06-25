@@ -65,11 +65,13 @@ library(BootstrapTests)
  n = 100
   # Under H1
   X_data = rgamma(n,2,3)
-  result = perform_GoF_test(X_data, nBootstrap = 30)
+  result_H1 = perform_GoF_test(X_data, nBootstrap = 30)
+  result_H1
   
    # Under H0
   X_data = rnorm(n)
-  result = perform_GoF_test(X_data, nBootstrap = 30)
+  result_H0 = perform_GoF_test(X_data, nBootstrap = 30)
+  result_H0
 ```
 
 
