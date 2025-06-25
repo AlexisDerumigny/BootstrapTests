@@ -119,7 +119,6 @@ perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
     my_grid = seq(min(X1,X2), max(X1,X2), length.out = 100)
   }
 
-  nGrid = length(my_grid)
 
   # Estimation of the product of the marginal CDFs
   FX1 = stats::ecdf(X1)(my_grid)
@@ -127,7 +126,7 @@ perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
   FX1FX2 = outer(FX1, FX2)
 
   # Compute joint ecdf
-  FX12 <- compute_joint_ecdf(X1, X2, my_grid, nGrid)
+  FX12 <- compute_joint_ecdf(X1, X2, my_grid)
 
   # Vector containing all the true test statistics, for the different norms
   true_stats = c("L2" = (sum((FX1FX2 - FX12)^2))*sqrt(n) ,
@@ -163,7 +162,7 @@ perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
       FX1FX2_st = outer(FX1_st, FX2_st)
 
       # Empirical joint CDF on the bootstrap data
-      FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid, nGrid)
+      FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid)
 
       stat_st_cent_L2[iBootstrap] =
         (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
