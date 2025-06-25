@@ -12,7 +12,7 @@ Description: Perform bootstrap-based hypothesis testing procedures on
     three statistical problems. In particular, it covers independence
     testing, testing the slope in a linear regression setting, and
     goodness-of-fit testing.
-License: What license is it under?
+License: GPL-3
 Imports: 
     stats (>= 4.4.0)
 Suggests: 
@@ -22,3 +22,5 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = FALSE)
 RoxygenNote: 7.3.2
+BugReports: https://github.com/AlexisDerumigny/BootstrapTests/issues
+URL: https://github.com/AlexisDerumigny/BootstrapTests
