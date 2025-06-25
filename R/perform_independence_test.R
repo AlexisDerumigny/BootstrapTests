@@ -57,7 +57,14 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 }
 
 
-#' Perform a test of independence
+#' Perform a test of  independence
+#'
+#' Perform a hypothesis test of statistical independence by means of bootstrapping.
+#' This procedure gives a total of 8 combinations of bootstrap resampling schemes
+#' (nonparametric and independent), test statistics (centered and equivalent),
+#' and Kolmogorov-Smirnov or L2-type of true test statistic. This function
+#' gives the corresponding p-values, the true test statistic and the
+#' bootstrap-version test statistics.
 #'
 #' @param X1,X2 numerical vectors of the same size. The independence test tests
 #' whether \code{X1} is independent from \code{X2}.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/perform_independence_test.R
 \name{perform_independence_test}
 \alias{perform_independence_test}
-\title{Perform a test of independence}
+\title{Perform a test of  independence}
 \usage{
 perform_independence_test(X1, X2, my_grid = NULL, nBootstrap)
 }
@@ -28,7 +28,12 @@ A list with components \itemize{
 }
 }
 \description{
-Perform a test of independence
+Perform a hypothesis test of statistical independence by means of bootstrapping.
+This procedure gives a total of 8 combinations of bootstrap resampling schemes
+(nonparametric and independent), test statistics (centered and equivalent),
+and Kolmogorov-Smirnov or L2-type of true test statistic. This function
+gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics.
 }
 \examples{
 n = 100
