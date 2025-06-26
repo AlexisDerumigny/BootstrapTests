@@ -384,13 +384,26 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
        pvals_df$type_stat == "cent" &
        pvals_df$param_bs == "MD-cent")
 
-  return( list(
+  result = list(
     # df of p-values
     pvals_df = pvals_df ,
 
     # true test statistics
-    true_stat = true_stat ) )
+    true_stat = true_stat )
+
+  # make a class for the result object
+  class(result) <- c("bootstrapTest")
+
+  return(result)
 }
 
+#' @export
+print.bootstrapTest <- function(x, ...){
+  cat("Goodness-of-fit test results:\n")
+  cat("P-values for the bootstrap tests:\n")
+  print(x$pvals_df)
+  cat("\nTrue test statistics:\n")
+  print(x$true_stat)
+}
 
 
