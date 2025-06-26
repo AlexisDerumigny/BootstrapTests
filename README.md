@@ -133,34 +133,27 @@ library(BootstrapTests)
   # Under H1
   X_data = rgamma(n,2,3)
   perform_GoF_test(X_data, nBootstrap = 30)
-#> $pvals_df
-#>   type_boot type_stat param_bs bootstrapped_tests    pvalues
-#> 1      null      cent       MD       0.659659.... 1.00000000
-#> 2      null      cent  MD-cent       0.650906.... 0.90000000
-#> 3      null        eq       MD       0.448813.... 0.00000000
-#> 4      null        eq  MD-cent       0.571215.... 0.36666667
-#> 5        NP      cent       MD       0.556913.... 0.30000000
-#> 6        NP      cent  MD-cent       0.277839.... 0.03333333
-#> 7        NP        eq       MD       0.738276.... 0.93333333
-#> 8        NP        eq  MD-cent       0.898623.... 1.00000000
-#>   theoretically_valid
-#> 1               FALSE
-#> 2               FALSE
-#> 3                TRUE
-#> 4               FALSE
-#> 5               FALSE
-#> 6                TRUE
-#> 7               FALSE
-#> 8               FALSE
+#> Goodness-of-fit test results:
+#> P-values for the bootstrap tests:
+#>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
+#> 1      null      cent       MD       0.987098.... 1.0000000               FALSE
+#> 2      null      cent  MD-cent       0.805738.... 0.9333333               FALSE
+#> 3      null        eq       MD       0.347654.... 0.0000000                TRUE
+#> 4      null        eq  MD-cent       0.554882.... 0.2000000               FALSE
+#> 5        NP      cent       MD       0.626148.... 0.3000000               FALSE
+#> 6        NP      cent  MD-cent       0.467239.... 0.0000000                TRUE
+#> 7        NP        eq       MD       0.916393.... 0.7333333               FALSE
+#> 8        NP        eq  MD-cent       0.944623.... 0.9333333               FALSE
 #> 
-#> $true_stat
+#> True test statistics:
 #>       sup 
 #> 0.6216888
   
    # Under H0
   X_data = rnorm(n)
   perform_GoF_test(X_data, nBootstrap = 30)
-#> $pvals_df
+#> Goodness-of-fit test results:
+#> P-values for the bootstrap tests:
 #>   type_boot type_stat param_bs bootstrapped_tests   pvalues theoretically_valid
 #> 1      null      cent       MD       0.688900.... 1.0000000               FALSE
 #> 2      null      cent  MD-cent       0.643788.... 0.9666667               FALSE
@@ -171,7 +164,7 @@ library(BootstrapTests)
 #> 7        NP        eq       MD       0.501489.... 1.0000000               FALSE
 #> 8        NP        eq  MD-cent       0.668045.... 1.0000000               FALSE
 #> 
-#> $true_stat
+#> True test statistics:
 #>       sup 
 #> 0.4019228
 ```
