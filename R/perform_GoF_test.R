@@ -392,13 +392,13 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
     true_stat = true_stat )
 
   # make a class for the result object
-  class(result) <- c("bootstrapTest")
+  class(result) <- c("bootstrapTest_GOF")
 
   return(result)
 }
 
 #' @export
-print.bootstrapTest <- function(x, ...){
+print.bootstrapTest_GOF <- function(x, ...){
   cat("Goodness-of-fit test results:\n")
   cat("P-values for the bootstrap tests:\n")
   print(x$pvals_df)
