@@ -75,6 +75,14 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
+#' @param type_boot_user type of bootstrap to resample the data, either 'NP' or 'cent'.
+#'
+#' @param type_stat_user type of test statistic to use, either 'cent' for centered or 'eq' for equivalent.
+#'
+#' @param norm_type_user type of norm to use for test statistic, either 'L2' or 'KS'.
+#'
+#' @param give_all_test_information logical, whether or not to give all test information
+#'
 #' @return A list with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 #'
@@ -104,7 +112,13 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @export
 #'
-perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap = 100)
+perform_independence_test <- function(X1, X2,
+                                      my_grid = NULL,
+                                      nBootstrap = 100,
+                                      type_boot_user = "indep",
+                                      type_stat_user = "eq",
+                                      norm_type_user = "KS",
+                                      give_all_test_information = FALSE)
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
