@@ -273,10 +273,56 @@ perform_independence_test <- function(X1, X2,
 
 #' @export
 print.bootstrapTest_independence <- function(x, ...){
-  cat("Independence test results:\n")
-  cat("P-values for the bootstrap tests:\n")
-  print(x$pvals_df)
-  cat("\nTrue test statistics:\n")
-  print(x$true_stats)
-}
+  cat("         🎯 Bootstrap Independence Test Results 🎯\n")
+  cat("         =========================================\n\n")
 
+  # Highlighted row
+  if (!is.null(x$highlighted_pval)) {
+    row <- x$highlighted_pval
+
+    # Get the true statistic
+    norm_type_true_stat <- row$norm_type
+    true_stat <- x$true_stats[[norm_type_true_stat]]
+
+    # Get confidence intervals
+    row$ci_lower_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.025))
+    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
+    row$ci_lower_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.005))
+    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+
+    cat("Performed test:\n")
+    cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
+    cat(sprintf("  Bootstrap repititions    : %d\n", x$nBootstrap))
+    cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
+    cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+    cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
+    cat(sprintf("  True test statistic      : %.4f\n", true_stat))
+    cat(sprintf("  95%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_95, row$ci_upper_95))
+    cat(sprintf("  99%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_99, row$ci_upper_99))
+    cat("\n")
+  } else {
+    cat("No highlighted test selected.\n\n")
+  }
+
+  if (x$give_all_test_information == TRUE) {
+    # No highlighted test selected (no matching row)
+
+
+    # Print the full p-values dataframe
+    df <- x$pvals_df
+
+    # Get confidence intervals
+    df$ci_lower_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.025))
+    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
+    df$ci_lower_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.005))
+    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+
+    # Print all test results
+    cat("All test results:\n\n")
+    print(df, row.names = FALSE)
+
+    # Print true test statistics
+    cat("\nTrue test statistics:\n")
+    print(x$true_stats)
+  }
+}
