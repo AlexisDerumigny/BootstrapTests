@@ -9,9 +9,10 @@ perform_independence_test(
   X2,
   my_grid = NULL,
   nBootstrap = 100,
-  type_boot = "indep",
-  type_stat = "eq",
-  norm_type = "KS"
+  type_boot_user = "indep",
+  type_stat_user = "eq",
+  norm_type_user = "KS",
+  give_all_test_information = FALSE
 )
 }
 \arguments{
@@ -21,6 +22,12 @@ whether \code{X1} is independent from \code{X2}.}
 \item{my_grid}{the grid on which the empirical CDFs are estimated.}
 
 \item{nBootstrap}{number of bootstrap repetitions.}
+
+\item{type_boot_user}{type of bootstrap to resample the data, either 'NP' or 'cent'.}
+
+\item{type_stat_user}{type of test statistic to use, either 'cent' for centered or 'eq' for equivalent.}
+
+\item{norm_type_user}{type of norm to use for test statistic, either 'L2' or 'KS'.}
 }
 \value{
 A list with components \itemize{
