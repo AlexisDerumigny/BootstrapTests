@@ -232,16 +232,42 @@ perform_independence_test <- function(X1, X2,
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
 
+
+  # Filter for the user-specified row dataframe
+  selected_row <- subset(
+    pvals_df,
+      type_boot == type_boot_user &
+      type_stat == type_stat_user &
+      norm_type == norm_type_user
+  )
+
+  # If the selected row exists, extract it; otherwise return NULL
+  highlighted_pval <- if (nrow(selected_row) > 0) {
+    selected_row[1, , drop = FALSE]
+  } else {
+    NULL
+  }
+
+
   result = ( list(
     # df of p-values
     pvals_df = pvals_df ,
 
     # true test statistics
-    true_stats = true_stats ) )
+    true_stats = true_stats ,
+
+    # highlighted user-specified df
+    highlighted_pval = highlighted_pval,
+
+    # Boolean for whether to give all test information
+    give_all_test_information = give_all_test_information,
+
+    # Include number of bootstrap repetitions
+    nBootstrap = nBootstrap
+    ) )
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_independence")
-
   return(result)
 }
 
