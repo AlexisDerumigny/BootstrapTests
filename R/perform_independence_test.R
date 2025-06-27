@@ -104,7 +104,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @export
 #'
-perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
+perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap = 100)
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
@@ -218,10 +218,25 @@ perform_independence_test <- function(X1, X2, my_grid = NULL, nBootstrap)
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
 
-  return( list(
+  result = ( list(
     # df of p-values
     pvals_df = pvals_df ,
 
     # true test statistics
     true_stats = true_stats ) )
+
+  # make a class for the result object
+  class(result) <- c("bootstrapTest_independence")
+
+  return(result)
 }
+
+#' @export
+print.bootstrapTest_independence <- function(x, ...){
+  cat("Independence test results:\n")
+  cat("P-values for the bootstrap tests:\n")
+  print(x$pvals_df)
+  cat("\nTrue test statistics:\n")
+  print(x$true_stats)
+}
+
