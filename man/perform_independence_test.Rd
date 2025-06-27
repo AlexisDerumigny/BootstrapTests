@@ -4,7 +4,15 @@
 \alias{perform_independence_test}
 \title{Perform a test of  independence}
 \usage{
-perform_independence_test(X1, X2, my_grid = NULL, nBootstrap)
+perform_independence_test(
+  X1,
+  X2,
+  my_grid = NULL,
+  nBootstrap = 100,
+  type_boot = "indep",
+  type_stat = "eq",
+  norm_type = "KS"
+)
 }
 \arguments{
 \item{X1, X2}{numerical vectors of the same size. The independence test tests
