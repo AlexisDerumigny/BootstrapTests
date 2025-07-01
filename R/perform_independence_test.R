@@ -260,9 +260,6 @@ perform_independence_test <- function(X1, X2,
     # highlighted user-specified df
     highlighted_pval = highlighted_pval,
 
-    # Boolean for whether to give all test information
-    give_all_test_information = give_all_test_information,
-
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap
     ) )
@@ -273,7 +270,9 @@ perform_independence_test <- function(X1, X2,
 }
 
 #' @export
-print.bootstrapTest_independence <- function(x, ...){
+print.bootstrapTest_independence <- function(x,
+                                        give_all_test_information = FALSE,
+                                        ...){
   cat("         🎯 Bootstrap Independence Test Results 🎯\n")
   cat("         =========================================\n\n")
 
@@ -304,8 +303,8 @@ print.bootstrapTest_independence <- function(x, ...){
     cat("No highlighted test selected.\n\n")
   }
 
-  if (x$give_all_test_information == TRUE) {
-    # No highlighted test selected (no matching row)
+  if (give_all_test_information == TRUE) {
+    # Print all testing information
 
     # Print the full p-values dataframe
     df <- x$pvals_df
