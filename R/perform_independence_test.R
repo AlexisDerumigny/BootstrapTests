@@ -60,6 +60,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #' Perform a test of  independence
 #'
 #' Perform a hypothesis test of statistical independence by means of bootstrapping.
+#' The null hypothesis is that of independence between the two random variables.
 #' This procedure gives a total of 8 combinations of bootstrap resampling schemes
 #' (nonparametric and independent), test statistics (centered and equivalent),
 #' and Kolmogorov-Smirnov or L2-type of true test statistic. This function
@@ -284,18 +285,17 @@ print.bootstrapTest_independence <- function(x, ...){
     norm_type_true_stat <- row$norm_type
     true_stat <- x$true_stats[[norm_type_true_stat]]
 
-    # Get confidence intervals
-    row$ci_lower_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.025))
+    # Get quantiles
     row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
-    row$ci_lower_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.005))
     row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
 
     cat("Performed test:\n")
     cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
-    cat(sprintf("  Bootstrap repititions    : %d\n", x$nBootstrap))
+    cat(sprintf("  Bootstrap repetitions    : %d\n", x$nBootstrap))
     cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
     cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
-    cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
+    cat( paste0("  p-value                  : ", row$pvalues,"\n"))
+    #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
     cat(sprintf("  True test statistic      : %.4f\n", true_stat))
     cat(sprintf("  95%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_95, row$ci_upper_95))
     cat(sprintf("  99%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_99, row$ci_upper_99))
