@@ -307,7 +307,6 @@ print.bootstrapTest_independence <- function(x, ...){
   if (x$give_all_test_information == TRUE) {
     # No highlighted test selected (no matching row)
 
-
     # Print the full p-values dataframe
     df <- x$pvals_df
 
@@ -325,4 +324,42 @@ print.bootstrapTest_independence <- function(x, ...){
     cat("\nTrue test statistics:\n")
     print(x$true_stats)
   }
+}
+
+#' @export
+plot.bootstrapTest_independence <- function(x, ...){
+
+  # assign the user-specfied highlighted dataframe
+  df <- x$highlighted_pval
+
+  # Get the true statistic
+  norm_type_true_stat <- df$norm_type
+  true_stat <- x$true_stats[[norm_type_true_stat]]
+
+  # Unlist and assign
+  bootstrapped_test <- unlist(df$bootstrapped_tests)
+
+  # Make histogram of bootstrapped test statistics
+  hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
+       xlab = "Bootstrapped test statistic")
+
+  # Get confidence intervals
+  ci_lower_95 <- stats::quantile(bootstrapped_test, 0.025)
+  ci_upper_95 <- stats::quantile(bootstrapped_test, 0.975)
+
+  # Show value of true statistic in the histogram
+  abline(v = true_stat, col = "darkorange", lwd = 2, lty = 2)
+
+  # Show 95% confidence interval
+  abline(v = ci_upper_95, col = "darkblue", lwd = 2, lty = 2)  # Upper CI
+  abline(v = ci_lower_95, col = "darkblue", lwd = 2, lty = 2)  # Lower CI
+  legend("topright",
+         legend = c("True statistic", "95% CI"),
+         col = c("darkorange", "darkblue"),
+         lty = 2,
+         lwd = 2,
+         cex = 1,           # Shrinks the text size (1 = default)
+         bty = "n",         # Removes the box around the legend
+         y.intersp = 0.7,   # Reduce vertical spacing between items
+         inset = 0.02)      # Slight inset from the edge of the plot
 }
