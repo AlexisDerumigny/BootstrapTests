@@ -243,11 +243,19 @@ perform_regression_test <- function(X, Y, nBootstrap){
 
   ### post-processing ###
 
-  bootstrap_regression_output <- list(
+  result <- list(
     # df of p-values
     pvals_df = pvals_df,
     # true test statistics
-    true_stat = true_stat )
+    true_stat = true_stat,
+    # beta
+    beta = b_hat,
 
-  return(bootstrap_regression_output)
+    nameMethod = "Bootstrap Regression Test"
+    )
+
+  # make a class for the result object
+  class(result) <- c("bootstrapTest_regression", "bootstrapTest")
+
+  return(result)
 }
