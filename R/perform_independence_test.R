@@ -265,7 +265,9 @@ perform_independence_test <- function(X1, X2,
     highlighted_pval = highlighted_pval,
 
     # Include number of bootstrap repetitions
-    nBootstrap = nBootstrap
+    nBootstrap = nBootstrap,
+
+    nameMethod = "Bootstrap Independence Test"
     ) )
 
   # make a class for the result object
@@ -274,10 +276,10 @@ perform_independence_test <- function(X1, X2,
 }
 
 #' @export
-                                        give_all_test_information = FALSE,
-                                        ...){
-  cat("         🎯 Bootstrap Independence Test Results 🎯\n")
 print.bootstrapTest <- function(x,
+                                give_all_test_information = FALSE,
+                                ...){
+  cat("         🎯" , x$nameMethod, "Results 🎯\n")
   cat("         =========================================\n\n")
 
   # Highlighted row
@@ -296,7 +298,12 @@ print.bootstrapTest <- function(x,
     cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
     cat(sprintf("  Bootstrap repetitions    : %d\n", x$nBootstrap))
     cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
-    cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+    if ("bootstrapTest_independence" %in% class(x)){
+      cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+    } else if ("bootstrapTest_regression" %in% class(x)){
+      cat("beta = ", x$beta)
+    }
+
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
     cat(sprintf("  True test statistic      : %.4f\n", true_stat))
