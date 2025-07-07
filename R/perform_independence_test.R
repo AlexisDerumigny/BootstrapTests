@@ -84,7 +84,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @param give_all_test_information logical, whether or not to give all test information
 #'
-#' @return A list with components \itemize{
+#' @return A class object with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 #'
 #'    These are the p-values for the 8 combinations of bootstrap resampling schemes
@@ -94,6 +94,11 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #'    \item \code{true_stats} a named vector of size 2 containing the true test
 #'    statistics for the L2 and KS distances.
+#'
+#'    \item \code{nBootstrap} Number of bootstrap repetitions.
+#'
+#'    \item \code{highlighted_pval} a dataframe with the default independence
+#'    results.
 #' }
 #'
 #' @examples
