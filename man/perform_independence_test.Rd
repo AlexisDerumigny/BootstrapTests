@@ -28,9 +28,11 @@ whether \code{X1} is independent from \code{X2}.}
 \item{type_stat_user}{type of test statistic to use, either 'cent' for centered or 'eq' for equivalent.}
 
 \item{norm_type_user}{type of norm to use for test statistic, either 'L2' or 'KS'.}
+
+\item{give_all_test_information}{logical, whether or not to give all test information}
 }
 \value{
-A list with components \itemize{
+A class object with components \itemize{
    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 
    These are the p-values for the 8 combinations of bootstrap resampling schemes
@@ -40,10 +42,16 @@ A list with components \itemize{
 
    \item \code{true_stats} a named vector of size 2 containing the true test
    statistics for the L2 and KS distances.
+
+   \item \code{nBootstrap} Number of bootstrap repetitions.
+
+   \item \code{highlighted_pval} a dataframe with the default independence
+   results.
 }
 }
 \description{
 Perform a hypothesis test of statistical independence by means of bootstrapping.
+The null hypothesis is that of independence between the two random variables.
 This procedure gives a total of 8 combinations of bootstrap resampling schemes
 (nonparametric and independent), test statistics (centered and equivalent),
 and Kolmogorov-Smirnov or L2-type of true test statistic. This function
