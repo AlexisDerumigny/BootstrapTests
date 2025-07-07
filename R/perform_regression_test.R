@@ -151,7 +151,11 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' result
 #'
 #' @export
-perform_regression_test <- function(X, Y, nBootstrap){
+perform_regression_test <- function(X, Y,
+                                    nBootstrap = 100,
+                                    type_boot_user = "indep_bs",
+                                    type_stat_user = "eq",
+                                    give_all_test_information = FALSE){
 
   # define the sample size
   n = length(X)
@@ -243,6 +247,7 @@ perform_regression_test <- function(X, Y, nBootstrap){
 
   ### post-processing ###
 
+<<<<<<< Updated upstream
   result <- list(
     # df of p-values
     pvals_df = pvals_df,
@@ -258,4 +263,97 @@ perform_regression_test <- function(X, Y, nBootstrap){
   class(result) <- c("bootstrapTest_regression", "bootstrapTest")
 
   return(result)
+=======
+  # Filter for the user-specified row dataframe
+  selected_row <- subset(
+    pvals_df,
+    type_boot == type_boot_user &
+      type_stat == type_stat_user
+  )
+
+  # create default return dataframe
+  highlighted_pval <- if (nrow(selected_row) > 0) {
+    selected_row[1, , drop = FALSE]
+  } else {
+    NULL
+  }
+
+
+  ### create the result object ###
+
+  result <- ( list(
+    # df of p-values
+    pvals_df = pvals_df,
+
+    # true test statistic
+    true_stat = true_stat,
+
+    # highlighted user-specified df
+    highlighted_pval = highlighted_pval,
+
+    # Include number of bootstrap repetitions
+    nBootstrap = nBootstrap
+  ) )
+
+  # make a class for the result object
+  class(result) <- c("bootstrapTest_regression", "bootstrapTest")
+  return(result)
+}
+
+
+#' @export
+print.bootstrapTest_regression <- function(x,
+                                             give_all_test_information = FALSE,
+                                             ...){
+  cat("         🎯 Bootstrap Regression Test Results 🎯\n")
+  cat("         =========================================\n\n")
+
+  # Highlighted row
+  if (!is.null(x$highlighted_pval)) {
+    row <- x$highlighted_pval
+
+    # Get the true statistic
+    norm_type_true_stat <- row$norm_type
+    true_stat <- x$true_stats[[norm_type_true_stat]]
+
+    # Get quantiles
+    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
+    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+
+    cat("Performed test:\n")
+    cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
+    cat(sprintf("  Bootstrap repetitions    : %d\n", x$nBootstrap))
+    cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
+    cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+    cat( paste0("  p-value                  : ", row$pvalues,"\n"))
+    #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
+    cat(sprintf("  True test statistic      : %.4f\n", true_stat))
+    cat(sprintf("  95%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_95, row$ci_upper_95))
+    cat(sprintf("  99%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_99, row$ci_upper_99))
+    cat("\n")
+  } else {
+    cat("No highlighted test selected.\n\n")
+  }
+
+  if (give_all_test_information == TRUE) {
+    # Print all testing information
+
+    # Print the full p-values dataframe
+    df <- x$pvals_df
+
+    # Get confidence intervals
+    df$ci_lower_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.025))
+    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
+    df$ci_lower_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.005))
+    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+
+    # Print all test results
+    cat("All test results:\n\n")
+    print(df, row.names = FALSE)
+
+    # Print true test statistics
+    cat("\nTrue test statistics:\n")
+    print(x$true_stats)
+  }
+>>>>>>> Stashed changes
 }
