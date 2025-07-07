@@ -339,7 +339,8 @@ print.bootstrapTest <- function(x,
 }
 
 #' @export
-plot.bootstrapTest <- function(x, ...){
+plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
+                               legend.x = NULL, legend.y = NULL, ...){
 
   # assign the user-specfied highlighted dataframe
   df <- x$highlighted_pval
@@ -352,18 +353,40 @@ plot.bootstrapTest <- function(x, ...){
   bootstrapped_test <- unlist(df$bootstrapped_tests)
 
   # Make histogram of bootstrapped test statistics
+  min_ = min(c(bootstrapped_test, true_stat))
+  max_ = max(c(bootstrapped_test, true_stat))
+
+  if (is.null(xlim)){
+    xlim = c(0, 1.1 * max_)
+  }
+  if (is.null(breaks)){
+    breaks = pretty(c(0, 1.1 * max_), n = 20)
+  } else if (length(breaks) == 1){
+
+    breaks = pretty(c(0, 1.1 * max_), n = breaks)
+  }
+
   hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
-       xlab = "Bootstrapped test statistic")
+       xlab = "Bootstrapped test statistic",
+       xlim = xlim,
+       breaks = breaks)
 
   # Get upper quantile
-  quantile_upper_95 <- stats::quantile(bootstrapped_test, 0.975)
+  quantile_upper_95 <- stats::quantile(bootstrapped_test, 0.95)
 
   # Show value of true statistic in the histogram
   abline(v = true_stat, col = "darkorange", lwd = 2, lty = 2)
 
   # Show 95% quantile in graph
   abline(v = quantile_upper_95, col = "darkblue", lwd = 2, lty = 2)
-  legend("topright",
+
+  if (is.null(legend.x)){
+    legend.x = "topright"
+  }
+
+  # Legend
+  legend(x = legend.x,
+         y = legend.y,
          legend = c("True statistic", "95% CI"),
          col = c("darkorange", "darkblue"),
          lty = 2,
