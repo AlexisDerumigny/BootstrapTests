@@ -265,7 +265,7 @@ perform_independence_test <- function(X1, X2,
     ) )
 
   # make a class for the result object
-  class(result) <- c("bootstrapTest_independence")
+  class(result) <- c("bootstrapTest_independence", "bootstrapTest")
   return(result)
 }
 
