@@ -342,16 +342,14 @@ plot.bootstrapTest_independence <- function(x, ...){
   hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
        xlab = "Bootstrapped test statistic")
 
-  # Get confidence intervals
-  ci_lower_95 <- stats::quantile(bootstrapped_test, 0.025)
-  ci_upper_95 <- stats::quantile(bootstrapped_test, 0.975)
+  # Get upper quantile
+  quantile_upper_95 <- stats::quantile(bootstrapped_test, 0.975)
 
   # Show value of true statistic in the histogram
   abline(v = true_stat, col = "darkorange", lwd = 2, lty = 2)
 
-  # Show 95% confidence interval
-  abline(v = ci_upper_95, col = "darkblue", lwd = 2, lty = 2)  # Upper CI
-  abline(v = ci_lower_95, col = "darkblue", lwd = 2, lty = 2)  # Lower CI
+  # Show 95% quantile in graph
+  abline(v = quantile_upper_95, col = "darkblue", lwd = 2, lty = 2)
   legend("topright",
          legend = c("True statistic", "95% CI"),
          col = c("darkorange", "darkblue"),
