@@ -11,8 +11,7 @@ perform_independence_test(
   nBootstrap = 100,
   type_boot_user = "indep",
   type_stat_user = "eq",
-  norm_type_user = "KS",
-  give_all_test_information = FALSE
+  norm_type_user = "KS"
 )
 }
 \arguments{

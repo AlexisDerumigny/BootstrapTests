@@ -123,8 +123,7 @@ perform_independence_test <- function(X1, X2,
                                       nBootstrap = 100,
                                       type_boot_user = "indep",
                                       type_stat_user = "eq",
-                                      norm_type_user = "KS",
-                                      give_all_test_information = FALSE)
+                                      norm_type_user = "KS")
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
@@ -275,10 +274,10 @@ perform_independence_test <- function(X1, X2,
 }
 
 #' @export
-print.bootstrapTest_independence <- function(x,
                                         give_all_test_information = FALSE,
                                         ...){
   cat("         🎯 Bootstrap Independence Test Results 🎯\n")
+print.bootstrapTest <- function(x,
   cat("         =========================================\n\n")
 
   # Highlighted row
