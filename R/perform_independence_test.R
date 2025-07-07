@@ -326,7 +326,7 @@ print.bootstrapTest_independence <- function(x,
 }
 
 #' @export
-plot.bootstrapTest_independence <- function(x, ...){
+plot.bootstrapTest <- function(x, ...){
 
   # assign the user-specfied highlighted dataframe
   df <- x$highlighted_pval
