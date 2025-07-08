@@ -409,12 +409,11 @@ perform_GoF_test <- function(X_data,
   ### post-processing ###
 
   # Filter for the user-specified row dataframe
-  selected_row <- subset(
-    pvals_df,
-    type_boot == type_boot_user &
-    type_stat == type_stat_user &
-    param_bs  == param_bs_user
-  )
+  selected_row <- pvals_df[
+      pvals_df$type_boot == type_boot_user &
+      pvals_df$type_stat == type_stat_user &
+      pvals_df$param_bs  == param_bs_user,
+  ]
 
   # If the selected row exists, extract it; otherwise return NULL
   highlighted_pval <- if (nrow(selected_row) > 0) {

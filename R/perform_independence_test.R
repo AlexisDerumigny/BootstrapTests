@@ -242,12 +242,11 @@ perform_independence_test <- function(X1, X2,
 
 
   # Filter for the user-specified row dataframe
-  selected_row <- subset(
-    pvals_df,
-      type_boot == type_boot_user &
-      type_stat == type_stat_user &
-      norm_type == norm_type_user
-  )
+  selected_row <- pvals_df[
+    pvals_df$type_boot == type_boot_user &
+    pvals_df$type_stat == type_stat_user &
+    pvals_df$norm_type == norm_type_user,
+  ]
 
   # If the selected row exists, extract it; otherwise return NULL
   highlighted_pval <- if (nrow(selected_row) > 0) {
