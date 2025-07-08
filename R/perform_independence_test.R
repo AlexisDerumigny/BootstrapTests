@@ -374,7 +374,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
     breaks = pretty(c(0, 1.1 * max_), n = breaks)
   }
 
-  hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
+  graphics::hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
        xlab = "Bootstrapped test statistic",
        xlim = xlim,
        breaks = breaks)
@@ -383,17 +383,17 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   quantile_upper_95 <- stats::quantile(bootstrapped_test, 0.95)
 
   # Show value of true statistic in the histogram
-  abline(v = true_stat, col = "darkorange", lwd = 2, lty = 2)
+  graphics::abline(v = true_stat, col = "darkorange", lwd = 2, lty = 2)
 
   # Show 95% quantile in graph
-  abline(v = quantile_upper_95, col = "darkblue", lwd = 2, lty = 2)
+  graphics::abline(v = quantile_upper_95, col = "darkblue", lwd = 2, lty = 2)
 
   if (is.null(legend.x)){
     legend.x = "topright"
   }
 
   # Legend
-  legend(x = legend.x,
+  graphics::legend(x = legend.x,
          y = legend.y,
          legend = c("True statistic", "95% quantile"),
          col = c("darkorange", "darkblue"),
