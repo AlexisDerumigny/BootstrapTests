@@ -249,31 +249,14 @@ perform_regression_test <- function(X, Y,
 
   ### post-processing ###
 
-<<<<<<< Updated upstream
-  result <- list(
-    # df of p-values
-    pvals_df = pvals_df,
-    # true test statistics
-    true_stat = true_stat,
-    # beta
-    beta = b_hat,
-
-    nameMethod = "Bootstrap Regression Test"
-    )
-
-  # make a class for the result object
-  class(result) <- c("bootstrapTest_regression", "bootstrapTest")
-
-  return(result)
-=======
   # Filter for the user-specified row dataframe
   selected_row <- subset(
     pvals_df,
     type_boot == type_boot_user &
-      type_stat == type_stat_user
+    type_stat == type_stat_user
   )
 
-  # create default return dataframe
+  # If the selected row exists, extract it; otherwise return NULL
   highlighted_pval <- if (nrow(selected_row) > 0) {
     selected_row[1, , drop = FALSE]
   } else {
@@ -281,21 +264,21 @@ perform_regression_test <- function(X, Y,
   }
 
 
-  ### create the result object ###
-
-  result <- ( list(
+  ### Create the result object ###
+  result <- list(
     # df of p-values
     pvals_df = pvals_df,
-
-    # true test statistic
-    true_stat = true_stat,
-
+    # true test statistics
+    true_stats = true_stat,
+    # beta
+    beta = b_hat,
     # highlighted user-specified df
     highlighted_pval = highlighted_pval,
-
     # Include number of bootstrap repetitions
-    nBootstrap = nBootstrap
-  ) )
+    nBootstrap = nBootstrap,
+    # give bootstrap method a name
+    nameMethod = "Bootstrap Regression Test"
+    )
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_regression", "bootstrapTest")
