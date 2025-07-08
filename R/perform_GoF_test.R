@@ -208,7 +208,13 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #' @export
 #'
-perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
+perform_GoF_test <- function(X_data,
+                             parametric_fam = "normal",
+                             nBootstrap = 100,
+                             #generate default user bootstrap procedure:
+                             type_boot_user = "null",
+                             type_stat_user = "eq",
+                             param_bs_user = "MD")
 {
   # Checking the validity of the inputs
   if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
@@ -398,14 +404,3 @@ perform_GoF_test <- function(X_data, parametric_fam = "normal", nBootstrap)
 
   return(result)
 }
-
-#' @export
-print.bootstrapTest_GOF <- function(x, ...){
-  cat("Goodness-of-fit test results:\n")
-  cat("P-values for the bootstrap tests:\n")
-  print(x$pvals_df)
-  cat("\nTrue test statistics:\n")
-  print(x$true_stat)
-}
-
-
