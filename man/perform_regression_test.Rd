@@ -4,7 +4,13 @@
 \alias{perform_regression_test}
 \title{Performs a test on the coefficient of a univariate linear regression}
 \usage{
-perform_regression_test(X, Y, nBootstrap)
+perform_regression_test(
+  X,
+  Y,
+  nBootstrap = 100,
+  type_boot_user = "indep_bs",
+  type_stat_user = "eq"
+)
 }
 \arguments{
 \item{X}{numeric univariate input vector resembling the independent variables}
@@ -12,12 +18,13 @@ perform_regression_test(X, Y, nBootstrap)
 \item{Y}{numeric univariate input vector the dependent variables}
 
 \item{nBootstrap}{numeric value of the amount of bootstrap resamples}
+
+\item{type_boot_user}{default "indep_bs" string for the bootstrap resampling scheme to be used.}
+
+\item{type_stat_user}{default "eq" string for the type of test statistic to be used.}
 }
 \value{
-a named list with `pvals_df` the df of p-values, with the vectors of
-bootstrapped test statistics T_n^* included and `true_stat` the true test statistic.
-
-A list with components \itemize{
+A class object with components \itemize{
    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
 
    These are the p-values for the combinations of bootstrap resampling schemes,
@@ -28,6 +35,15 @@ A list with components \itemize{
 
    \item \code{true_stat} a named vector of size 1 containing the true test
    statistic.
+
+   \item \code{nBootstrap} Number of bootstrap repetitions.
+
+   \item \code{highlighted_pval} a dataframe with the default independence
+   results.
+
+   \item \code{nameMethod} string for the name of the method used.
+
+   \item \code{beta} numeric for the estimated slope of the regression model.
 }
 }
 \description{
@@ -44,13 +60,15 @@ n = 100
 X_data = rnorm(n)
 Y_data =  X_data + rnorm(n)   #Y = X + epsilon
 result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
-result
+print(result)
+plot(result)
 
 # Under H0
 X_data = rnorm(n)
 Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
 result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
-result
+print(result)
+plot(result)
 
 }
 \seealso{

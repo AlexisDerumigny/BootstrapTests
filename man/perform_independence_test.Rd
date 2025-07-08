@@ -71,7 +71,8 @@ plot(result)
 # Under H0
 X1 = rnorm(n)
 X2 = rnorm(n)
-result = perform_independence_test(X1, X2, nBootstrap = 100)
-result
+result = perform_independence_test(X1, X2, nBootstrap = 30)
+print(result)
+plot(result)
 
 }
