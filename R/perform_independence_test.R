@@ -82,8 +82,6 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @param norm_type_user type of norm to use for test statistic, either 'L2' or 'KS'.
 #'
-#' @param give_all_test_information logical, whether or not to give all test information
-#'
 #' @return A class object with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
 #'
