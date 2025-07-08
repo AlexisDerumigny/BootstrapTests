@@ -4,7 +4,14 @@
 \alias{perform_GoF_test}
 \title{Perform a GoF test}
 \usage{
-perform_GoF_test(X_data, parametric_fam = "normal", nBootstrap)
+perform_GoF_test(
+  X_data,
+  parametric_fam = "normal",
+  nBootstrap = 100,
+  type_boot_user = "null",
+  type_stat_user = "eq",
+  param_bs_user = "MD"
+)
 }
 \arguments{
 \item{X_data, }{numerical vector of the same size. the GoF tests whether this
