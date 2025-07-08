@@ -392,15 +392,39 @@ perform_GoF_test <- function(X_data,
        pvals_df$type_stat == "cent" &
        pvals_df$param_bs == "MD-cent")
 
-  result = list(
-    # df of p-values
-    pvals_df = pvals_df ,
+  ### post-processing ###
 
+  # Filter for the user-specified row dataframe
+  selected_row <- subset(
+    pvals_df,
+    type_boot == type_boot_user &
+    type_stat == type_stat_user &
+    param_bs  == param_bs_user
+  )
+
+  # If the selected row exists, extract it; otherwise return NULL
+  highlighted_pval <- if (nrow(selected_row) > 0) {
+    selected_row[1, , drop = FALSE]
+  } else {
+    NULL
+  }
+
+
+  ### Create the result object ###
+  result <- list(
+    # df of p-values
+    pvals_df = pvals_df,
     # true test statistics
-    true_stat = true_stat )
+    true_stats = true_stat,
+    # highlighted user-specified df
+    highlighted_pval = highlighted_pval,
+    # Include number of bootstrap repetitions
+    nBootstrap = nBootstrap,
+    # give bootstrap method a name
+    nameMethod = "Bootstrap GoF Test"
+  )
 
   # make a class for the result object
-  class(result) <- c("bootstrapTest_GOF")
-
+  class(result) <- c("bootstrapTest_GoF", "bootstrapTest")
   return(result)
 }
