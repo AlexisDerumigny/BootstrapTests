@@ -142,13 +142,15 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' X_data = rnorm(n)
 #' Y_data =  X_data + rnorm(n)   #Y = X + epsilon
 #' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
-#' result
+#' print(result)
+#' plot(result)
 #'
 #' # Under H0
 #' X_data = rnorm(n)
 #' Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
 #' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
-#' result
+#' print(result)
+#' plot(result)
 #'
 #' @export
 perform_regression_test <- function(X, Y,
