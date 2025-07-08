@@ -324,11 +324,9 @@ print.bootstrapTest <- function(x,
     # Print the full p-values dataframe
     df <- x$pvals_df
 
-    # Get confidence intervals
-    df$ci_lower_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.025))
-    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
-    df$ci_lower_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.005))
-    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+    # Get quantiles
+    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
 
     # Print all test results
     cat("All test results:\n\n")
