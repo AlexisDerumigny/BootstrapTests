@@ -174,19 +174,33 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' @param parametric_fam name of the parametric family. For the moment, only
 #' `normal` is supported.
 #'
-#' @param nBootstrap number of bootstrap repetitions.
+#' @param nBootstrap numeric value of the amount of bootstrap resamples.
 #'
-#' @return A list with components \itemize{
+#' @param type_boot_user default "null" string for the bootstrap resampling scheme to be used.
+#'
+#' @param type_stat_user default "eq" string for the type of test statistic to be used.
+#'
+#' @param param_bs_user default "MD" string for the bootstrap parameter estimator to be used.
+#'
+#' @return A class object with components \itemize{
 #'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
 #'
-#'    These are the p-values for the combinations of bootstrap resampling schemes
-#'    (nonparametric and null), test statistics (centered and equivalent),
+#'    These are the p-values for the combinations of bootstrap resampling schemes,
+#'    test statistics (centered and equivalent).
 #'
 #'    It also contains the vectors of bootstrap test statistics
 #'    for each of the combinations.
 #'
 #'    \item \code{true_stat} a named vector of size 1 containing the true test
 #'    statistic.
+#'
+#'    \item \code{nBootstrap} Number of bootstrap repetitions.
+#'
+#'    \item \code{highlighted_pval} a dataframe with the default independence
+#'    results.
+#'
+#'    \item \code{nameMethod} string for the name of the method used.
+#'
 #' }
 #'
 #' @seealso \code{\link{perform_regression_test},\link{perform_independence_test}}

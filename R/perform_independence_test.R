@@ -278,6 +278,15 @@ perform_independence_test <- function(X1, X2,
   return(result)
 }
 
+
+#' Print the bootstrap test results
+#' @param x an object of class \code{bootstrapTest_independence},
+#'        \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}
+#'
+#' @param give_all_test_information logical, whether or not to give all test information.
+#'        Defaults to \code{FALSE}. If \code{TRUE}, prints all test results.
+#' @param ... additional arguments passed to the \code{print} function
+#'
 #' @export
 print.bootstrapTest <- function(x,
                                 give_all_test_information = FALSE,
@@ -343,6 +352,16 @@ print.bootstrapTest <- function(x,
   }
 }
 
+
+#' Plot the bootstrap test statistics distribution
+#' @param x an object of class \code{bootstrapTest_independence} or \code{bootstrapTest}
+#'
+#' @param xlim limits for the x-axis of the histogram
+#' @param breaks breaks for the histogram
+#' @param legend.x position of the legend on the x-axis
+#' @param legend.y position of the legend on the y-axis
+#' @param ... additional arguments passed to the \code{hist} function
+#'
 #' @export
 plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                                legend.x = NULL, legend.y = NULL, ...){
