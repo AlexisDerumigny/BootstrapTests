@@ -197,12 +197,14 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' # Under H1
 #' X_data = rgamma(n,2,3)
 #' result = perform_GoF_test(X_data, nBootstrap = 30)
-#' result$pvals_df
+#' print(result)
+#' plot(result)
 #' #
 #' # Under H0
 #' X_data = rnorm(n)
 #' result = perform_GoF_test(X_data, nBootstrap = 30)
-#' result$pvals_df
+#' print(result)
+#' plot(result)
 #'
 #' @export
 #'
