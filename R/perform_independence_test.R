@@ -292,8 +292,11 @@ print.bootstrapTest <- function(x,
     row <- x$highlighted_pval
 
     # Get the true statistic
-    norm_type_true_stat <- row$norm_type
-    true_stat <- x$true_stats[[norm_type_true_stat]]
+    if ("bootstrapTest_independence" %in% class(x)){
+      true_stat <- x$true_stats[[row$norm_type]]
+    } else if ("bootstrapTest_regression" %in% class(x)){
+      true_stat <- x$true_stats
+    }
 
     # Get quantiles
     row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
@@ -306,7 +309,7 @@ print.bootstrapTest <- function(x,
     if ("bootstrapTest_independence" %in% class(x)){
       cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
     } else if ("bootstrapTest_regression" %in% class(x)){
-      cat("beta = ", x$beta)
+      cat("  Beta                     :", x$beta, "\n")
     }
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
@@ -346,8 +349,11 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   df <- x$highlighted_pval
 
   # Get the true statistic
-  norm_type_true_stat <- df$norm_type
-  true_stat <- x$true_stats[[norm_type_true_stat]]
+  if ("bootstrapTest_independence" %in% class(x)){
+    true_stat <- x$true_stats[[df$norm_type]]
+  } else if ("bootstrapTest_regression" %in% class(x)){
+    true_stat <- x$true_stats
+  }
 
   # Unlist and assign
   bootstrapped_test <- unlist(df$bootstrapped_tests)
