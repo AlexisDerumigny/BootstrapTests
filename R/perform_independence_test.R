@@ -295,8 +295,8 @@ print.bootstrapTest <- function(x,
     true_stat <- x$true_stats[[norm_type_true_stat]]
 
     # Get quantiles
-    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.975))
-    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.995))
+    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
 
     cat("Performed test:\n")
     cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
@@ -307,12 +307,11 @@ print.bootstrapTest <- function(x,
     } else if ("bootstrapTest_regression" %in% class(x)){
       cat("beta = ", x$beta)
     }
-
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
     cat(sprintf("  True test statistic      : %.4f\n", true_stat))
-    cat(sprintf("  95%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_95, row$ci_upper_95))
-    cat(sprintf("  99%% Confidence Interval  : [%.4f, %.4f]\n", row$ci_lower_99, row$ci_upper_99))
+    cat(sprintf("  95%% Quantile             : %.4f\n", row$ci_upper_95))
+    cat(sprintf("  99%% Quantile             : %.4f\n", row$ci_upper_99))
     cat("\n")
   } else {
     cat("No highlighted test selected.\n\n")
@@ -389,7 +388,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   # Legend
   legend(x = legend.x,
          y = legend.y,
-         legend = c("True statistic", "95% CI"),
+         legend = c("True statistic", "95% quantile"),
          col = c("darkorange", "darkblue"),
          lty = 2,
          lwd = 2,
