@@ -281,8 +281,10 @@ perform_independence_test <- function(X1, X2,
 print.bootstrapTest <- function(x,
                                 give_all_test_information = FALSE,
                                 ...){
-  cat("         🎯" , x$nameMethod, "Results 🎯\n")
-  cat("         =========================================\n\n")
+  # print a nice layout
+  welcome_message_name <- paste0("         🎯" , x$nameMethod, " Results 🎯\n")
+  equal_signs <- paste(rep("=", nchar(welcome_message_name) + 6), collapse = "")
+  cat(welcome_message_name, equal_signs, "\n\n")
 
   # Highlighted row
   if (!is.null(x$highlighted_pval)) {
