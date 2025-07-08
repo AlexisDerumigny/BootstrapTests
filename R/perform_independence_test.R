@@ -294,7 +294,7 @@ print.bootstrapTest <- function(x,
     # Get the true statistic
     if ("bootstrapTest_independence" %in% class(x)){
       true_stat <- x$true_stats[[row$norm_type]]
-    } else if ("bootstrapTest_regression" %in% class(x)){
+    } else {
       true_stat <- x$true_stats
     }
 
@@ -310,6 +310,8 @@ print.bootstrapTest <- function(x,
       cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
     } else if ("bootstrapTest_regression" %in% class(x)){
       cat("  Beta                     :", x$beta, "\n")
+    } else if ("bootstrapTest_GoF" %in% class(x)){
+           cat("  Bootstrap estimator used :", row$param_bs, "\n")
     }
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
@@ -351,7 +353,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
     true_stat <- x$true_stats[[df$norm_type]]
-  } else if ("bootstrapTest_regression" %in% class(x)){
+  } else {
     true_stat <- x$true_stats
   }
 
