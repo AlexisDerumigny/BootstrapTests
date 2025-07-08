@@ -116,11 +116,11 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @param X numeric univariate input vector resembling the independent variables
 #' @param Y numeric univariate input vector the dependent variables
 #' @param nBootstrap numeric value of the amount of bootstrap resamples
+#' @param type_boot_user default "indep_bs" string for the bootstrap resampling scheme to be used.
+#' @param type_stat_user default "eq" string for the type of test statistic to be used.
 #'
-#' @returns a named list with `pvals_df` the df of p-values, with the vectors of
-#' bootstrapped test statistics T_n^* included and `true_stat` the true test statistic.
 #'
-#' @return A list with components \itemize{
+#' @return A class object with components \itemize{
 #'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
 #'
 #'    These are the p-values for the combinations of bootstrap resampling schemes,
@@ -131,6 +131,15 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #'    \item \code{true_stat} a named vector of size 1 containing the true test
 #'    statistic.
+#'
+#'    \item \code{nBootstrap} Number of bootstrap repetitions.
+#'
+#'    \item \code{highlighted_pval} a dataframe with the default independence
+#'    results.
+#'
+#'    \item \code{nameMethod} string for the name of the method used.
+#'
+#'    \item \code{beta} numeric for the estimated slope of the regression model.
 #' }
 #'
 #' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}
