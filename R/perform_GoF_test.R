@@ -277,6 +277,9 @@ perform_GoF_test <- function(X_data,
   # Extract the fitted parameters (for normal family the mean and variance)
   estimated_param <- fit$par
 
+  # Use standard empirical mean and variance as estimates
+  estimated_param_canonical <- generate_initial_params(X_data, parametric_fam)
+
   # Calculate the empirical CDF values at the grid of X points
   ecdf_values <- stats::ecdf(X_data)(grid_points)
 
@@ -285,12 +288,21 @@ perform_GoF_test <- function(X_data,
                                          parametric_fam = parametric_fam,
                                          param = estimated_param )$fitted_cdf_vals
 
+  # Calculate the parametrised CDF values at the grid of X points
+  parametrized_cdf_values_canonical <- param_distr(grid_points = grid_points,
+                                         parametric_fam = parametric_fam,
+                                         param = estimated_param_canonical )$fitted_cdf_vals
+
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
+  max_diff_canonical <- max(abs(ecdf_values - parametrized_cdf_values_canonical))
+
 
   # Vector containing true test statistics, for the supremum norm
   true_stat = c(# Kolmogorov-Smirnov test statistic, with sqrt(n)
-    "sup" = max_diff*sqrt(n)          )
+    "KS_with_MD" = max_diff*sqrt(n),
+    "KS_with_canonical" = max_diff_canonical*sqrt(n)
+  )
 
 
   # Bootstrapping ===========================================================
