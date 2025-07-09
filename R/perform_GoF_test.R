@@ -440,9 +440,16 @@ perform_GoF_test <- function(X_data,
   pvals_df$pvalues = lapply(
     X = 1:nrow(pvals_df),
     FUN = function(i){
+      # Choose the appropriate true_stat based on the value of param_bs
+      true_stat_to_use <- if (pvals_df$param_bs[i] == "canonical") {
+        true_stat[2]
+      } else {
+        true_stat[1]
+      }
       pval = mean(as.numeric(
-        true_stat[1] < pvals_df$bootstrapped_tests[i][[1]]
+        true_stat_to_use < pvals_df$bootstrapped_tests[i][[1]]
       ) )
+      return(pval)
     }
   ) |> unlist()
   # The NP and centred test statistic also needs
