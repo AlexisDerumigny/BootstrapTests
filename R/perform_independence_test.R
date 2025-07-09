@@ -300,6 +300,14 @@ print.bootstrapTest <- function(x,
     # Get the true statistic
     if ("bootstrapTest_independence" %in% class(x)){
       true_stat <- x$true_stats[[row$norm_type]]
+    } else if("bootstrapTest_GoF" %in% class(x)){
+      if (row$param_bs == 'canonical') {
+        # for the canonical parameter estimates, we need different true test stat
+        true_stat <- x$true_stats[[2]]
+      } else {
+        # for the MD parameter estimates, we use the first true test stat
+        true_stat <- x$true_stats[[1]]
+      }
     } else {
       true_stat <- x$true_stats
     }
@@ -368,7 +376,15 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
-    true_stat <- x$true_stats[[df$norm_type]]
+    true_stat <- x$true_stats[[row$norm_type]]
+  } else if("bootstrapTest_GoF" %in% class(x)){
+    if (df$param_bs == "canonical") {
+      # for the canonical parameter estimates, we need different true test stat
+      true_stat <- x$true_stats[[2]]
+    } else {
+      # for the MD parameter estimates, we use the first true test stat
+      true_stat <- x$true_stats[[1]]
+    }
   } else {
     true_stat <- x$true_stats
   }
