@@ -460,7 +460,10 @@ perform_GoF_test <- function(X_data,
        pvals_df$param_bs == "MD")  |
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
-       pvals_df$param_bs == "MD-cent")
+       pvals_df$param_bs == "MD-cent") |
+    (pvals_df$type_boot == "null" &
+       pvals_df$type_stat == "eq" &
+       pvals_df$param_bs == "canonical")
 
   ### post-processing ###
 
