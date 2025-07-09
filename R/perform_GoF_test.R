@@ -353,6 +353,8 @@ perform_GoF_test <- function(X_data,
       # Extract the fitted `bootstrap-based` parameters
       estimated_param_st <- fit_st$par
       estimated_param_st_MD <- fit_st_MD$par
+      estimated_param_st_canonical <- generate_initial_params(X_st_canonical,
+                                                              parametric_fam)
 
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
@@ -366,6 +368,10 @@ perform_GoF_test <- function(X_data,
       parametrized_cdf_values_st_MD <- param_distr(grid_points,
                                                    parametric_fam = parametric_fam,
                                                    estimated_param_st_MD )$fitted_cdf_vals
+
+      parametrized_cdf_values_st_canonical <- param_distr(grid_points,
+                                                        parametric_fam = parametric_fam,
+                                                        param = estimated_param_canonical )$fitted_cdf_vals
 
       # Calculate the infinity norm (sup norm): maximum absolute difference
       max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
@@ -385,12 +391,23 @@ perform_GoF_test <- function(X_data,
                                                   X_st,
                                                   estimated_param_st_MD,
                                                   parametric_fam = parametric_fam)
+      max_diff_eq_st_canonical <- infinity_norm_distance(grid_points,
+                                                         X_st_canonical,
+                                                         estimated_param_st_canonical,
+                                                         parametric_fam = parametric_fam)
+
+      max_diff_cent_st_canonical <- max(abs(ecdf_values_st
+                                  - parametrized_cdf_values_st_canonical
+                                  - ecdf_values
+                                  + parametrized_cdf_values_canonical ))
 
       # Calculating bootstrap test statistics
-      stat_st_cent[iBootstrap]    = max_diff_cent_st * sqrt(n)
-      stat_st_eq[iBootstrap]      = max_diff_eq_st * sqrt(n)
-      stat_st_cent_MD[iBootstrap] = max_diff_cent_st_MD * sqrt(n)
-      stat_st_eq_MD[iBootstrap]   = max_diff_eq_st_MD * sqrt(n)
+      stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
+      stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
+      stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
+      stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
+      stat_st_cent_canonical[iBootstrap]  = max_diff_cent_st_canonical * sqrt(n)
+      stat_st_eq_canonical[iBootstrap]    = max_diff_eq_st_canonical * sqrt(n)
 
     }
 
