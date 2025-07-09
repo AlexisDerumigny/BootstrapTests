@@ -253,6 +253,22 @@ perform_GoF_test <- function(X_data,
     stop("X_data must contain at least one entry.")
   }
 
+  if (parametric_fam != "normal"){
+    stop("parametric_fam can only be the normal family.")
+  }
+
+  if (type_boot_user %in% c("null", "NP") == FALSE){
+    stop("Choose valid type_boot_user: either 'null' or 'NP'")
+  }
+
+  if (type_stat_user %in% c("eq", "cent") == FALSE){
+    stop("Choose valid type_stat_user: either 'eq' or 'cent'")
+  }
+
+  if (param_bs_user %in% c("MD", "MD-cent", "canonical") == FALSE){
+    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'canonical'.")
+  }
+
   # Computation of the original statistics ===========================
 
   # TODO: make better grid
