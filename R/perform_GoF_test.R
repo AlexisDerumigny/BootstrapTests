@@ -319,15 +319,18 @@ perform_GoF_test <- function(X_data,
     stat_st_eq  = rep(NA, nBootstrap)
     stat_st_cent_MD = rep(NA, nBootstrap)
     stat_st_eq_MD  = rep(NA, nBootstrap)
+    stat_st_cent_canonical = rep(NA, nBootstrap)
+    stat_st_eq_canonical  = rep(NA, nBootstrap)
 
 
     for (iBootstrap in 1:nBootstrap){
       # Generation of the bootstrapped data
-      dataBoot = generateBootstrapSamples_GOF(X_data,
+      X_st <- generateBootstrapSamples_GOF(X_data,
+                                           type_boot = type_boot,
+                                           param = estimated_param)
+      X_st_canonical <- generateBootstrapSamples_GOF(X_data,
                                               type_boot = type_boot,
-                                              param = estimated_param)
-      # Extract bootstrap sample
-      X_st = dataBoot
+                                              param = estimated_param_canonical)
 
       # Estimate unknown distribution parameters to minimize the norm distance
       # Initial guesses for the mean and sd parameters
