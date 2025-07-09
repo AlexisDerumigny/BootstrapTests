@@ -376,7 +376,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
-    true_stat <- x$true_stats[[row$norm_type]]
+    true_stat <- x$true_stats[[df$norm_type]]
   } else if("bootstrapTest_GoF" %in% class(x)){
     if (df$param_bs == "canonical") {
       # for the canonical parameter estimates, we need different true test stat
