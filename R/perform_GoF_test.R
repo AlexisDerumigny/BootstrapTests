@@ -412,20 +412,23 @@ perform_GoF_test <- function(X_data,
     }
 
     # Put dataframes in a list, alternating the entries
-    # `param_bs` corresponds to the MD bootstrap parameter estimator (centered or not)
+    # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
+    # the Minimum Distance (MD) or the canonical estimator.
     list_results[[1 + (iBoot - 1)*2]] =
       data.frame(type_boot = type_boot,
                  type_stat = "cent",
-                 param_bs = c("MD", "MD-cent"),
+                 param_bs = c("MD", "MD-cent", "canonical"),
                  bootstrapped_tests = I(list(stat_st_cent,
-                                             stat_st_cent_MD) )
+                                             stat_st_cent_MD,
+                                             stat_st_cent_canonical) )
       )
     list_results[[2 + (iBoot - 1)*2]] =
       data.frame(type_boot = type_boot,
                  type_stat = "eq",
-                 param_bs = c("MD", "MD-cent"),
+                 param_bs = c("MD", "MD-cent", "canonical"),
                  bootstrapped_tests = I(list(stat_st_eq,
-                                             stat_st_eq_MD) )
+                                             stat_st_eq_MD,
+                                             stat_st_eq_canonical) )
       )
   }
 
