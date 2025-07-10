@@ -1,0 +1,89 @@
+
+#' Print the bootstrap test results
+#' @param x an object of class \code{bootstrapTest_independence},
+#'        \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}
+#'
+#' @param give_all_test_information logical, whether or not to give all test information.
+#'        Defaults to \code{FALSE}. If \code{TRUE}, prints all test results.
+#' @param ... additional arguments passed to the \code{print} function
+#'
+#' @export
+print.bootstrapTest <- function(x,
+                                give_all_test_information = FALSE,
+                                ...){
+  # print a nice layout
+  welcome_message_name <- paste0("         🎯" , x$nameMethod, " Results 🎯\n")
+  equal_signs <- paste(rep("=", nchar(welcome_message_name) + 6), collapse = "")
+  cat(welcome_message_name, equal_signs, "\n\n")
+
+  # Highlighted row
+  if (!is.null(x$highlighted_pval)) {
+    row <- x$highlighted_pval
+
+    # Get the true statistic
+    if ("bootstrapTest_independence" %in% class(x)){
+      true_stat <- x$true_stats[[row$norm_type]]
+    } else if("bootstrapTest_GoF" %in% class(x)){
+
+      true_stat <- switch(
+        row$param_bs,
+        'canonical' = {
+          x$true_stats["KS_with_canonical"]
+        },
+        'MD' = {
+          x$true_stats["KS_with_MD"]
+        },
+        'MD-cent' = {
+          x$true_stats["KS_with_MD"]
+        },
+        stop("Unknown 'param_bs': ", row$param_bs)
+      )
+    } else {
+      true_stat <- x$true_stats
+    }
+
+    # Get quantiles
+    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+
+    cat("Performed test:\n")
+    cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
+    cat(sprintf("  Bootstrap repetitions    : %d\n", x$nBootstrap))
+    cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
+    if ("bootstrapTest_independence" %in% class(x)){
+      cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+    } else if ("bootstrapTest_regression" %in% class(x)){
+      cat("  Beta                     :", x$beta, "\n")
+    } else if ("bootstrapTest_GoF" %in% class(x)){
+      cat("  Bootstrap estimator used :", row$param_bs, "\n")
+    }
+    cat( paste0("  p-value                  : ", row$pvalues,"\n"))
+    #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
+    cat(sprintf("  True test statistic      : %.4f\n", true_stat))
+    cat(sprintf("  95%% Quantile             : %.4f\n", row$ci_upper_95))
+    cat(sprintf("  99%% Quantile             : %.4f\n", row$ci_upper_99))
+    cat("\n")
+  } else {
+    cat("No highlighted test selected.\n\n")
+  }
+
+  if (give_all_test_information == TRUE) {
+    # Print all testing information
+
+    # Print the full p-values dataframe
+    df <- x$pvals_df
+
+    # Get quantiles
+    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+
+    # Print all test results
+    cat("All test results:\n\n")
+    print(df, row.names = FALSE)
+
+    # Print true test statistics
+    cat("\nTrue test statistics:\n")
+    print(x$true_stats)
+  }
+}
+
