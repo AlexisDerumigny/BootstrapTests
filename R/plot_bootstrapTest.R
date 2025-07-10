@@ -47,7 +47,9 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
     breaks = pretty(c(0, 1.1 * max_), n = breaks)
   }
 
-  graphics::hist(bootstrapped_test, main = "Bootstrap test statistics distribution",
+  graphics::hist(bootstrapped_test,
+                 main = "Bootstrap test statistics distribution",
+                 sub = x$nameMethod, # TODO: find something looking better
                  xlab = "Bootstrapped test statistic",
                  xlim = xlim,
                  breaks = breaks)
