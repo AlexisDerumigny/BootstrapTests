@@ -25,3 +25,12 @@ test_that("independence test output is well formatted", {
 
   expect_true(all(result$pvals_df$pval <= 1))
 })
+
+test_that("Independence test throws errors for wrong input", {
+  X1 = rnorm(10)
+  X2 = rnorm(10)
+  expect_error(perform_independence_test(X1,X2, norm_type_user = ""))
+  expect_error(perform_independence_test(X1,X2, type_stat_user = ""))
+  expect_error(perform_independence_test(X1,X2, type_boot_user = ""))
+  expect_error(perform_independence_test(X1,X2, nBootstrap = ""))
+})
