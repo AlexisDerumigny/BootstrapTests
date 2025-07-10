@@ -241,7 +241,7 @@ perform_GoF_test <- function(X_data,
                              #generate default user bootstrap procedure:
                              type_boot_user = "null",
                              type_stat_user = "eq",
-                             param_bs_user = "MD")
+                             param_bs_user = "canonical")
 {
   # Checking the validity of the inputs
   if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
