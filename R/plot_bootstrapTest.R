@@ -68,7 +68,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   # Legend
   graphics::legend(x = legend.x,
                    y = legend.y,
-                   legend = c("True statistic", "95% quantile"),
+                   legend = c("True statistic", "5% critical value"),
                    col = c("darkorange", "darkblue"),
                    lty = 2,
                    lwd = 2,
