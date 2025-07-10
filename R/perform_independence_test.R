@@ -327,13 +327,20 @@ print.bootstrapTest <- function(x,
     if ("bootstrapTest_independence" %in% class(x)){
       true_stat <- x$true_stats[[row$norm_type]]
     } else if("bootstrapTest_GoF" %in% class(x)){
-      if (row$param_bs == 'canonical') {
-        # for the canonical parameter estimates, we need different true test stat
-        true_stat <- x$true_stats[[2]]
-      } else {
-        # for the MD parameter estimates, we use the first true test stat
-        true_stat <- x$true_stats[[1]]
-      }
+
+      true_stat <- switch(
+        row$param_bs,
+        'canonical' = {
+          x$true_stats["KS_with_canonical"]
+        },
+        'MD' = {
+          x$true_stats["KS_with_MD"]
+        },
+        'MD-cent' = {
+          x$true_stats["KS_with_MD"]
+        },
+        stop("Unknown 'param_bs': ", row$param_bs)
+      )
     } else {
       true_stat <- x$true_stats
     }
