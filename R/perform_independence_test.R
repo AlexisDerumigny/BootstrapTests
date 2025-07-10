@@ -76,11 +76,14 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
-#' @param type_boot_user type of bootstrap to resample the data, either 'NP' or 'cent'.
+#' @param type_boot_user type of bootstrap to resample the data, either 'NP'
+#' or 'cent'.
 #'
-#' @param type_stat_user type of test statistic to use, either 'cent' for centered or 'eq' for equivalent.
+#' @param type_stat_user type of test statistic to use, either 'cent' for
+#' centered or 'eq' for equivalent.
 #'
-#' @param norm_type_user type of norm to use for test statistic, either 'L2' or 'KS'.
+#' @param norm_type_user type of norm to use for test statistic, either 'L2'
+#' or 'KS'.
 #'
 #' @return A class object with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
@@ -134,6 +137,29 @@ perform_independence_test <- function(X1, X2,
 
   if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
     stop("nBootstrap must be a positive integer of length 1.")
+  }
+
+  if (length(X1) < 1 || length(X2) < 1 ){
+    stop("X1 and X2 must contain at least one entry.")
+  }
+
+  if ( is.numeric(X1) == FALSE || is.numeric(X2) == FALSE ){
+    stop("X1 and X2 must be numeric vectors. Please check your input data.")
+  }
+
+  if (type_boot_user %in% c("indep", "NP") == FALSE){
+    stop("Choose valid type_boot_user: either 'indep' or 'NP'. current input is ",
+         type_boot_user)
+  }
+
+  if (type_stat_user %in% c("eq", "cent") == FALSE){
+    stop("Choose valid type_stat_user: either 'eq' or 'cent'. Current input is",
+         type_stat_user)
+  }
+
+  if (norm_type_user %in% c("KS","L2") == FALSE){
+    stop("Choose valid norm_type_user: either 'KS' or 'L2'. Current input is ",
+         norm_type_user)
   }
 
   # Computation of the original statistics ===========================
