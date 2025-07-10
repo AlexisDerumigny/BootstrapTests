@@ -459,9 +459,9 @@ perform_GoF_test <- function(X_data,
     FUN = function(i){
       # Choose the appropriate true_stat based on the value of param_bs
       true_stat_to_use <- if (pvals_df$param_bs[i] == "canonical") {
-        true_stat[2]
+        true_stat["KS_with_canonical"]
       } else {
-        true_stat[1]
+        true_stat["KS_with_MD"]
       }
       pval = mean(as.numeric(
         true_stat_to_use < pvals_df$bootstrapped_tests[i][[1]]
