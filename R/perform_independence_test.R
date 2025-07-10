@@ -90,9 +90,11 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'         either 'L2' or 'KS'.
 #'   }
 #'
-#'   \item \code{"all"}:
+#'   \item \code{"all"} This gives all theoretically valid combinations for
+#'   bootstrap resampling schemes.
 #'
-#'   \item \code{"all and also wrong"}:
+#'   \item \code{"all and also wrong"} This gives all possible combinations for
+#'   bootstrap
 #' }
 #' A warning is raised if the given combination of \code{type_boot_user} and
 #' \code{type_stat_user} is theoretically invalid.
