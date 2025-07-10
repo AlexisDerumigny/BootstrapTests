@@ -9,7 +9,7 @@
 #'
 #' @noRd
 #'
-generate_initial_params <- function(data, parametric_fam = "normal"){
+estimate_params <- function(data, parametric_fam = "normal"){
 
   switch (parametric_fam,
           "normal" = {
@@ -281,7 +281,7 @@ perform_GoF_test <- function(X_data,
   # TODO: for other GoF-tests, change initial estimation parameters
   # Estimate unknown distribution parameters to minimize the norm distance
   # Initial guesses for the parameters
-  initial_params <- generate_initial_params(X_data)
+  initial_params <- estimate_params(X_data)
 
   # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
   # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
@@ -294,7 +294,7 @@ perform_GoF_test <- function(X_data,
   estimated_param <- fit$par
 
   # Use standard empirical mean and variance as estimates
-  estimated_param_canonical <- generate_initial_params(X_data, parametric_fam)
+  estimated_param_canonical <- estimate_params(X_data, parametric_fam)
 
   # Calculate the empirical CDF values at the grid of X points
   ecdf_values <- stats::ecdf(X_data)(grid_points)
@@ -348,9 +348,10 @@ perform_GoF_test <- function(X_data,
                                               type_boot = type_boot,
                                               param = estimated_param_canonical)
 
-      # Estimate unknown distribution parameters to minimize the norm distance
+      ## Estimate unknown distribution parameters to minimize the norm distance ##
+
       # Initial guesses for the mean and sd parameters
-      initial_params_st <- generate_initial_params(X_st)
+      initial_params_st <- estimate_params(X_st)
 
       # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
       fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
@@ -369,7 +370,7 @@ perform_GoF_test <- function(X_data,
       # Extract the fitted `bootstrap-based` parameters
       estimated_param_st <- fit_st$par
       estimated_param_st_MD <- fit_st_MD$par
-      estimated_param_st_canonical <- generate_initial_params(X_st_canonical,
+      estimated_param_st_canonical <- estimate_params(X_st_canonical,
                                                               parametric_fam)
 
       # Calculate the empirical CDF values at the grid of X_st points, after
