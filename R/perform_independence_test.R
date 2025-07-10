@@ -76,14 +76,27 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
-#' @param type_boot_user type of bootstrap to resample the data, either 'NP'
-#' or 'cent'.
+#' @param bootstrapOptions This can be one of \itemize{
+#'   \item \code{NULL}
 #'
-#' @param type_stat_user type of test statistic to use, either 'cent' for
-#' centered or 'eq' for equivalent.
+#'   \item a list with at most 3 elements names \itemize{
+#'         \item \code{type_boot} type of bootstrap to resample the data,
+#'         either 'NP' or 'cent'.
 #'
-#' @param norm_type_user type of norm to use for test statistic, either 'L2'
-#' or 'KS'.
+#'         \item \code{type_stat} type of test statistic to use,
+#'         either 'cent' for centered or 'eq' for equivalent.
+#'
+#'         \item \code{norm_type} type of norm to use for test statistic,
+#'         either 'L2' or 'KS'.
+#'   }
+#'
+#'   \item \code{"all"}:
+#'
+#'   \item \code{"all and also wrong"}:
+#' }
+#' A warning is raised if the given combination of \code{type_boot_user} and
+#' \code{type_stat_user} is theoretically invalid.
+#'
 #'
 #' @return A class object with components \itemize{
 #'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
@@ -109,6 +122,13 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #' X1 = rnorm(n)
 #' X2 = X1 + rnorm(n)
 #' result = perform_independence_test(X1, X2, nBootstrap = 30)
+#'
+#' result = perform_independence_test(
+#'    X1, X2, nBootstrap = 30,
+#'    bootstrapOptions = list(type_boot_user = "indep",
+#'                            type_stat_user = "eq",
+#'                            norm_type_user = "KS") )
+#'
 #' print(result)
 #' plot(result)
 #'
@@ -122,12 +142,11 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' @export
 #'
-perform_independence_test <- function(X1, X2,
-                                      my_grid = NULL,
-                                      nBootstrap = 100,
-                                      type_boot_user = "indep",
-                                      type_stat_user = "eq",
-                                      norm_type_user = "KS")
+perform_independence_test <- function(
+    X1, X2,
+    my_grid = NULL,
+    nBootstrap = 100,
+    bootstrapOptions = NULL)
 {
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){

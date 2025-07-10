@@ -9,9 +9,7 @@ perform_independence_test(
   X2,
   my_grid = NULL,
   nBootstrap = 100,
-  type_boot_user = "indep",
-  type_stat_user = "eq",
-  norm_type_user = "KS"
+  bootstrapOptions = NULL
 )
 }
 \arguments{
@@ -22,11 +20,26 @@ whether \code{X1} is independent from \code{X2}.}
 
 \item{nBootstrap}{number of bootstrap repetitions.}
 
-\item{type_boot_user}{type of bootstrap to resample the data, either 'NP' or 'cent'.}
+\item{bootstrapOptions}{This can be one of \itemize{
+  \item \code{NULL}
 
-\item{type_stat_user}{type of test statistic to use, either 'cent' for centered or 'eq' for equivalent.}
+  \item a list with at most 3 elements names \itemize{
+        \item \code{type_boot_user} type of bootstrap to resample the data,
+        either 'NP' or 'cent'.
 
-\item{norm_type_user}{type of norm to use for test statistic, either 'L2' or 'KS'.}
+        \item \code{type_stat_user} type of test statistic to use,
+        either 'cent' for centered or 'eq' for equivalent.
+
+        \item \code{norm_type_user} type of norm to use for test statistic,
+        either 'L2' or 'KS'.
+  }
+
+  \item \code{"all"}:
+
+  \item \code{"all and also wrong"}:
+}
+A warning is raised if the given combination of \code{type_boot_user} and
+\code{type_stat_user} is theoretically invalid.}
 }
 \value{
 A class object with components \itemize{
@@ -62,6 +75,13 @@ n = 100
 X1 = rnorm(n)
 X2 = X1 + rnorm(n)
 result = perform_independence_test(X1, X2, nBootstrap = 30)
+
+result = perform_independence_test(
+   X1, X2, nBootstrap = 30,
+   bootstrapOptions = list(type_boot_user = "indep",
+                           type_stat_user = "eq",
+                           norm_type_user = "KS") )
+
 print(result)
 plot(result)
 
