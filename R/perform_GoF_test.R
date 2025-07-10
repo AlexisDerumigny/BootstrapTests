@@ -221,7 +221,6 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #' @examples
 #' n = 100
-#'
 #' # Under H1
 #' X_data = rgamma(n,2,3)
 #' result = perform_GoF_test(X_data, nBootstrap = 30)
@@ -376,6 +375,7 @@ perform_GoF_test <- function(X_data,
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
       ecdf_values_st <- stats::ecdf(X_st)(grid_points)
+      ecdf_values_st_canonical <- stats::ecdf(X_st_canonical)(grid_points)
 
       # Calculate the parametric CDF values at the grid of X_st points
       parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
@@ -388,7 +388,7 @@ perform_GoF_test <- function(X_data,
 
       parametrized_cdf_values_st_canonical <- param_distr(grid_points,
                                                         parametric_fam = parametric_fam,
-                                                        param = estimated_param_canonical )$fitted_cdf_vals
+                                                        param = estimated_param_st_canonical )$fitted_cdf_vals
 
       # Calculate the infinity norm (sup norm): maximum absolute difference
       max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
@@ -413,7 +413,7 @@ perform_GoF_test <- function(X_data,
                                                          estimated_param_st_canonical,
                                                          parametric_fam = parametric_fam)
 
-      max_diff_cent_st_canonical <- max(abs(ecdf_values_st
+      max_diff_cent_st_canonical <- max(abs(ecdf_values_st_canonical
                                   - parametrized_cdf_values_st_canonical
                                   - ecdf_values
                                   + parametrized_cdf_values_canonical ))
@@ -480,6 +480,9 @@ perform_GoF_test <- function(X_data,
        pvals_df$param_bs == "MD-cent") |
     (pvals_df$type_boot == "null" &
        pvals_df$type_stat == "eq" &
+       pvals_df$param_bs == "canonical")|
+    (pvals_df$type_boot == "NP" &
+       pvals_df$type_stat == "cent" &
        pvals_df$param_bs == "canonical")
 
   ### post-processing ###
