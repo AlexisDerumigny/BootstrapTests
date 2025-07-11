@@ -9,7 +9,6 @@
 #'
 #' @export
 print.bootstrapTest <- function(x,
-                                give_all_test_information = FALSE,
                                 ...){
   # print a nice layout
   welcome_message_name <- paste0("         🎯" , x$nameMethod, " Results 🎯\n")
@@ -17,8 +16,8 @@ print.bootstrapTest <- function(x,
   cat(welcome_message_name, equal_signs, "\n\n")
 
   # Highlighted row
-  if (!is.null(x$highlighted_pval)) {
-    row <- x$highlighted_pval
+  if (nrow(x$pvals_df) == 1) {
+    row <- x$pvals_df
 
     # Get the true statistic
     if ("bootstrapTest_independence" %in% class(x)){
@@ -63,11 +62,7 @@ print.bootstrapTest <- function(x,
     cat(sprintf("  Critical value at 5%%     : %.4f\n", row$ci_upper_95))
     cat(sprintf("  Critical value at 1%%     : %.4f\n", row$ci_upper_99))
     cat("\n")
-  } else {
-    cat("No highlighted test selected.\n\n")
-  }
-
-  if (give_all_test_information == TRUE) {
+  } else if ( nrow(x$pvals_df) >= 1 ) {
     # Print all testing information
 
     # Print the full p-values dataframe
