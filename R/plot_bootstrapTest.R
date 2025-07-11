@@ -13,8 +13,14 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                                legend.x = NULL, legend.y = NULL, ...){
 
   # assign the user-specfied highlighted dataframe
-  df <- x$highlighted_pval
-
+  nrow(x$pvals_df) == 1
+  if (nrow(x$pvals_df) == 1) {
+    df <- x$pvals_df
+  } else {
+    stop("The pvals_df should have only one row,
+         so do not input multiple bootstrap method combinations.
+         Please check the input data.")
+  }
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
     true_stat <- x$true_stats[[df$norm_type]]
