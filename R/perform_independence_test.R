@@ -93,7 +93,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'   \item \code{"all"} This gives all theoretically valid combinations for
 #'   bootstrap resampling schemes.
 #'
-#'   \item \code{"all and also wrong"} This gives all possible combinations for
+#'   \item \code{"all and also invalid"} This gives all possible combinations for
 #'   bootstrap
 #' }
 #' A warning is raised if the given combination of \code{type_boot_user} and
@@ -127,9 +127,9 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'
 #' result = perform_independence_test(
 #'    X1, X2, nBootstrap = 30,
-#'    bootstrapOptions = list(type_boot_user = "indep",
-#'                            type_stat_user = "eq",
-#'                            norm_type_user = "KS") )
+#'    bootstrapOptions = list(type_boot = "indep",
+#'                            type_stat = "eq",
+#'                            norm_type = "KS") )
 #'
 #' print(result)
 #' plot(result)
@@ -150,6 +150,30 @@ perform_independence_test <- function(
     nBootstrap = 100,
     bootstrapOptions = NULL)
 {
+
+  # Initialize default values for the bootstrap options
+  type_boot_user = "indep"
+  type_stat_user = "eq"
+  norm_type_user = "KS"
+
+  # Read in the `bootstrapOptions` and set the user-specified options
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if ("type_boot" %in% names(bootstrapOptions)){
+      type_boot_user = bootstrapOptions$type_boot
+    }
+    if ("type_stat" %in% names(bootstrapOptions)){
+      type_stat_user = bootstrapOptions$type_stat
+    }
+    if ("norm_type" %in% names(bootstrapOptions)){
+      norm_type_user = bootstrapOptions$norm_type
+    }
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             !is.character(bootstrapOptions)){
+    stop("Invalid bootstrap options. Please check your inputs.")
+  }
+
+
   # Checking the validity of the inputs
   if (length(X1) != length(X2)){
     stop("X1 and X2 must have the same length. Here the length of X1 is ",
@@ -192,7 +216,6 @@ perform_independence_test <- function(
   if (is.null(my_grid)){
     my_grid = seq(min(X1,X2), max(X1,X2), length.out = 100)
   }
-
 
   # Estimation of the product of the marginal CDFs
   FX1 = stats::ecdf(X1)(my_grid)
@@ -285,21 +308,25 @@ perform_independence_test <- function(
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
 
-
-  # Filter for the user-specified row dataframe
-  selected_row <- pvals_df[
-    pvals_df$type_boot == type_boot_user &
-    pvals_df$type_stat == type_stat_user &
-    pvals_df$norm_type == norm_type_user,
-  ]
-
-  # If the selected row exists, extract it; otherwise return NULL
-  highlighted_pval <- if (nrow(selected_row) > 0) {
-    selected_row[1, , drop = FALSE]
-  } else {
-    NULL
+  # Select the right rows based on the user-specified bootstrap options
+  if ( !is.list(bootstrapOptions) &&
+       !is.null(bootstrapOptions) &&
+       bootstrapOptions == "all") {
+    # Return only rows where `theoretically_valid` is TRUE
+    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             bootstrapOptions == "all and also invalid"){
+    # Return all rows, including theoretically invalid combinations
+    pvals_df = pvals_df
+  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing
+    pvals_df = pvals_df[
+      pvals_df$type_boot == type_boot_user &
+      pvals_df$type_stat == type_stat_user &
+      pvals_df$norm_type == norm_type_user, ]
   }
-
 
   result = ( list(
     # df of p-values
@@ -307,9 +334,6 @@ perform_independence_test <- function(
 
     # true test statistics
     true_stats = true_stats ,
-
-    # highlighted user-specified df
-    highlighted_pval = highlighted_pval,
 
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
