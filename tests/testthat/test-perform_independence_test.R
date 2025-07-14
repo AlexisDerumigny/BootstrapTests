@@ -33,6 +33,11 @@ test_that("Independence test throws errors for wrong input", {
   expect_error(perform_independence_test(X1,X2, type_stat = ""))
   expect_error(perform_independence_test(X1,X2, type_boot = ""))
   expect_error(perform_independence_test(X1,X2, nBootstrap = ""))
+
+  # Check the `bootstrapOptions`
+  expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(norm_type = "K S")))
+  expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(typo = "KS")))
+  expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(boot_type = "KS")))
 })
 
 
