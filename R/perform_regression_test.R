@@ -8,7 +8,7 @@
 #' @param b_hat estimated slope, from the regression model
 #' @param epsilon_hat estimated residuals, from the regression model
 #' @param resampling_type string of the bootstrap resampling scheme to be used.
-#                  choose from \code{"indep_bs"}, \code{empirical_bs}, \code{res_bs},
+#                  choose from \code{"indep"}, \code{NP}, \code{res_bs},
 #                  \code{fixed_design_bs_Hnull}, \code{fixed_design_bs},
 #                  \code{hybrid_null_bs}
 #'
@@ -43,7 +43,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 
   # Bootstrap of Category 1: independence resampling bootstrap
   # Independently resample X* from X and resample Y* from Y. No pairs!
-  if (resampling_type == 'indep_bs') {
+  if (resampling_type == 'indep') {
     # random resampling (X*) from X and (Y*) from (Y)
     permutation_1 = sample.int(n, replace = TRUE)
     X_st = X[permutation_1]
@@ -53,7 +53,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 
   # Bootstrap of Category 2: empirical bootstrap (nonparametric)
   # Resample pairs (X*,Y*) from (X,Y).
-  if (resampling_type == 'empirical_bs') {
+  if (resampling_type == 'NP') {
     permutation = sample.int(n, replace = TRUE)
     X_st = X[permutation]
     Y_st = Y[permutation]
@@ -108,15 +108,34 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' Performs a test on the coefficient of a univariate linear regression
 #'
 #' This function performs the bootstrap regression test for given data X,Y. It
-#' uses indep_bs, empirical_bs, res_bs, fixed_design_bs_Hnull, fixed_design_bs,
-#' hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap and
-#' stores all the corresponding p-values and bootstrapped test statistics in a
-#' dataframe to keep track of the outputs.
+#' uses indep, NP, res_bs, fixed_design_bs_Hnull, fixed_design_bs,
+#' hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap.
+#' This function gives the corresponding p-values, the true test statistic and the
+#' bootstrap-version test statistics. Furthermore, it also gives the estimated slope.
 #'
 #' @param X numeric univariate input vector resembling the independent variables
 #' @param Y numeric univariate input vector the dependent variables
 #' @param nBootstrap numeric value of the amount of bootstrap resamples
-#' @param type_boot_user default "indep_bs" string for the bootstrap resampling scheme to be used.
+#' @param bootstrapOptions This can be one of \itemize{
+#'   \item \code{NULL}
+#'
+#'   \item a list with at most 3 elements names \itemize{
+#'         \item \code{type_boot} type of bootstrap to resample the data,
+#'         either 'NP' or 'cent'.
+#'
+#'         \item \code{type_stat} type of test statistic to use,
+#'         either 'cent' for centered or 'eq' for equivalent.
+#'   }
+#'   #'   \item \code{"all"} This gives all theoretically valid combinations for
+#'   bootstrap resampling schemes.
+#'
+#'   \item \code{"all and also invalid"} This gives all possible combinations for
+#'   bootstrap resampling schemes and test statistics, including invalid ones.
+#' }
+#' A warning is raised if the given combination of \code{type_boot_user} and
+#' \code{type_stat_user} is theoretically invalid.
+#'
+#' @param type_boot_user default "indep" string for the bootstrap resampling scheme to be used.
 #' @param type_stat_user default "eq" string for the type of test statistic to be used.
 #'
 #'
@@ -134,9 +153,6 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #'    \item \code{nBootstrap} Number of bootstrap repetitions.
 #'
-#'    \item \code{highlighted_pval} a dataframe with the default independence
-#'    results.
-#'
 #'    \item \code{nameMethod} string for the name of the method used.
 #'
 #'    \item \code{beta} numeric for the estimated slope of the regression model.
@@ -150,7 +166,9 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' # Under H1
 #' X_data = rnorm(n)
 #' Y_data =  X_data + rnorm(n)   #Y = X + epsilon
-#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30,
+#'                         bootstrapOptions =  list(type_boot = "indep",
+#'                                                  type_stat = "eq"))
 #' print(result)
 #' plot(result)
 #'
@@ -184,7 +202,7 @@ perform_regression_test <- function(X, Y,
   # calculate T_n = sqrt(n) * |b_hat|
   true_stat = sqrt(n) * abs(b_hat)
 
-  bootstrap_names <- c("indep_bs", "empirical_bs",
+  bootstrap_names <- c("indep", "NP",
                        "res_bs", "fixed_design_bs_Hnull",
                        "fixed_design_bs", "hybrid_null_bs")
 
