@@ -48,8 +48,9 @@ test_that("Different types of bootstrap options work as expected", {
   # Under H1
   X1 = rnorm(n)
   X2 = X1 + rnorm(n)
+  set.seed(10)
   result_1 = perform_independence_test(X1, X2, nBootstrap = 30)
-
+  set.seed(10)
   result_2 = perform_independence_test(
     X1, X2, nBootstrap = 30,
     bootstrapOptions = list(type_boot = "indep",
@@ -57,32 +58,40 @@ test_that("Different types of bootstrap options work as expected", {
                             norm_type = "KS") )
 
   expect_identical(result_1, result_2)
-
+  set.seed(10)
   result_3 = perform_independence_test(
     X1, X2, nBootstrap = 30,
     bootstrapOptions = list(type_boot = "indep") )
 
+  # use the same seed to have equal result
   expect_identical(result_1, result_3)
 
-  result_4 = perform_independence_test(
+  # Give warning for theoreotically invalid bootstrap schemes
+  expect_warning({ perform_independence_test(
     X1, X2, nBootstrap = 30,
-    bootstrapOptions = list(type_boot = "NP") )
-
-  expect_warning({
-    result_5 = perform_independence_test(
-      X1, X2, nBootstrap = 30,
-      bootstrapOptions = list(type_boot = "NP",
-                              type_stat = "eq") )
+    bootstrapOptions = list(type_boot = "NP",
+                            type_stat = "eq") )
   })
 
+  # Give warning for theoreotically invalid bootstrap schemes
+  expect_warning({perform_independence_test(
+    X1, X2, nBootstrap = 30,
+    bootstrapOptions = list(type_boot = "indep",
+                            type_stat = "cent") )
+  })
+
+  set.seed(10)
   result_6 = perform_independence_test(X1, X2, nBootstrap = 30,
                                        bootstrapOptions = "all")
 
+  set.seed(10)
   expect_warning({
     result_7 = perform_independence_test(X1, X2, nBootstrap = 30,
-                                         bootstrapOptions = "all and also wrong")
+                                         bootstrapOptions = "all and also invalid")
   })
 
+  # expect that the results are not identical, as the `result_7' also gives
+  # invalid bootstrap schemes
   expect_false(identical(result_6, result_7))
 })
 
