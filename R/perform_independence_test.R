@@ -123,18 +123,14 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #' # Under H1
 #' X1 = rnorm(n)
 #' X2 = X1 + rnorm(n)
-#' result = perform_independence_test(X1, X2, nBootstrap = 30)
-#'
 #' result = perform_independence_test(
 #'    X1, X2, nBootstrap = 30,
 #'    bootstrapOptions = list(type_boot = "indep",
 #'                            type_stat = "eq",
 #'                            norm_type = "KS") )
-#'
 #' print(result)
 #' plot(result)
 #'
-#' #
 #' # Under H0
 #' X1 = rnorm(n)
 #' X2 = rnorm(n)
@@ -166,6 +162,10 @@ perform_independence_test <- function(
     }
     if ("norm_type" %in% names(bootstrapOptions)){
       norm_type_user = bootstrapOptions$norm_type
+    }
+    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat", "norm_type" )) ){
+      stop("Please provide correct argument names for `bootstrapOptions`.
+            Valid names are: 'type_boot', 'type_stat', and 'norm_type'.")
     }
   } else if (!is.list(bootstrapOptions) &&
              !is.null(bootstrapOptions) &&
@@ -205,6 +205,35 @@ perform_independence_test <- function(
   if (norm_type_user %in% c("KS","L2") == FALSE){
     stop("Choose valid norm_type_user: either 'KS' or 'L2'. Current input is ",
          norm_type_user)
+  }
+
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      bootstrapOptions == "all and also invalid"){
+    warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
+            "This will return all theoretically valid and invalid combinations of ",
+            "bootstrap resampling schemes, test statistics, and norms. ",
+            "Please use with caution.")
+  }
+
+  if (is.character(bootstrapOptions) &&
+      bootstrapOptions != "all and also invalid"  &&
+      bootstrapOptions != "all"){
+    warning("Invalid choice for bootstrapOptions. ",
+            "Please choose either 'all' or 'all and also invalid'. Current input is",
+            bootstrapOptions )
+  }
+
+  # Give warning for theoreotically invalid bootstrap schemes
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if (type_boot_user == "indep" && type_stat_user == "cent"){
+      warning("The combination of type_boot = 'indep' and type_stat = 'cent' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "NP" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 'NP' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
   }
 
   # Computation of the original statistics ===========================
