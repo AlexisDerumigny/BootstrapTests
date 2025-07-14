@@ -182,8 +182,107 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @export
 perform_regression_test <- function(X, Y,
                                     nBootstrap = 100,
-                                    type_boot_user = "indep_bs",
-                                    type_stat_user = "eq"){
+                                    bootstrapOptions = NULL){
+
+  # Initialize default values for the bootstrap options
+  type_boot_user = "indep"
+  type_stat_user = "eq"
+
+  # Read in the `bootstrapOptions` and set the user-specified options
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if ("type_boot" %in% names(bootstrapOptions)){
+      type_boot_user = bootstrapOptions$type_boot
+    }
+    if ("type_stat" %in% names(bootstrapOptions)){
+      type_stat_user = bootstrapOptions$type_stat
+    }
+    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat" )) ){
+      stop("Please provide correct argument names for `bootstrapOptions`.
+            Valid names are: 'type_boot' and 'type_stat'.")
+    }
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             !is.character(bootstrapOptions)){
+    stop("Invalid bootstrap options. Please check your inputs.")
+  }
+
+  # Checking the validity of the inputs
+  if (length(X) != length(Y)){
+    stop("X and Y must have the same length. Here the length of X is ",
+         length(X), " while the length of Y is ", length(Y))
+  }
+
+  if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
+    stop("nBootstrap must be a positive integer of length 1.")
+  }
+
+  if (length(X) < 1 || length(Y) < 1 ){
+    stop("X and Y must contain at least one entry.")
+  }
+
+  if ( is.numeric(X) == FALSE || is.numeric(Y) == FALSE ){
+    stop("X and Y must be numeric vectors. Please check your input data.")
+  }
+
+  bootstrap_names_check <- c("indep", "NP",
+                             "res_bs", "fixed_design_bs_Hnull",
+                             "fixed_design_bs", "hybrid_null_bs")
+
+  if (type_boot_user %in% bootstrap_names_check == FALSE){
+    stop("Choose valid type_boot: either 'indep', 'NP', 'res_bs',
+    'fixed_design_bs_Hnull', 'fixed_design_bs', hybrid_null_bs'. Current input is ",
+         type_boot_user)
+  }
+
+  if (type_stat_user %in% c("eq", "cent") == FALSE){
+    stop("Choose valid type_stat: either 'eq' or 'cent'. Current input is",
+         type_stat_user)
+  }
+
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      bootstrapOptions == "all and also invalid"){
+    warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
+            "This will return all theoretically valid and invalid combinations of ",
+            "bootstrap resampling schemes, and test statistics. ",
+            "Please use with caution.")
+  }
+
+  if (is.character(bootstrapOptions) &&
+      bootstrapOptions != "all and also invalid"  &&
+      bootstrapOptions != "all"){
+    warning("Invalid choice for bootstrapOptions. ",
+            "Please choose either 'all' or 'all and also invalid'. Current input is",
+            bootstrapOptions )
+  }
+
+  # Give warning for theoretically invalid bootstrap schemes
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if (type_boot_user == "indep" && type_stat_user == "cent"){
+      warning("The combination of type_boot = 'indep' and type_stat = 'cent' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "NP" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 'NP' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "res_bs" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 're_bs' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "hybrid_null_bs" && type_stat_user == "cent"){
+      warning("The combination of type_boot = 'hybrid_null_bs' and type_stat = 'cent' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "fixed_design_bs_Hnull" && type_stat_user == "cent"){
+      warning("The combination of type_boot = 'fixed_design_bs_Hnull' and type_stat = 'cent' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "fixed_design_bs" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 'fixed_design_bs' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+  }
 
   # define the sample size
   n = length(X)
@@ -275,6 +374,14 @@ perform_regression_test <- function(X, Y,
 
   ### post-processing ###
 
+
+  # Add a column to indicate whether the combination of bootstrap and
+  # test statistic is theoretically valid
+  pvals_df$theoretically_valid =
+    (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
+    (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
+
+
   # Filter for the user-specified row dataframe
   selected_row <- pvals_df[
     pvals_df$type_boot == type_boot_user &
@@ -289,6 +396,26 @@ perform_regression_test <- function(X, Y,
   }
 
 
+  # Select the right rows based on the user-specified bootstrap options
+  if ( !is.list(bootstrapOptions) &&
+       !is.null(bootstrapOptions) &&
+       bootstrapOptions == "all") {
+    # Return only rows where `theoretically_valid` is TRUE
+    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             bootstrapOptions == "all and also invalid"){
+    # Return all rows, including theoretically invalid combinations
+    pvals_df = pvals_df
+  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing
+    pvals_df = pvals_df[
+      pvals_df$type_boot == type_boot_user &
+        pvals_df$type_stat == type_stat_user, ]
+  }
+
+
   ### Create the result object ###
   result <- list(
     # df of p-values
@@ -297,8 +424,6 @@ perform_regression_test <- function(X, Y,
     true_stats = true_stat,
     # beta
     beta = b_hat,
-    # highlighted user-specified df
-    highlighted_pval = highlighted_pval,
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
     # give bootstrap method a name
