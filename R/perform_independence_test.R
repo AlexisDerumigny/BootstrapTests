@@ -94,7 +94,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'   bootstrap resampling schemes.
 #'
 #'   \item \code{"all and also invalid"} This gives all possible combinations for
-#'   bootstrap
+#'   bootstrap resampling schemes and test statistics, including invalid ones.
 #' }
 #' A warning is raised if the given combination of \code{type_boot_user} and
 #' \code{type_stat_user} is theoretically invalid.
@@ -112,10 +112,9 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'    statistics for the L2 and KS distances.
 #'
 #'    \item \code{nBootstrap} Number of bootstrap repetitions.
-#'
-#'    \item \code{highlighted_pval} a dataframe with the default independence
-#'    results.
 #' }
+#'
+#' @seealso \code{\link{perform_GoF_test},\link{perform_regression_test}}
 #'
 #' @examples
 #' n = 100
