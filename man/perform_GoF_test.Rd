@@ -8,9 +8,7 @@ perform_GoF_test(
   X_data,
   parametric_fam = "normal",
   nBootstrap = 100,
-  type_boot_user = "null",
-  type_stat_user = "eq",
-  param_bs_user = "canonical"
+  bootstrapOptions = NULL
 )
 }
 \arguments{
@@ -23,18 +21,35 @@ sample comes from `parametric_fam`, a specified parametric distribution.}
 \item{nBootstrap}{numeric value of the number of bootstrap resamples. Defaults
 to 100.}
 
-\item{type_boot_user}{defaults to the \code{"null"} bootstrap resampling scheme to be used.
-\code{type_boot_user} can be either "null" for the null/parametric bootstrap,
-or \code{"NP"} for the non-parametric bootstrap.}
+\item{bootstrapOptions}{This can be one of \itemize{
+  \item \code{NULL}
 
-\item{type_stat_user}{defaults to \code{"eq"} for the type of test statistic
-to be used. This can be either \code{"eq"} for the equivalent test statistic,
-or \code{"cent"} for the centered test statistic.}
+  \item a list with at most 3 elements names \itemize{
+        \item \code{type_boot} defaults to the \code{"null"} bootstrap
+        resampling scheme to be used. \code{type_boot_user} can be either
+        \code{"null"} for the null/parametric bootstrap, or \code{"NP"} for the
+        non-parametric bootstrap.
 
-\item{param_bs_user}{defaults to \code{"MD"} for the bootstrap parameter
-estimator to be used. \code{param_bs_user} can be either \code{"MD"} for the
-Minimum Distance estimator, \code{"MD-cent"} for the centered Minimum Distance
-estimator, or \code{"canonical"} for the canonical estimator.}
+        \item \code{type_stat} defaults to \code{"eq"} for the type of test
+        statistic to be used. This can be either \code{"eq"} for the
+        equivalent test statistic, or \code{"cent"} for the centered
+        test statistic.
+
+        \item \code{param_bs} defaults to \code{"canonical"} for the bootstrap
+        parameter estimator to be used. \code{param_bs} can be either
+        \code{"MD"} for the Minimum Distance estimator, \code{"MD-cent"} for
+        the centered Minimum Distance estimator, or \code{"canonical"}
+        for the canonical estimator (empirical mean and variance).
+  }
+  #'   \item \code{"all"} this gives test results for all theoretically valid
+  combinations of bootstrap resampling schemes.
+
+  \item \code{"all and also invalid"} this gives test results for all possible
+  combinations of bootstrap resampling schemes and test statistics, including
+  invalid ones.
+}
+A warning is raised if the given combination of \code{type_boot},
+\code{type_stat}, and \code{param_bs} is theoretically invalid.}
 }
 \value{
 A class object with components \itemize{
@@ -53,9 +68,6 @@ A class object with components \itemize{
 
    \item \code{nBootstrap} number of bootstrap repetitions.
 
-   \item \code{highlighted_pval} a dataframe with the default GoF test
-   results.
-
    \item \code{nameMethod} string for the name of the method used.
 
 }
@@ -66,13 +78,20 @@ parametric family. It implements a null bootstrap and a non-parametric bootstrap
 The test statistic is the Kolmogorov-Smirnov test statistic.
 For the null/parametric bootstrap, the minimum distance estimator is used to
 estimate the parameters, or a canonical estimator (the sample mean and variance).
-For now, only a test of normality is implemented.
+For now, only a test of normality is implemented. This function gives the
+corresponding p-values, the true test statistic and the bootstrap-version
+test statistics.
 }
 \examples{
 n = 100
 # Under H1
 X_data = rgamma(n,2,3)
-result = perform_GoF_test(X_data, nBootstrap = 30)
+result = perform_GoF_test(X_data,
+                          nBootstrap = 30,
+                          bootstrapOptions = list(type_boot = "null",
+                                                  type_stat = "eq",
+                                                  param_bs = "canonical")
+                         )
 print(result)
 plot(result)
 

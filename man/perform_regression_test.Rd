@@ -16,7 +16,7 @@ perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
 \item{bootstrapOptions}{This can be one of \itemize{
   \item \code{NULL}
 
-  \item a list with at most 3 elements names \itemize{
+  \item a list with at most 2 elements names \itemize{
         \item \code{type_boot} type of bootstrap to resample the data,
         either 'NP' or 'cent'.
 
@@ -29,12 +29,8 @@ perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
   \item \code{"all and also invalid"} This gives all possible combinations for
   bootstrap resampling schemes and test statistics, including invalid ones.
 }
-A warning is raised if the given combination of \code{type_boot_user} and
-\code{type_stat_user} is theoretically invalid.}
-
-\item{type_boot_user}{default "indep" string for the bootstrap resampling scheme to be used.}
-
-\item{type_stat_user}{default "eq" string for the type of test statistic to be used.}
+A warning is raised if the given combination of \code{type_boot} and
+\code{type_stat} is theoretically invalid.}
 }
 \value{
 A class object with components \itemize{
