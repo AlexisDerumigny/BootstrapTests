@@ -119,7 +119,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @param bootstrapOptions This can be one of \itemize{
 #'   \item \code{NULL}
 #'
-#'   \item a list with at most 3 elements names \itemize{
+#'   \item a list with at most 2 elements names \itemize{
 #'         \item \code{type_boot} type of bootstrap to resample the data,
 #'         either 'NP' or 'cent'.
 #'
@@ -132,11 +132,8 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'   \item \code{"all and also invalid"} This gives all possible combinations for
 #'   bootstrap resampling schemes and test statistics, including invalid ones.
 #' }
-#' A warning is raised if the given combination of \code{type_boot_user} and
-#' \code{type_stat_user} is theoretically invalid.
-#'
-#' @param type_boot_user default "indep" string for the bootstrap resampling scheme to be used.
-#' @param type_stat_user default "eq" string for the type of test statistic to be used.
+#' A warning is raised if the given combination of \code{type_boot} and
+#' \code{type_stat} is theoretically invalid.
 #'
 #'
 #' @return A class object with components \itemize{
@@ -321,8 +318,6 @@ perform_regression_test <- function(X, Y,
     bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
   )
 
-
-
   # For all possible bootstrap resampling schemes, perform the bootstrap
   # regression test.
 
@@ -382,20 +377,6 @@ perform_regression_test <- function(X, Y,
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
-
-
-  # Filter for the user-specified row dataframe
-  selected_row <- pvals_df[
-    pvals_df$type_boot == type_boot_user &
-    pvals_df$type_stat == type_stat_user,
-  ]
-
-  # If the selected row exists, extract it; otherwise return NULL
-  highlighted_pval <- if (nrow(selected_row) > 0) {
-    selected_row[1, , drop = FALSE]
-  } else {
-    NULL
-  }
 
 
   # Select the right rows based on the user-specified bootstrap options
