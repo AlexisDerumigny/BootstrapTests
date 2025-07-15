@@ -42,8 +42,8 @@ print.bootstrapTest <- function(x,
     }
 
     # Get quantiles
-    row$ci_upper_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
-    row$ci_upper_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+    row$quantile_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    row$quantile_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
 
     cat("Performed test:\n")
     cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
