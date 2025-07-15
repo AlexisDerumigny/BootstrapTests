@@ -153,6 +153,8 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #'    \item \code{nBootstrap} Number of bootstrap repetitions.
 #'
+#'    \item \code{data} named list of the used input data, i.e. X and Y.
+#'
 #'    \item \code{nameMethod} string for the name of the method used.
 #'
 #'    \item \code{beta} numeric for the estimated slope of the regression model.
@@ -415,7 +417,6 @@ perform_regression_test <- function(X, Y,
         pvals_df$type_stat == type_stat_user, ]
   }
 
-
   ### Create the result object ###
   result <- list(
     # df of p-values
@@ -426,6 +427,8 @@ perform_regression_test <- function(X, Y,
     beta = b_hat,
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
+    # Include the input data
+    data = list(X = X, Y = Y),
     # give bootstrap method a name
     nameMethod = "Bootstrap Regression Test"
     )
