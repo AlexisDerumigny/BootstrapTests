@@ -35,7 +35,7 @@ test_that("Regression test throws errors for wrong input", {
 
   expect_error(perform_regression_test(X, Y, nBootstrap = 10, type_stat = ""))
   expect_error(perform_regression_test(X, Y, nBootstrap = 10, type_boot = ""))
-  expect_error(perform_regression_test(X, Y, nBootstrap = 10, nBootstrap = ""))
+  expect_error(perform_regression_test(X, Y, nBootstrap = ""))
 
   # Check the `bootstrapOptions`
   expect_error(perform_regression_test(X, Y, nBootstrap = 10,
