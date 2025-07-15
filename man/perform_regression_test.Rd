@@ -4,13 +4,7 @@
 \alias{perform_regression_test}
 \title{Performs a test on the coefficient of a univariate linear regression}
 \usage{
-perform_regression_test(
-  X,
-  Y,
-  nBootstrap = 100,
-  type_boot_user = "indep_bs",
-  type_stat_user = "eq"
-)
+perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
 }
 \arguments{
 \item{X}{numeric univariate input vector resembling the independent variables}
@@ -19,7 +13,26 @@ perform_regression_test(
 
 \item{nBootstrap}{numeric value of the amount of bootstrap resamples}
 
-\item{type_boot_user}{default "indep_bs" string for the bootstrap resampling scheme to be used.}
+\item{bootstrapOptions}{This can be one of \itemize{
+  \item \code{NULL}
+
+  \item a list with at most 3 elements names \itemize{
+        \item \code{type_boot} type of bootstrap to resample the data,
+        either 'NP' or 'cent'.
+
+        \item \code{type_stat} type of test statistic to use,
+        either 'cent' for centered or 'eq' for equivalent.
+  }
+  #'   \item \code{"all"} This gives all theoretically valid combinations for
+  bootstrap resampling schemes.
+
+  \item \code{"all and also invalid"} This gives all possible combinations for
+  bootstrap resampling schemes and test statistics, including invalid ones.
+}
+A warning is raised if the given combination of \code{type_boot_user} and
+\code{type_stat_user} is theoretically invalid.}
+
+\item{type_boot_user}{default "indep" string for the bootstrap resampling scheme to be used.}
 
 \item{type_stat_user}{default "eq" string for the type of test statistic to be used.}
 }
@@ -38,8 +51,7 @@ A class object with components \itemize{
 
    \item \code{nBootstrap} Number of bootstrap repetitions.
 
-   \item \code{highlighted_pval} a dataframe with the default independence
-   results.
+   \item \code{data} named list of the used input data, i.e. X and Y.
 
    \item \code{nameMethod} string for the name of the method used.
 
@@ -48,10 +60,10 @@ A class object with components \itemize{
 }
 \description{
 This function performs the bootstrap regression test for given data X,Y. It
-uses indep_bs, empirical_bs, res_bs, fixed_design_bs_Hnull, fixed_design_bs,
-hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap and
-stores all the corresponding p-values and bootstrapped test statistics in a
-dataframe to keep track of the outputs.
+uses indep, NP, res_bs, fixed_design_bs_Hnull, fixed_design_bs,
+hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap.
+This function gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics. Furthermore, it also gives the estimated slope.
 }
 \examples{
 n = 100
@@ -59,7 +71,9 @@ n = 100
 # Under H1
 X_data = rnorm(n)
 Y_data =  X_data + rnorm(n)   #Y = X + epsilon
-result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+result = perform_regression_test(X_data, Y_data, nBootstrap = 30,
+                        bootstrapOptions =  list(type_boot = "indep",
+                                                 type_stat = "eq"))
 print(result)
 plot(result)
 

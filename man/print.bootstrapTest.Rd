@@ -4,16 +4,16 @@
 \alias{print.bootstrapTest}
 \title{Print the bootstrap test results}
 \usage{
-\method{print}{bootstrapTest}(x, give_all_test_information = FALSE, ...)
+\method{print}{bootstrapTest}(x, ...)
 }
 \arguments{
 \item{x}{an object of class \code{bootstrapTest_independence},
 \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}}
 
+\item{...}{additional arguments passed to the \code{print} function}
+
 \item{give_all_test_information}{logical, whether or not to give all test information.
 Defaults to \code{FALSE}. If \code{TRUE}, prints all test results.}
-
-\item{...}{additional arguments passed to the \code{print} function}
 }
 \description{
 Print the bootstrap test results

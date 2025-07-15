@@ -24,19 +24,21 @@ whether \code{X1} is independent from \code{X2}.}
   \item \code{NULL}
 
   \item a list with at most 3 elements names \itemize{
-        \item \code{type_boot_user} type of bootstrap to resample the data,
+        \item \code{type_boot} type of bootstrap to resample the data,
         either 'NP' or 'cent'.
 
-        \item \code{type_stat_user} type of test statistic to use,
+        \item \code{type_stat} type of test statistic to use,
         either 'cent' for centered or 'eq' for equivalent.
 
-        \item \code{norm_type_user} type of norm to use for test statistic,
+        \item \code{norm_type} type of norm to use for test statistic,
         either 'L2' or 'KS'.
   }
 
-  \item \code{"all"}:
+  \item \code{"all"} This gives all theoretically valid combinations for
+  bootstrap resampling schemes.
 
-  \item \code{"all and also wrong"}:
+  \item \code{"all and also invalid"} This gives all possible combinations for
+  bootstrap resampling schemes and test statistics, including invalid ones.
 }
 A warning is raised if the given combination of \code{type_boot_user} and
 \code{type_stat_user} is theoretically invalid.}
@@ -54,9 +56,6 @@ A class object with components \itemize{
    statistics for the L2 and KS distances.
 
    \item \code{nBootstrap} Number of bootstrap repetitions.
-
-   \item \code{highlighted_pval} a dataframe with the default independence
-   results.
 }
 }
 \description{
@@ -74,18 +73,14 @@ n = 100
 # Under H1
 X1 = rnorm(n)
 X2 = X1 + rnorm(n)
-result = perform_independence_test(X1, X2, nBootstrap = 30)
-
 result = perform_independence_test(
    X1, X2, nBootstrap = 30,
-   bootstrapOptions = list(type_boot_user = "indep",
-                           type_stat_user = "eq",
-                           norm_type_user = "KS") )
-
+   bootstrapOptions = list(type_boot = "indep",
+                           type_stat = "eq",
+                           norm_type = "KS") )
 print(result)
 plot(result)
 
-#
 # Under H0
 X1 = rnorm(n)
 X2 = rnorm(n)
@@ -93,4 +88,7 @@ result = perform_independence_test(X1, X2, nBootstrap = 30)
 print(result)
 plot(result)
 
+}
+\seealso{
+\code{\link{perform_GoF_test},\link{perform_regression_test}}
 }

@@ -10,7 +10,7 @@ perform_GoF_test(
   nBootstrap = 100,
   type_boot_user = "null",
   type_stat_user = "eq",
-  param_bs_user = "MD"
+  param_bs_user = "canonical"
 )
 }
 \arguments{
@@ -23,7 +23,7 @@ sample comes from `parametric_fam`, a specified parametric distribution.}
 \item{nBootstrap}{numeric value of the number of bootstrap resamples. Defaults
 to 100.}
 
-\item{type_boot_user}{defaults to the "null" bootstrap resampling scheme to be used.
+\item{type_boot_user}{defaults to the \code{"null"} bootstrap resampling scheme to be used.
 \code{type_boot_user} can be either "null" for the null/parametric bootstrap,
 or \code{"NP"} for the non-parametric bootstrap.}
 
@@ -70,7 +70,6 @@ For now, only a test of normality is implemented.
 }
 \examples{
 n = 100
-
 # Under H1
 X_data = rgamma(n,2,3)
 result = perform_GoF_test(X_data, nBootstrap = 30)
