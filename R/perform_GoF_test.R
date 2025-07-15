@@ -169,10 +169,12 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' The test statistic is the Kolmogorov-Smirnov test statistic.
 #' For the null/parametric bootstrap, the minimum distance estimator is used to
 #' estimate the parameters, or a canonical estimator (the sample mean and variance).
-#' For now, only a test of normality is implemented.
+#' For now, only a test of normality is implemented. This function gives the
+#' corresponding p-values, the true test statistic and the bootstrap-version
+#' test statistics.
 #'
 #'
-#' @param X_data, numerical input vector. Perform a GoF test whether or not this
+#' @param X_data numerical input vector. Perform a GoF test whether or not this
 #' sample comes from `parametric_fam`, a specified parametric distribution.
 #'
 #' @param parametric_fam name of the parametric family. For the moment, only
@@ -181,18 +183,35 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' @param nBootstrap numeric value of the number of bootstrap resamples. Defaults
 #' to 100.
 #'
-#' @param type_boot_user defaults to the \code{"null"} bootstrap resampling scheme to be used.
-#' \code{type_boot_user} can be either "null" for the null/parametric bootstrap,
-#' or \code{"NP"} for the non-parametric bootstrap.
+#' @param bootstrapOptions This can be one of \itemize{
+#'   \item \code{NULL}
 #'
-#' @param type_stat_user defaults to \code{"eq"} for the type of test statistic
-#' to be used. This can be either \code{"eq"} for the equivalent test statistic,
-#' or \code{"cent"} for the centered test statistic.
+#'   \item a list with at most 3 elements names \itemize{
+#'         \item \code{type_boot} defaults to the \code{"null"} bootstrap
+#'         resampling scheme to be used. \code{type_boot_user} can be either
+#'         \code{"null"} for the null/parametric bootstrap, or \code{"NP"} for the
+#'         non-parametric bootstrap.
 #'
-#' @param param_bs_user defaults to \code{"MD"} for the bootstrap parameter
-#' estimator to be used. \code{param_bs_user} can be either \code{"MD"} for the
-#' Minimum Distance estimator, \code{"MD-cent"} for the centered Minimum Distance
-#' estimator, or \code{"canonical"} for the canonical estimator.
+#'         \item \code{type_stat} defaults to \code{"eq"} for the type of test
+#'         statistic to be used. This can be either \code{"eq"} for the
+#'         equivalent test statistic, or \code{"cent"} for the centered
+#'         test statistic.
+#'
+#'         \item \code{param_bs} defaults to \code{"canonical"} for the bootstrap
+#'         parameter estimator to be used. \code{param_bs} can be either
+#'         \code{"MD"} for the Minimum Distance estimator, \code{"MD-cent"} for
+#'         the centered Minimum Distance estimator, or \code{"canonical"}
+#'         for the canonical estimator (empirical mean and variance).
+#'   }
+#'   #'   \item \code{"all"} this gives test results for all theoretically valid
+#'   combinations of bootstrap resampling schemes.
+#'
+#'   \item \code{"all and also invalid"} this gives test results for all possible
+#'   combinations of bootstrap resampling schemes and test statistics, including
+#'   invalid ones.
+#' }
+#' A warning is raised if the given combination of \code{type_boot},
+#' \code{type_stat}, and \code{param_bs} is theoretically invalid.
 #'
 #' @return A class object with components \itemize{
 #'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
@@ -210,9 +229,6 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #'    \item \code{nBootstrap} number of bootstrap repetitions.
 #'
-#'    \item \code{highlighted_pval} a dataframe with the default GoF test
-#'    results.
-#'
 #'    \item \code{nameMethod} string for the name of the method used.
 #'
 #' }
@@ -223,7 +239,12 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' n = 100
 #' # Under H1
 #' X_data = rgamma(n,2,3)
-#' result = perform_GoF_test(X_data, nBootstrap = 30)
+#' result = perform_GoF_test(X_data,
+#'                           nBootstrap = 30,
+#'                           bootstrapOptions = list(type_boot = "null",
+#'                                                   type_stat = "eq",
+#'                                                   param_bs = "canonical")
+#'                          )
 #' print(result)
 #' plot(result)
 #'
@@ -238,11 +259,36 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 perform_GoF_test <- function(X_data,
                              parametric_fam = "normal",
                              nBootstrap = 100,
-                             #generate default user bootstrap procedure:
-                             type_boot_user = "null",
-                             type_stat_user = "eq",
-                             param_bs_user = "canonical")
+                             bootstrapOptions = NULL)
 {
+
+  # Initialize default values for the bootstrap options
+  type_boot_user = "null"
+  type_stat_user = "eq"
+  param_bs_user = "canonical"
+
+  # Read in the `bootstrapOptions` and set the user-specified options
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if ("type_boot" %in% names(bootstrapOptions)){
+      type_boot_user = bootstrapOptions$type_boot
+    }
+    if ("type_stat" %in% names(bootstrapOptions)){
+      type_stat_user = bootstrapOptions$type_stat
+    }
+    if ("param_bs" %in% names(bootstrapOptions)){
+      param_bs_user = bootstrapOptions$param_bs
+    }
+    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat", "param_bs" )) ){
+      stop("Please provide correct argument names for `bootstrapOptions`.
+            Valid names are: 'type_boot', 'type_stat', and 'param_bs'. ")
+    }
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             !is.character(bootstrapOptions)){
+    stop("Invalid bootstrap options. Please check your inputs.")
+  }
+
+
   # Checking the validity of the inputs
   if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
     stop("nBootstrap must be a positive integer of length 1.")
@@ -252,20 +298,68 @@ perform_GoF_test <- function(X_data,
     stop("X_data must contain at least one entry.")
   }
 
+  if ( !is.numeric(X_data) ){
+    stop("X_data must be a numeric vector. Please check your input data.")
+  }
+
   if (parametric_fam != "normal"){
     stop("parametric_fam can only be the normal family.")
   }
 
   if (type_boot_user %in% c("null", "NP") == FALSE){
-    stop("Choose valid type_boot_user: either 'null' or 'NP'")
+    stop("Choose valid type_boot_user: either 'null' or 'NP'. Current input is ",
+         type_boot_user)
   }
 
-  if (type_stat_user %in% c("eq", "cent") == FALSE){
-    stop("Choose valid type_stat_user: either 'eq' or 'cent'")
+  if(type_stat_user %in% c("eq", "cent") == FALSE){
+    stop("Choose valid type_stat: either 'eq' or 'cent'. Current input is",
+         type_stat_user)
   }
 
   if (param_bs_user %in% c("MD", "MD-cent", "canonical") == FALSE){
-    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'canonical'.")
+    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'canonical'.
+         Current input is", param_bs_user)
+  }
+
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      bootstrapOptions == "all and also invalid"){
+    warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
+            "This will return all theoretically valid and invalid combinations of ",
+            "bootstrap resampling schemes, and test statistics. ",
+            "Please use with caution.")
+  }
+
+  if (is.character(bootstrapOptions) &&
+      bootstrapOptions != "all and also invalid"  &&
+      bootstrapOptions != "all"){
+    warning("Invalid choice for bootstrapOptions. ",
+            "Please choose either 'all' or 'all and also invalid'. Current input is",
+            bootstrapOptions )
+  }
+
+
+  # Give warning for theoretically invalid bootstrap schemes
+  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
+    if (type_boot_user == "null" && type_stat_user == "cent"){
+      warning("The combination of type_boot = 'null' and type_stat = 'cent' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "NP" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 'NP' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "res_bs" && type_stat_user == "eq"){
+      warning("The combination of type_boot = 're_bs' and type_stat = 'eq' ",
+              "is theoretically invalid. The p-values will not be valid.")
+    }
+    if (type_boot_user == "NP" &&
+        type_stat_user == "cent" &&
+        param_bs_user == "MD"){
+      warning("The combination of type_boot = 'NP', type_stat = 'cent', ",
+              "and `param_bs` = 'MD' is theoretically invalid.
+              The p-values will not be valid.")
+    }
   }
 
   # Computation of the original statistics ===========================
@@ -305,8 +399,8 @@ perform_GoF_test <- function(X_data,
 
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values_canonical <- param_distr(grid_points = grid_points,
-                                         parametric_fam = parametric_fam,
-                                         param = estimated_param_canonical )$fitted_cdf_vals
+                                                   parametric_fam = parametric_fam,
+                                                   param = estimated_param_canonical )$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
@@ -344,8 +438,8 @@ perform_GoF_test <- function(X_data,
                                            type_boot = type_boot,
                                            param = estimated_param)
       X_st_canonical <- generateBootstrapSamples_GOF(X_data,
-                                              type_boot = type_boot,
-                                              param = estimated_param_canonical)
+                                                     type_boot = type_boot,
+                                                     param = estimated_param_canonical)
 
       ## Estimate unknown distribution parameters to minimize the norm distance ##
 
@@ -370,7 +464,7 @@ perform_GoF_test <- function(X_data,
       estimated_param_st <- fit_st$par
       estimated_param_st_MD <- fit_st_MD$par
       estimated_param_st_canonical <- estimate_params(X_st_canonical,
-                                                              parametric_fam)
+                                                      parametric_fam)
 
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
@@ -387,8 +481,8 @@ perform_GoF_test <- function(X_data,
                                                    estimated_param_st_MD )$fitted_cdf_vals
 
       parametrized_cdf_values_st_canonical <- param_distr(grid_points,
-                                                        parametric_fam = parametric_fam,
-                                                        param = estimated_param_st_canonical )$fitted_cdf_vals
+                                                          parametric_fam = parametric_fam,
+                                                          param = estimated_param_st_canonical )$fitted_cdf_vals
 
       # Calculate the infinity norm (sup norm): maximum absolute difference
       max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
@@ -414,9 +508,9 @@ perform_GoF_test <- function(X_data,
                                                          parametric_fam = parametric_fam)
 
       max_diff_cent_st_canonical <- max(abs(ecdf_values_st_canonical
-                                  - parametrized_cdf_values_st_canonical
-                                  - ecdf_values
-                                  + parametrized_cdf_values_canonical ))
+                                            - parametrized_cdf_values_st_canonical
+                                            - ecdf_values
+                                            + parametrized_cdf_values_canonical ))
 
       # Calculating bootstrap test statistics
       stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
@@ -469,6 +563,7 @@ perform_GoF_test <- function(X_data,
       return(pval)
     }
   ) |> unlist()
+
   # The NP and centred test statistic also needs
   # a centred MD bootstrap parameter estimator.
   pvals_df$theoretically_valid =
@@ -487,18 +582,24 @@ perform_GoF_test <- function(X_data,
 
   ### post-processing ###
 
-  # Filter for the user-specified row dataframe
-  selected_row <- pvals_df[
+  # Select the right rows based on the user-specified bootstrap options
+  if ( !is.list(bootstrapOptions) &&
+       !is.null(bootstrapOptions) &&
+       bootstrapOptions == "all") {
+    # Return only rows where `theoretically_valid` is TRUE
+    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
+  } else if (!is.list(bootstrapOptions) &&
+             !is.null(bootstrapOptions) &&
+             bootstrapOptions == "all and also invalid"){
+    # Return all rows, including theoretically invalid combinations
+    pvals_df = pvals_df
+  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing
+    pvals_df = pvals_df[
       pvals_df$type_boot == type_boot_user &
-      pvals_df$type_stat == type_stat_user &
-      pvals_df$param_bs  == param_bs_user,
-  ]
-
-  # If the selected row exists, extract it; otherwise return NULL
-  highlighted_pval <- if (nrow(selected_row) > 0) {
-    selected_row[1, , drop = FALSE]
-  } else {
-    NULL
+        pvals_df$type_stat == type_stat_user &
+        pvals_df$param_bs == param_bs_user, ]
   }
 
 
@@ -508,8 +609,6 @@ perform_GoF_test <- function(X_data,
     pvals_df = pvals_df,
     # true test statistics
     true_stats = true_stat,
-    # highlighted user-specified df
-    highlighted_pval = highlighted_pval,
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
     # give bootstrap method a name
