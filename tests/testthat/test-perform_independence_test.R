@@ -29,9 +29,12 @@ test_that("independence test output is well formatted", {
 test_that("Independence test throws errors for wrong input", {
   X1 = rnorm(10)
   X2 = rnorm(10)
-  expect_error(perform_independence_test(X1,X2, norm_type = ""))
-  expect_error(perform_independence_test(X1,X2, type_stat = ""))
-  expect_error(perform_independence_test(X1,X2, type_boot = ""))
+  expect_error(perform_independence_test(X1,X2,
+                                         bootstrapOptions = list(norm_type = "")))
+  expect_error(perform_independence_test(X1,X2,
+                                         bootstrapOptions = list(type_stat = "")))
+  expect_error(perform_independence_test(X1,X2,
+                                         bootstrapOptions = list(type_boot = "")))
   expect_error(perform_independence_test(X1,X2, nBootstrap = ""))
 
   # Check the `bootstrapOptions`
