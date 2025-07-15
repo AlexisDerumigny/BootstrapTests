@@ -82,5 +82,34 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                    bty = "n",         # Removes the box around the legend
                    y.intersp = 0.7,   # Reduce vertical spacing between items
                    inset = 0.02)      # Slight inset from the edge of the plot
+
+
+  ####### For regression test, also plot the slope #######
+
+  if ("bootstrapTest_regression" %in% class(x) ) {
+    data <- x$data
+    plot(data$X, data$Y,
+         main = paste0(x$nameMethod," - Regression Plot"),
+         xlab = "X",
+         ylab = "Y",)
+
+    # add regression line
+    linear_model <- stats::lm(Y ~ X, data = data)
+    graphics::abline(a = linear_model$coefficients["(Intercept)"] ,
+                     b = x$beta,
+                     col = "darkorange",
+                     lwd = 2,
+                     lty = 1
+                     )
+
+    # Legend
+    graphics::legend(x = "topright",
+                     legend = c("Estimated regression line"),
+                     col = c("darkorange"),
+                     lty = 1,
+                     lwd = 2,
+                     bty = "n",         # Removes the box around the legend
+    )
+  }
 }
 
