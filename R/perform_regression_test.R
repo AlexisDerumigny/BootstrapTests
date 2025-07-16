@@ -110,7 +110,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' This function performs a bootstrap regression test for given data X,Y.
 #' The null hypothesis corresponds of a slope coefficient of zero, versus the
 #' alternative hypothesis of a non-zero slope coefficient.
-#' It uses an independence/null bootstrap \code{"indep}, a non-parametric \code{"NP"},
+#' It uses an independence/null bootstrap \code{"indep"}, a non-parametric \code{"NP"},
 #' a residual bootstrap \code{"res_bs"}, a fixed design bootstrap \code{"fixed_design_bs"},
 #' a fixed design null bootstrap \code{"fixed_design_bs_Hnull"}, a hybrid null
 #' bootstrap \code{"hybrid_null_bs"} as bootstrap resampling schemes to perform

@@ -183,7 +183,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #'
 #' @param X_data numerical input vector. Perform a GoF test whether or not this
-#' sample comes from \code{"parametric_fam}, a specified parametric distribution.
+#' sample comes from \code{"parametric_fam"}, a specified parametric distribution.
 #'
 #' @param parametric_fam name of the parametric family. For the moment, only
 #' \code{"normal"} is supported.
