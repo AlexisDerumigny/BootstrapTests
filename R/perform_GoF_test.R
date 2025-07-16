@@ -162,20 +162,28 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 
 
 
-#' Perform a GoF test
+#' Perform a univariate GoF hypothesis test via bootstrap resampling
 #'
-#' This function performs a bootstrap goodness-of-fit test for a specific univariate
-#' parametric family. It implements a null bootstrap and a non-parametric bootstrap.
-#' The test statistic is the Kolmogorov-Smirnov test statistic.
-#' For the null/parametric bootstrap, the minimum distance estimator is used to
-#' estimate the parameters, or a canonical estimator (the sample mean and variance).
-#' For now, only a test of normality is implemented. This function gives the
-#' corresponding p-values, the true test statistic and the bootstrap-version
-#' test statistics.
+#' This function performs a bootstrap goodness-of-fit hypothesis test for a
+#' specific univariate parametric family. The null hypothesis corresponds to the
+#' sample coming from the specified parametric family, while the alternative
+#' hypothesis corresponds to the sample not coming from the specified
+#' parametric family. This function implements a null bootstrap and
+#' a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
+#' statistic. To estimate the parameters of the parametric family, either a minimum
+#' distance estimator, or a canonical estimator (the sample mean and variance)
+#' is used. On the bootstrap sample, we have also implemented a centered MD estimator,
+#' as in the paper. For now, only a test of normality is implemented. This function
+#' gives the corresponding p-values, the true test statistic and the
+#' bootstrap-version test statistics. The default (and valid) method implemented
+#' in this function is the null bootstrap, together with the equivalent test statistic
+#' and the canonical parameter estimator. Via the \code{bootstrapOptions}
+#' argument, the user can specify other bootstrap resampling schemes,
+#' test statistics, and parameter estimators.
 #'
 #'
 #' @param X_data numerical input vector. Perform a GoF test whether or not this
-#' sample comes from `parametric_fam`, a specified parametric distribution.
+#' sample comes from \code{"parametric_fam}, a specified parametric distribution.
 #'
 #' @param parametric_fam name of the parametric family. For the moment, only
 #' \code{"normal"} is supported.
@@ -188,7 +196,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'
 #'   \item a list with at most 3 elements names \itemize{
 #'         \item \code{type_boot} defaults to the \code{"null"} bootstrap
-#'         resampling scheme to be used. \code{type_boot_user} can be either
+#'         resampling scheme to be used. \code{type_boot} can be either
 #'         \code{"null"} for the null/parametric bootstrap, or \code{"NP"} for the
 #'         non-parametric bootstrap.
 #'
@@ -203,7 +211,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'         the centered Minimum Distance estimator, or \code{"canonical"}
 #'         for the canonical estimator (empirical mean and variance).
 #'   }
-#'   #'   \item \code{"all"} this gives test results for all theoretically valid
+#'   \item \code{"all"} this gives test results for all theoretically valid
 #'   combinations of bootstrap resampling schemes.
 #'
 #'   \item \code{"all and also invalid"} this gives test results for all possible
@@ -214,13 +222,13 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' \code{type_stat}, and \code{param_bs} is theoretically invalid.
 #'
 #' @return A class object with components \itemize{
-#'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
+#'    \item \code{pvals_df} a dataframe of p-values and bootstrapped test statistics:
 #'
 #'    These are the p-values for the combinations of bootstrap resampling schemes,
 #'    test statistics (centered and equivalent), and different parameter estimators.
 #'
 #'    It also contains the vectors of bootstrap test statistics
-#'    for each of the combinations.
+#'    for each of these combinations.
 #'
 #'    \item \code{true_stat} a named vector of size 2 containing the true test
 #'    statistics. The first entry is the Kolmogorov-Smirnov test statistic for
@@ -236,11 +244,11 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' @seealso \code{\link{perform_regression_test},\link{perform_independence_test}}
 #'
 #' @examples
-#' n = 100
+#' n <- 100
 #' # Under H1
-#' X_data = rgamma(n,2,3)
-#' result = perform_GoF_test(X_data,
-#'                           nBootstrap = 30,
+#' X_data <- rgamma(n,2,3)
+#' result <- perform_GoF_test(X_data,
+#'                           nBootstrap = 100,
 #'                           bootstrapOptions = list(type_boot = "null",
 #'                                                   type_stat = "eq",
 #'                                                   param_bs = "canonical")
@@ -249,8 +257,8 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' plot(result)
 #'
 #' # Under H0
-#' X_data = rnorm(n)
-#' result = perform_GoF_test(X_data, nBootstrap = 30)
+#' X_data <- rnorm(n)
+#' result <- perform_GoF_test(X_data, nBootstrap = 100)
 #' print(result)
 #' plot(result)
 #'

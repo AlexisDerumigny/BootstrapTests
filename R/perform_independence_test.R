@@ -57,20 +57,27 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 }
 
 
-#' Perform a test of  independence
+#' Perform a hypothesis test of independence
 #'
 #' Perform a hypothesis test of statistical independence by means of bootstrapping.
-#' The null hypothesis is that of independence between the two random variables.
+#' The null hypothesis is that of independence between the two random variables,
+#' versus the alternative of dependence between them.
 #' This procedure gives a total of 8 combinations of bootstrap resampling schemes
 #' (nonparametric and independent), test statistics (centered and equivalent),
 #' and Kolmogorov-Smirnov or L2-type of true test statistic. This function
 #' gives the corresponding p-values, the true test statistic and the
-#' bootstrap-version test statistics.
+#' bootstrap-version test statistics. The default (and valid) method implemented
+#' in this function is the null bootstrap, together with the equivalent test
+#' statistic and Kolmogorov-Smirnov test statistic.
+#' Via the \code{bootstrapOptions} argument, the user can specify other
+#' bootstrap resampling schemes and test statistics.
 #'
 #' @param X1,X2 numerical vectors of the same size. The independence test tests
 #' whether \code{X1} is independent from \code{X2}.
 #'
-#' @param my_grid the grid on which the empirical CDFs are estimated.
+#' @param my_grid the grid on which the empirical CDFs are estimated. It defaults
+#' to \code{NULL}, so it is chosen automatically. However, the user can input
+#' a grid of their choice.
 #  TODO: implement a different grid for X1 and X2.
 #  TODO: can the grid be chosen automatically? For example quantiles of X1, X2?
 #'
@@ -80,50 +87,61 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'   \item \code{NULL}
 #'
 #'   \item a list with at most 3 elements names \itemize{
-#'         \item \code{type_boot} type of bootstrap to resample the data,
-#'         either 'NP' or 'cent'.
+#'         \item \code{type_boot} defaults to the \code{"indep"} bootstrap
+#'         resampling scheme to be used. \code{type_boot} can be either
+#'         \code{"indep"} for the independence/null bootstrap, or \code{"NP"}
+#'         for the non-parametric bootstrap.
 #'
-#'         \item \code{type_stat} type of test statistic to use,
-#'         either 'cent' for centered or 'eq' for equivalent.
+#'         \item \code{type_stat} defaults to \code{"eq"} for the type of test
+#'         statistic to be used. This can be either \code{"eq"} for the
+#'         equivalent test statistic, or \code{"cent"} for the centered
+#'         test statistic.
 #'
-#'         \item \code{norm_type} type of norm to use for test statistic,
-#'         either 'L2' or 'KS'.
+#'         \item \code{norm_type} defaults to \code{"KS"} for the type of norm
+#'         to bes used for the test statistic. \code{norm_type} can be either
+#'         \code{"KS"} for the Kolmogorov-Smirnov type test statistic or
+#'         \code{"L2"} for the L2-type test statistic.
 #'   }
 #'
-#'   \item \code{"all"} This gives all theoretically valid combinations for
-#'   bootstrap resampling schemes.
+#'   \item \code{"all"} this gives test results for all theoretically valid
+#'   combinations of bootstrap resampling schemes.
 #'
-#'   \item \code{"all and also invalid"} This gives all possible combinations for
-#'   bootstrap resampling schemes and test statistics, including invalid ones.
+#'   \item \code{"all and also invalid"} this gives test results for all possible
+#'   combinations of bootstrap resampling schemes and test statistics, including
+#'   invalid ones.
 #' }
 #' A warning is raised if the given combination of \code{type_boot_user} and
 #' \code{type_stat_user} is theoretically invalid.
 #'
 #'
 #' @return A class object with components \itemize{
-#'    \item \code{pvals_df}: df of p-values and bootstrapped test statistics:
+#'    \item \code{pvals_df}: a dataframe of p-values and bootstrapped test statistics:
 #'
 #'    These are the p-values for the 8 combinations of bootstrap resampling schemes
 #'    (nonparametric and independent), test statistics (centered and equivalent),
-#'    and Kolmogorov-Smirnov or L2-type of true test statistic. The column 'bootstrapped_tests'
-#'    contains vectors of bootstrap test statistics.
+#'    and Kolmogorov-Smirnov or L2-type of true test statistic.
+#'
+#'    It also contains the vectors of bootstrap test statistics
+#'    for each of the combinations.
 #'
 #'    \item \code{true_stats} a named vector of size 2 containing the true test
 #'    statistics for the L2 and KS distances.
 #'
 #'    \item \code{nBootstrap} Number of bootstrap repetitions.
+#'
+#'    \item \code{nameMethod} string for the name of the method used.
 #' }
 #'
 #' @seealso \code{\link{perform_GoF_test},\link{perform_regression_test}}
 #'
 #' @examples
-#' n = 100
+#' n <- 100
 #'
 #' # Under H1
-#' X1 = rnorm(n)
-#' X2 = X1 + rnorm(n)
-#' result = perform_independence_test(
-#'    X1, X2, nBootstrap = 30,
+#' X1 <- rnorm(n)
+#' X2 <- X1 + rnorm(n)
+#' result <- perform_independence_test(
+#'    X1, X2, nBootstrap = 100,
 #'    bootstrapOptions = list(type_boot = "indep",
 #'                            type_stat = "eq",
 #'                            norm_type = "KS") )
@@ -131,9 +149,9 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #' plot(result)
 #'
 #' # Under H0
-#' X1 = rnorm(n)
-#' X2 = rnorm(n)
-#' result = perform_independence_test(X1, X2, nBootstrap = 30)
+#' X1 <- rnorm(n)
+#' X2 <- rnorm(n)
+#' result <- perform_independence_test(X1, X2, nBootstrap = 100)
 #' print(result)
 #' plot(result)
 #'

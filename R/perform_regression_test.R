@@ -105,13 +105,21 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 
 
 
-#' Performs a test on the coefficient of a univariate linear regression
+#' Perform a test on the slope coefficient of a univariate linear regression
 #'
-#' This function performs the bootstrap regression test for given data X,Y. It
-#' uses indep, NP, res_bs, fixed_design_bs_Hnull, fixed_design_bs,
-#' hybrid_null_bs as bootstrap resampling schemes to perform the bootstrap.
-#' This function gives the corresponding p-values, the true test statistic and the
-#' bootstrap-version test statistics. Furthermore, it also gives the estimated slope.
+#' This function performs a bootstrap regression test for given data X,Y.
+#' The null hypothesis corresponds of a slope coefficient of zero, versus the
+#' alternative hypothesis of a non-zero slope coefficient.
+#' It uses an independence/null bootstrap \code{"indep}, a non-parametric \code{"NP"},
+#' a residual bootstrap \code{"res_bs"}, a fixed design bootstrap \code{"fixed_design_bs"},
+#' a fixed design null bootstrap \code{"fixed_design_bs_Hnull"}, a hybrid null
+#' bootstrap \code{"hybrid_null_bs"} as bootstrap resampling schemes to perform
+#' the bootstrap. This function gives the corresponding p-values, the true test
+#' statistic and the bootstrap-version test statistics. Furthermore, it also
+#' gives the estimated slope.The default (and valid) method implemented
+#' in this function is the null bootstrap, together with the equivalent test
+#' statistic. Via the \code{bootstrapOptions} argument, the user can specify other
+#' bootstrap resampling schemes and test statistics.
 #'
 #' @param X numeric univariate input vector resembling the independent variables
 #' @param Y numeric univariate input vector the dependent variables
@@ -120,24 +128,29 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'   \item \code{NULL}
 #'
 #'   \item a list with at most 2 elements names \itemize{
-#'         \item \code{type_boot} type of bootstrap to resample the data,
-#'         either 'NP' or 'cent'.
+#'         \item \code{type_boot} defaults to the \code{"indep"} bootstrap
+#'         resampling scheme to be used. \code{type_boot} can be either
+#'         \code{"indep"} for the independence/null bootstrap, or \code{"NP"}
+#'         for the non-parametric bootstrap.
 #'
-#'         \item \code{type_stat} type of test statistic to use,
-#'         either 'cent' for centered or 'eq' for equivalent.
+#'         \item \code{type_stat} defaults to \code{"eq"} for the type of test
+#'         statistic to be used. This can be either \code{"eq"} for the
+#'         equivalent test statistic, or \code{"cent"} for the centered
+#'         test statistic.
 #'   }
-#'   #'   \item \code{"all"} This gives all theoretically valid combinations for
-#'   bootstrap resampling schemes.
+#'   \item \code{"all"} this gives test results for all theoretically valid
+#'   combinations of bootstrap resampling schemes.
 #'
-#'   \item \code{"all and also invalid"} This gives all possible combinations for
-#'   bootstrap resampling schemes and test statistics, including invalid ones.
+#'   \item \code{"all and also invalid"} this gives test results for all possible
+#'   combinations of bootstrap resampling schemes and test statistics, including
+#'   invalid ones.
 #' }
 #' A warning is raised if the given combination of \code{type_boot} and
 #' \code{type_stat} is theoretically invalid.
 #'
 #'
 #' @return A class object with components \itemize{
-#'    \item \code{pvals_df} df of p-values and bootstrapped test statistics:
+#'    \item \code{pvals_df} a dataframe of p-values and bootstrapped test statistics:
 #'
 #'    These are the p-values for the combinations of bootstrap resampling schemes,
 #'    test statistics (centered and equivalent).
@@ -154,27 +167,27 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #'    \item \code{nameMethod} string for the name of the method used.
 #'
-#'    \item \code{beta} numeric for the estimated slope of the regression model.
+#'    \item \code{beta} numeric value of the estimated slope of the regression model.
 #' }
 #'
 #' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}
 #'
 #' @examples
-#' n = 100
+#' n <- 100
 #'
 #' # Under H1
-#' X_data = rnorm(n)
-#' Y_data =  X_data + rnorm(n)   #Y = X + epsilon
-#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30,
+#' X_data <- rnorm(n)
+#' Y_data <-  X_data + rnorm(n)   #Y = X + epsilon
+#' result <- perform_regression_test(X_data, Y_data, nBootstrap = 100,
 #'                         bootstrapOptions =  list(type_boot = "indep",
 #'                                                  type_stat = "eq"))
 #' print(result)
 #' plot(result)
 #'
 #' # Under H0
-#' X_data = rnorm(n)
-#' Y_data =  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
-#' result = perform_regression_test(X_data, Y_data, nBootstrap = 30)
+#' X_data <- rnorm(n)
+#' Y_data <-  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+#' result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 #' print(result)
 #' plot(result)
 #'
