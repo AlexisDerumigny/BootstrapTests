@@ -3,8 +3,6 @@
 #' @param x an object of class \code{bootstrapTest_independence},
 #'        \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}
 #'
-#' @param give_all_test_information logical, whether or not to give all test information.
-#'        Defaults to \code{FALSE}. If \code{TRUE}, prints all test results.
 #' @param ... additional arguments passed to the \code{print} function
 #'
 #' @export
