@@ -11,9 +11,6 @@
 \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}}
 
 \item{...}{additional arguments passed to the \code{print} function}
-
-\item{give_all_test_information}{logical, whether or not to give all test information.
-Defaults to \code{FALSE}. If \code{TRUE}, prints all test results.}
 }
 \description{
 Print the bootstrap test results
