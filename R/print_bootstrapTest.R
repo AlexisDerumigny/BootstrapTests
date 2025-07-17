@@ -6,8 +6,7 @@
 #' @param ... additional arguments passed to the \code{print} function
 #'
 #' @export
-print.bootstrapTest <- function(x,
-                                ...){
+print.bootstrapTest <- function(x, ...){
   # print a nice layout
   welcome_message_name <- paste0("         🎯" , x$nameMethod, " Results 🎯\n")
   equal_signs <- paste(rep("=", nchar(welcome_message_name) + 6), collapse = "")
@@ -50,7 +49,7 @@ print.bootstrapTest <- function(x,
     if ("bootstrapTest_independence" %in% class(x)){
       cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
     } else if ("bootstrapTest_regression" %in% class(x)){
-      cat("  Beta                     :", x$beta, "\n")
+      cat("  Slope coefficient β      :", x$beta, "\n")
     } else if ("bootstrapTest_GoF" %in% class(x)){
       cat("  Bootstrap estimator used :", row$param_bs, "\n")
     }
