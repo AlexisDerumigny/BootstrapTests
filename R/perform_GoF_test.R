@@ -171,13 +171,13 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' parametric family. This function implements a null bootstrap and
 #' a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 #' statistic. To estimate the parameters of the parametric family, either a minimum
-#' distance estimator, or a canonical estimator (the sample mean and variance)
+#' distance estimator, or a MLE estimator (the sample mean and variance)
 #' is used. On the bootstrap sample, we have also implemented a centered MD estimator,
 #' as in the paper. For now, only a test of normality is implemented. This function
 #' gives the corresponding p-values, the true test statistic and the
 #' bootstrap-version test statistics. The default (and valid) method implemented
 #' in this function is the null bootstrap, together with the equivalent test statistic
-#' and the canonical parameter estimator. Via the \code{bootstrapOptions}
+#' and the MLE parameter estimator. Via the \code{bootstrapOptions}
 #' argument, the user can specify other bootstrap resampling schemes,
 #' test statistics, and parameter estimators.
 #'
@@ -205,11 +205,11 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'         equivalent test statistic, or \code{"cent"} for the centered
 #'         test statistic.
 #'
-#'         \item \code{param_bs} defaults to \code{"canonical"} for the bootstrap
+#'         \item \code{param_bs} defaults to \code{"MLE"} for the bootstrap
 #'         parameter estimator to be used. \code{param_bs} can be either
 #'         \code{"MD"} for the Minimum Distance estimator, \code{"MD-cent"} for
-#'         the centered Minimum Distance estimator, or \code{"canonical"}
-#'         for the canonical estimator (empirical mean and variance).
+#'         the centered Minimum Distance estimator, or \code{"MLE"}
+#'         for the MLE estimator (empirical mean and variance).
 #'   }
 #'   \item \code{"all"} this gives test results for all theoretically valid
 #'   combinations of bootstrap resampling schemes.
@@ -233,7 +233,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'    \item \code{true_stat} a named vector of size 2 containing the true test
 #'    statistics. The first entry is the Kolmogorov-Smirnov test statistic for
 #'    the Minimum Distance estimator, and the second entry is the Kolmogorov-Smirnov
-#'    test statistic for the canonical parameter estimator.
+#'    test statistic for the MLE parameter estimator.
 #'
 #'    \item \code{nBootstrap} number of bootstrap repetitions.
 #'
@@ -252,7 +252,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'                           nBootstrap = 100,
 #'                           bootstrapOptions = list(type_boot = "null",
 #'                                                   type_stat = "eq",
-#'                                                   param_bs = "canonical")
+#'                                                   param_bs = "MLE")
 #'                          )
 #' print(result)
 #' plot(result)
@@ -274,7 +274,7 @@ perform_GoF_test <- function(X_data,
   # Initialize default values for the bootstrap options
   type_boot_user = "null"
   type_stat_user = "eq"
-  param_bs_user = "canonical"
+  param_bs_user = "MLE"
 
   # Read in the `bootstrapOptions` and set the user-specified options
   if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
@@ -325,8 +325,8 @@ perform_GoF_test <- function(X_data,
          type_stat_user)
   }
 
-  if (param_bs_user %in% c("MD", "MD-cent", "canonical") == FALSE){
-    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'canonical'.
+  if (param_bs_user %in% c("MD", "MD-cent", "MLE") == FALSE){
+    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'MLE'.
          Current input is", param_bs_user)
   }
 
@@ -396,7 +396,7 @@ perform_GoF_test <- function(X_data,
   estimated_param <- fit$par
 
   # Use standard empirical mean and variance as estimates
-  estimated_param_canonical <- estimate_params(X_data, parametric_fam)
+  estimated_param_MLE <- estimate_params(X_data, parametric_fam)
 
   # Calculate the empirical CDF values at the grid of X points
   ecdf_values <- stats::ecdf(X_data)(grid_points)
@@ -407,19 +407,19 @@ perform_GoF_test <- function(X_data,
                                          param = estimated_param )$fitted_cdf_vals
 
   # Calculate the parametrised CDF values at the grid of X points
-  parametrized_cdf_values_canonical <- param_distr(grid_points = grid_points,
+  parametrized_cdf_values_MLE <- param_distr(grid_points = grid_points,
                                                    parametric_fam = parametric_fam,
-                                                   param = estimated_param_canonical )$fitted_cdf_vals
+                                                   param = estimated_param_MLE )$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
-  max_diff_canonical <- max(abs(ecdf_values - parametrized_cdf_values_canonical))
+  max_diff_MLE <- max(abs(ecdf_values - parametrized_cdf_values_MLE))
 
 
   # Vector containing true test statistics, for the supremum norm
   true_stat = c(# Kolmogorov-Smirnov test statistic, with sqrt(n)
     "KS_with_MD" = max_diff*sqrt(n),
-    "KS_with_canonical" = max_diff_canonical*sqrt(n)
+    "KS_with_MLE" = max_diff_MLE*sqrt(n)
   )
 
 
@@ -437,8 +437,8 @@ perform_GoF_test <- function(X_data,
     stat_st_eq  = rep(NA, nBootstrap)
     stat_st_cent_MD = rep(NA, nBootstrap)
     stat_st_eq_MD  = rep(NA, nBootstrap)
-    stat_st_cent_canonical = rep(NA, nBootstrap)
-    stat_st_eq_canonical  = rep(NA, nBootstrap)
+    stat_st_cent_MLE = rep(NA, nBootstrap)
+    stat_st_eq_MLE  = rep(NA, nBootstrap)
 
 
     for (iBootstrap in 1:nBootstrap){
@@ -446,9 +446,9 @@ perform_GoF_test <- function(X_data,
       X_st <- generateBootstrapSamples_GOF(X_data,
                                            type_boot = type_boot,
                                            param = estimated_param)
-      X_st_canonical <- generateBootstrapSamples_GOF(X_data,
+      X_st_MLE <- generateBootstrapSamples_GOF(X_data,
                                                      type_boot = type_boot,
-                                                     param = estimated_param_canonical)
+                                                     param = estimated_param_MLE)
 
       ## Estimate unknown distribution parameters to minimize the norm distance ##
 
@@ -472,13 +472,13 @@ perform_GoF_test <- function(X_data,
       # Extract the fitted `bootstrap-based` parameters
       estimated_param_st <- fit_st$par
       estimated_param_st_MD <- fit_st_MD$par
-      estimated_param_st_canonical <- estimate_params(X_st_canonical,
+      estimated_param_st_MLE <- estimate_params(X_st_MLE,
                                                       parametric_fam)
 
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
       ecdf_values_st <- stats::ecdf(X_st)(grid_points)
-      ecdf_values_st_canonical <- stats::ecdf(X_st_canonical)(grid_points)
+      ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
 
       # Calculate the parametric CDF values at the grid of X_st points
       parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
@@ -489,9 +489,9 @@ perform_GoF_test <- function(X_data,
                                                    parametric_fam = parametric_fam,
                                                    estimated_param_st_MD )$fitted_cdf_vals
 
-      parametrized_cdf_values_st_canonical <- param_distr(grid_points,
+      parametrized_cdf_values_st_MLE <- param_distr(grid_points,
                                                           parametric_fam = parametric_fam,
-                                                          param = estimated_param_st_canonical )$fitted_cdf_vals
+                                                          param = estimated_param_st_MLE )$fitted_cdf_vals
 
       # Calculate the infinity norm (sup norm): maximum absolute difference
       max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
@@ -511,44 +511,44 @@ perform_GoF_test <- function(X_data,
                                                   X_st,
                                                   estimated_param_st_MD,
                                                   parametric_fam = parametric_fam)
-      max_diff_eq_st_canonical <- infinity_norm_distance(grid_points,
-                                                         X_st_canonical,
-                                                         estimated_param_st_canonical,
+      max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
+                                                         X_st_MLE,
+                                                         estimated_param_st_MLE,
                                                          parametric_fam = parametric_fam)
 
-      max_diff_cent_st_canonical <- max(abs(ecdf_values_st_canonical
-                                            - parametrized_cdf_values_st_canonical
+      max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
+                                            - parametrized_cdf_values_st_MLE
                                             - ecdf_values
-                                            + parametrized_cdf_values_canonical ))
+                                            + parametrized_cdf_values_MLE ))
 
       # Calculating bootstrap test statistics
       stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
       stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
       stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
       stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
-      stat_st_cent_canonical[iBootstrap]  = max_diff_cent_st_canonical * sqrt(n)
-      stat_st_eq_canonical[iBootstrap]    = max_diff_eq_st_canonical * sqrt(n)
+      stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
+      stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
 
     }
 
     # Put dataframes in a list, alternating the entries
     # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
-    # the Minimum Distance (MD) or the canonical estimator.
+    # the Minimum Distance (MD) or the MLE estimator.
     list_results[[1 + (iBoot - 1)*2]] =
       data.frame(type_boot = type_boot,
                  type_stat = "cent",
-                 param_bs = c("MD", "MD-cent", "canonical"),
+                 param_bs = c("MD", "MD-cent", "MLE"),
                  bootstrapped_tests = I(list(stat_st_cent,
                                              stat_st_cent_MD,
-                                             stat_st_cent_canonical) )
+                                             stat_st_cent_MLE) )
       )
     list_results[[2 + (iBoot - 1)*2]] =
       data.frame(type_boot = type_boot,
                  type_stat = "eq",
-                 param_bs = c("MD", "MD-cent", "canonical"),
+                 param_bs = c("MD", "MD-cent", "MLE"),
                  bootstrapped_tests = I(list(stat_st_eq,
                                              stat_st_eq_MD,
-                                             stat_st_eq_canonical) )
+                                             stat_st_eq_MLE) )
       )
   }
 
@@ -561,8 +561,8 @@ perform_GoF_test <- function(X_data,
     X = 1:nrow(pvals_df),
     FUN = function(i){
       # Choose the appropriate true_stat based on the value of param_bs
-      true_stat_to_use <- if (pvals_df$param_bs[i] == "canonical") {
-        true_stat["KS_with_canonical"]
+      true_stat_to_use <- if (pvals_df$param_bs[i] == "MLE") {
+        true_stat["KS_with_MLE"]
       } else {
         true_stat["KS_with_MD"]
       }
@@ -584,10 +584,10 @@ perform_GoF_test <- function(X_data,
        pvals_df$param_bs == "MD-cent") |
     (pvals_df$type_boot == "null" &
        pvals_df$type_stat == "eq" &
-       pvals_df$param_bs == "canonical")|
+       pvals_df$param_bs == "MLE")|
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
-       pvals_df$param_bs == "canonical")
+       pvals_df$param_bs == "MLE")
 
   ### post-processing ###
 

@@ -4,7 +4,6 @@
 # Package BootstrapTests
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 This package BootstrapTests implements several methods to perform
@@ -222,14 +221,14 @@ alternative hypothesis corresponds to the sample not coming from the
 specified parametric family. This function implements a null bootstrap
 and a non-parametric bootstrap. The test statistic is the
 Kolmogorov-Smirnov test statistic. To estimate the parameters of the
-parametric family, either a minimum distance estimator, or a canonical
+parametric family, either a minimum distance estimator, or a MLE
 estimator (the sample mean and variance) is used. On the bootstrap
 sample, we have also implemented a centered MD estimator, as in the
 paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method
 implemented in this function is the null bootstrap, together with the
-equivalent test statistic and the canonical parameter estimator. Via the
+equivalent test statistic and the MLE parameter estimator. Via the
 `bootstrapOptions` argument, the user can specify other bootstrap
 resampling schemes, test statistics, and parameter estimators.
 
@@ -243,7 +242,7 @@ result <- perform_GoF_test(X_data,
                          nBootstrap = 100,
                          bootstrapOptions = list(type_boot = "null",
                                                  type_stat = "eq",
-                                                 param_bs = "canonical")
+                                                 param_bs = "MLE")
                         )
 print(result)
 #>          🎯Bootstrap GoF Test Results 🎯
@@ -253,7 +252,7 @@ print(result)
 #>   Bootstrap type           : null
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Bootstrap estimator used : canonical 
+#>   Bootstrap estimator used : MLE 
 #>   p-value                  : 0.04
 #>   True test statistic      : 0.9334
 plot(result)
@@ -274,13 +273,39 @@ print(result)
 #>   Bootstrap type           : null
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Bootstrap estimator used : canonical 
+#>   Bootstrap estimator used : MLE 
 #>   p-value                  : 0.04
 #>   True test statistic      : 0.8963
 plot(result)
 ```
 
 <img src="man/figures/README-example GOF-2.png" width="100%" />
+
+``` r
+
+# Showing all theoretically valid options:
+result_valid <- perform_GoF_test(X_data, bootstrapOptions = "all")
+print(result_valid)
+#>          🎯Bootstrap GoF Test Results 🎯
+#>  =============================================== 
+#> 
+#> All test results:
+#> 
+#>  type_boot type_stat param_bs bootstrapped_tests pvalues theoretically_valid
+#>       null        eq       MD       0.394892....    0.09                TRUE
+#>       null        eq      MLE       0.286271....    0.02                TRUE
+#>         NP      cent  MD-cent       0.319439....    0.09                TRUE
+#>         NP      cent      MLE       0.417932....    0.03                TRUE
+#>  quantile_95 quantile_99
+#>    0.6243186   0.6394306
+#>    0.8198315   0.9002679
+#>    0.5687391   0.6975290
+#>    0.8120607   0.9138376
+#> 
+#> True test statistics:
+#>  KS_with_MD KS_with_MLE 
+#>   0.5509896   0.8963067
+```
 
 ## References
 

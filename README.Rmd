@@ -142,13 +142,13 @@ hypothesis corresponds to the sample not coming from the specified
 parametric family. This function implements a null bootstrap and
 a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 statistic. To estimate the parameters of the parametric family, either a minimum
-distance estimator, or a canonical estimator (the sample mean and variance)
+distance estimator, or a MLE estimator (the sample mean and variance)
 is used. On the bootstrap sample, we have also implemented a centered MD estimator,
 as in the paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method implemented
 in this function is the null bootstrap, together with the equivalent test statistic
-and the canonical parameter estimator. Via the `bootstrapOptions`
+and the MLE parameter estimator. Via the `bootstrapOptions`
 argument, the user can specify other bootstrap resampling schemes,
 test statistics, and parameter estimators.
 
@@ -162,7 +162,7 @@ result <- perform_GoF_test(X_data,
                          nBootstrap = 100,
                          bootstrapOptions = list(type_boot = "null",
                                                  type_stat = "eq",
-                                                 param_bs = "canonical")
+                                                 param_bs = "MLE")
                         )
 print(result)
 plot(result)
@@ -172,6 +172,10 @@ X_data <- rnorm(n)
 result <- perform_GoF_test(X_data, nBootstrap = 100)
 print(result)
 plot(result)
+
+# Showing all theoretically valid options:
+result_valid <- perform_GoF_test(X_data, bootstrapOptions = "all")
+print(result_valid)
 ```
 
 
