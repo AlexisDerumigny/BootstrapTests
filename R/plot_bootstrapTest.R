@@ -103,8 +103,8 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
   if ("bootstrapTest_regression" %in% class(x) ) {
     if (ask) {
-      oask <- devAskNewPage(TRUE)
-      on.exit(devAskNewPage(oask))
+      oask <- grDevices::devAskNewPage(TRUE)
+      on.exit(grDevices::devAskNewPage(oask))
     }
 
     data <- x$data
