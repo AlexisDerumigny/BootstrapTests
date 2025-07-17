@@ -65,7 +65,7 @@ test_that("Different types of bootstrap options work as expected", {
     X_data, nBootstrap = 10,
     bootstrapOptions = list(type_boot = "null",
                             type_stat = "eq",
-                            param_bs = "canonical") )
+                            param_bs = "MLE") )
 
   expect_identical(result_1, result_2)
 

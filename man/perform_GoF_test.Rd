@@ -35,11 +35,11 @@ to 100.}
         equivalent test statistic, or \code{"cent"} for the centered
         test statistic.
 
-        \item \code{param_bs} defaults to \code{"canonical"} for the bootstrap
+        \item \code{param_bs} defaults to \code{"MLE"} for the bootstrap
         parameter estimator to be used. \code{param_bs} can be either
         \code{"MD"} for the Minimum Distance estimator, \code{"MD-cent"} for
-        the centered Minimum Distance estimator, or \code{"canonical"}
-        for the canonical estimator (empirical mean and variance).
+        the centered Minimum Distance estimator, or \code{"MLE"}
+        for the MLE estimator (empirical mean and variance).
   }
   \item \code{"all"} this gives test results for all theoretically valid
   combinations of bootstrap resampling schemes.
@@ -64,7 +64,7 @@ A class object with components \itemize{
    \item \code{true_stat} a named vector of size 2 containing the true test
    statistics. The first entry is the Kolmogorov-Smirnov test statistic for
    the Minimum Distance estimator, and the second entry is the Kolmogorov-Smirnov
-   test statistic for the canonical parameter estimator.
+   test statistic for the MLE parameter estimator.
 
    \item \code{nBootstrap} number of bootstrap repetitions.
 
@@ -80,13 +80,13 @@ hypothesis corresponds to the sample not coming from the specified
 parametric family. This function implements a null bootstrap and
 a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 statistic. To estimate the parameters of the parametric family, either a minimum
-distance estimator, or a canonical estimator (the sample mean and variance)
+distance estimator, or a MLE estimator (the sample mean and variance)
 is used. On the bootstrap sample, we have also implemented a centered MD estimator,
 as in the paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method implemented
 in this function is the null bootstrap, together with the equivalent test statistic
-and the canonical parameter estimator. Via the \code{bootstrapOptions}
+and the MLE parameter estimator. Via the \code{bootstrapOptions}
 argument, the user can specify other bootstrap resampling schemes,
 test statistics, and parameter estimators.
 }
@@ -98,7 +98,7 @@ result <- perform_GoF_test(X_data,
                           nBootstrap = 100,
                           bootstrapOptions = list(type_boot = "null",
                                                   type_stat = "eq",
-                                                  param_bs = "canonical")
+                                                  param_bs = "MLE")
                          )
 print(result)
 plot(result)

@@ -18,8 +18,8 @@ print.bootstrapTest <- function(x, ...){
 
       true_stat <- switch(
         row$param_bs,
-        'canonical' = {
-          x$true_stats["KS_with_canonical"]
+        'MLE' = {
+          x$true_stats["KS_with_MLE"]
         },
         'MD' = {
           x$true_stats["KS_with_MD"]
