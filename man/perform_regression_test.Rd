@@ -95,5 +95,6 @@ plot(result)
 
 }
 \seealso{
-\code{\link{perform_GoF_test},\link{perform_independence_test}}
+\code{\link{perform_GoF_test},\link{perform_independence_test}}.
+The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 }

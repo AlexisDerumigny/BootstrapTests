@@ -108,5 +108,6 @@ plot(result)
 
 }
 \seealso{
-\code{\link{perform_GoF_test},\link{perform_regression_test}}
+\code{\link{perform_GoF_test},\link{perform_regression_test}}.
+The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 }

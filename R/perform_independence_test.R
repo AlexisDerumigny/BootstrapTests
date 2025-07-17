@@ -132,7 +132,8 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #'    \item \code{nameMethod} string for the name of the method used.
 #' }
 #'
-#' @seealso \code{\link{perform_GoF_test},\link{perform_regression_test}}
+#' @seealso \code{\link{perform_GoF_test},\link{perform_regression_test}}.
+#' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 #'
 #' @examples
 #' n <- 100

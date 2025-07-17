@@ -1,5 +1,5 @@
 
-#' Plot the bootstrap test statistics distribution
+#' Plot and print the bootstrap test statistics distribution
 #'
 #' In the regression test case, the estimated regression line is plotted as well.
 #'
@@ -13,6 +13,15 @@
 #' plot. Used only if \code{x} is an object of class \code{bootstrapTest_regression}.
 #'
 #' @param ... additional arguments passed to the \code{hist} function
+#' (in the case of the \code{plot} method) or ignored (in the case of the
+#' \code{print} method).
+#'
+#' @returns These functions have no return value and are called solely for their
+#' side effects.
+#'
+#' @seealso The functions that generate such object \code{x}:
+#' \code{\link{perform_independence_test}, \link{perform_GoF_test},
+#' \link{perform_regression_test}}.
 #'
 #' @export
 plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,

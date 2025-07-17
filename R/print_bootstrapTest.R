@@ -1,10 +1,5 @@
 
-#' Print the bootstrap test results
-#' @param x an object of class \code{bootstrapTest_independence},
-#'        \code{bootstrapTest_GoF}, \code{bootstrapTest_regression} or \code{bootstrapTest}
-#'
-#' @param ... additional arguments passed to the \code{print} function
-#'
+#' @rdname plot.bootstrapTest
 #' @export
 print.bootstrapTest <- function(x, ...){
   # print a nice layout
