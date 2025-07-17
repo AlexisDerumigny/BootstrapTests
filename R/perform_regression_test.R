@@ -186,7 +186,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #' # Under H0
 #' X_data <- rnorm(n)
-#' Y_data <-  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+#' Y_data <-  rnorm(n)  #these values are exactly constant (as b = 0 under H0)
 #' result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 #' print(result)
 #' plot(result)

@@ -4,6 +4,7 @@
 # Package BootstrapTests
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 This package BootstrapTests implements several methods to perform
@@ -123,41 +124,6 @@ print(result_valid)
 #> True test statistics:
 #>      L2      KS 
 #> 16.9997  0.0620
-
-# Showing all bootstrap combinations, including invalid options:
-result_invalid <- perform_independence_test(X1, X2, bootstrapOptions = "all and also invalid")
-#> Warning in perform_independence_test(X1, X2, bootstrapOptions = "all and also
-#> invalid"): Using 'all and also invalid' as bootstrapOptions is not recommended.
-#> This will return all theoretically valid and invalid combinations of bootstrap
-#> resampling schemes, test statistics, and norms. Please use with caution.
-print(result_invalid)
-#>          🎯Bootstrap Independence Test Results 🎯
-#>  ======================================================== 
-#> 
-#> All test results:
-#> 
-#>  type_boot type_stat norm_type bootstrapped_tests pvalues theoretically_valid
-#>      indep      cent        L2       54.0208,....    0.85               FALSE
-#>      indep      cent        KS       0.1086, ....    0.92               FALSE
-#>      indep        eq        L2       18.25465....    0.07                TRUE
-#>      indep        eq        KS       0.058, 0....    0.11                TRUE
-#>         NP      cent        L2       5.979504....    0.14                TRUE
-#>         NP      cent        KS       0.0379, ....    0.18                TRUE
-#>         NP        eq        L2       20.45643....    0.89               FALSE
-#>         NP        eq        KS       0.074, 0....    0.91               FALSE
-#>  quantile_95 quantile_99
-#>    43.576013   56.420725
-#>     0.108030    0.112460
-#>    17.645728   21.958935
-#>     0.068060    0.080064
-#>    21.241101   27.681720
-#>     0.073845    0.080874
-#>    45.224090   48.175549
-#>     0.100105    0.111205
-#> 
-#> True test statistics:
-#>      L2      KS 
-#> 16.9997  0.0620
 ```
 
 ### Slope testing in linear regression setting
@@ -196,9 +162,9 @@ print(result)
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Beta                     : 0.9204966 
+#>   Slope coefficient β      : 0.7940995 
 #>   p-value                  : 0
-#>   True test statistic      : 9.2050
+#>   True test statistic      : 7.9410
 plot(result)
 ```
 
@@ -208,7 +174,7 @@ plot(result)
 
 # Under H0
 X_data <- rnorm(n)
-Y_data <-  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+Y_data <- 0 * X_data + rnorm(n) 
 result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 print(result)
 #>          🎯Bootstrap Regression Test Results 🎯
@@ -218,9 +184,9 @@ print(result)
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Beta                     : 1.971842e-16 
-#>   p-value                  : 0.35
-#>   True test statistic      : 0.0000
+#>   Slope coefficient β      : 0.000209957 
+#>   p-value                  : 1
+#>   True test statistic      : 0.0021
 plot(result)
 ```
 
@@ -236,57 +202,15 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat pvalues bootstrapped_tests theoretically_valid
-#>      indep        eq    0.20       4.882052....                TRUE
-#>         NP      cent    0.54       1.001348....                TRUE
-#>   quantile_95  quantile_99
-#>  3.355789e-15 3.611288e-15
-#>  4.582757e-15 5.404115e-15
+#>  type_boot type_stat pvalues bootstrapped_tests theoretically_valid quantile_95
+#>      indep        eq    1.00       1.491490....                TRUE    1.750612
+#>         NP      cent    0.98       0.500202....                TRUE    1.929458
+#>  quantile_99
+#>     2.553541
+#>     2.293660
 #> 
 #> True test statistics:
-#> [1] 1.971842e-15
-
-# Showing all bootstrap combinations, including invalid options:
-result_invalid <- perform_regression_test(X_data, Y_data, bootstrapOptions = "all and also invalid")
-#> Warning in perform_regression_test(X_data, Y_data, bootstrapOptions = "all and
-#> also invalid"): Using 'all and also invalid' as bootstrapOptions is not
-#> recommended. This will return all theoretically valid and invalid combinations
-#> of bootstrap resampling schemes, and test statistics. Please use with caution.
-print(result_invalid)
-#>          🎯Bootstrap Regression Test Results 🎯
-#>  ====================================================== 
-#> 
-#> All test results:
-#> 
-#>              type_boot type_stat pvalues bootstrapped_tests theoretically_valid
-#>                  indep      cent    0.54       8.462175....               FALSE
-#>                  indep        eq    0.33       1.125624....                TRUE
-#>                     NP      cent    0.43       3.786224....                TRUE
-#>                     NP        eq    0.20       1.814382....               FALSE
-#>                 res_bs      cent    0.39       6.550954....               FALSE
-#>                 res_bs        eq    0.54       2.626937....               FALSE
-#>  fixed_design_bs_Hnull      cent    0.19       1.971035....               FALSE
-#>  fixed_design_bs_Hnull        eq    0.22       8.064584....               FALSE
-#>        fixed_design_bs      cent    0.36       1.441583....               FALSE
-#>        fixed_design_bs        eq    0.88       3.413425....               FALSE
-#>         hybrid_null_bs      cent    0.60       5.146206....               FALSE
-#>         hybrid_null_bs        eq    0.41       3.174364....               FALSE
-#>   quantile_95  quantile_99
-#>  4.504114e-15 5.877080e-15
-#>  3.121898e-15 4.381178e-15
-#>  4.153874e-15 4.990254e-15
-#>  2.725698e-15 3.592837e-15
-#>  5.126268e-15 6.480373e-15
-#>  7.098110e-15 8.452215e-15
-#>  3.468282e-15 4.465447e-15
-#>  4.235973e-15 5.608171e-15
-#>  4.483778e-15 7.505986e-15
-#>  6.455619e-15 9.477828e-15
-#>  5.562744e-15 6.082691e-15
-#>  4.306166e-15 5.175889e-15
-#> 
-#> True test statistics:
-#> [1] 1.971842e-15
+#> [1] 0.00209957
 ```
 
 ### Goodness-of-fit testing
@@ -330,8 +254,8 @@ print(result)
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : canonical 
-#>   p-value                  : 0.01
-#>   True test statistic      : 1.1406
+#>   p-value                  : 0.04
+#>   True test statistic      : 0.9334
 plot(result)
 ```
 
@@ -351,8 +275,8 @@ print(result)
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : canonical 
-#>   p-value                  : 0.61
-#>   True test statistic      : 0.4980
+#>   p-value                  : 0.04
+#>   True test statistic      : 0.8963
 plot(result)
 ```
 
