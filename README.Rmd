@@ -58,7 +58,7 @@ gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method implemented
 in this function is the null bootstrap, together with the equivalent test
 statistic and Kolmogorov-Smirnov test statistic.
-Via the \code{bootstrapOptions} argument, the user can specify other
+Via the `bootstrapOptions` argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 
 ```{r example independence}
@@ -99,15 +99,15 @@ print(result_invalid)
 This function performs a bootstrap regression test for given data X,Y.
 The null hypothesis corresponds of a slope coefficient of zero, versus the
 alternative hypothesis of a non-zero slope coefficient.
-It uses an independence/null bootstrap \code{"indep"}, a non-parametric \code{"NP"},
-a residual bootstrap \code{"res_bs"}, a fixed design bootstrap \code{"fixed_design_bs"},
-a fixed design null bootstrap \code{"fixed_design_bs_Hnull"}, a hybrid null
-bootstrap \code{"hybrid_null_bs"} as bootstrap resampling schemes to perform
+It uses an independence/null bootstrap `"indep"`, a non-parametric `"NP"`,
+a residual bootstrap `"res_bs"`, a fixed design bootstrap `"fixed_design_bs"`,
+a fixed design null bootstrap `"fixed_design_bs_Hnull"`, a hybrid null
+bootstrap `"hybrid_null_bs"` as bootstrap resampling schemes to perform
 the bootstrap. This function gives the corresponding p-values, the true test
 statistic and the bootstrap-version test statistics. Furthermore, it also
 gives the estimated slope.The default (and valid) method implemented
 in this function is the null bootstrap, together with the equivalent test
-statistic. Via the \code{bootstrapOptions} argument, the user can specify other
+statistic. Via the `bootstrapOptions` argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 
 ```{r example linear regression}
@@ -143,6 +143,23 @@ print(result_invalid)
 
 
 ### Goodness-of-fit testing
+
+This function performs a bootstrap goodness-of-fit hypothesis test for a
+specific univariate parametric family. The null hypothesis corresponds to the
+sample coming from the specified parametric family, while the alternative
+hypothesis corresponds to the sample not coming from the specified
+parametric family. This function implements a null bootstrap and
+a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
+statistic. To estimate the parameters of the parametric family, either a minimum
+distance estimator, or a canonical estimator (the sample mean and variance)
+is used. On the bootstrap sample, we have also implemented a centered MD estimator,
+as in the paper. For now, only a test of normality is implemented. This function
+gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics. The default (and valid) method implemented
+in this function is the null bootstrap, together with the equivalent test statistic
+and the canonical parameter estimator. Via the `bootstrapOptions`
+argument, the user can specify other bootstrap resampling schemes,
+test statistics, and parameter estimators.
 
 ```{r example GOF}
 library(BootstrapTests)

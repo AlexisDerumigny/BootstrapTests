@@ -289,6 +289,24 @@ print(result_invalid)
 
 ### Goodness-of-fit testing
 
+This function performs a bootstrap goodness-of-fit hypothesis test for a
+specific univariate parametric family. The null hypothesis corresponds
+to the sample coming from the specified parametric family, while the
+alternative hypothesis corresponds to the sample not coming from the
+specified parametric family. This function implements a null bootstrap
+and a non-parametric bootstrap. The test statistic is the
+Kolmogorov-Smirnov test statistic. To estimate the parameters of the
+parametric family, either a minimum distance estimator, or a canonical
+estimator (the sample mean and variance) is used. On the bootstrap
+sample, we have also implemented a centered MD estimator, as in the
+paper. For now, only a test of normality is implemented. This function
+gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics. The default (and valid) method
+implemented in this function is the null bootstrap, together with the
+equivalent test statistic and the canonical parameter estimator. Via the
+argument, the user can specify other bootstrap resampling schemes, test
+statistics, and parameter estimators.
+
 ``` r
 library(BootstrapTests)
 
