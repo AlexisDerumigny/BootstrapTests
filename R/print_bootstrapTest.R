@@ -67,8 +67,8 @@ print.bootstrapTest <- function(x,
     df <- x$pvals_df
 
     # Get quantiles
-    df$ci_upper_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
-    df$ci_upper_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+    df$quantile_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
+    df$quantile_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
 
     # Print all test results
     cat("All test results:\n\n")
