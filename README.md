@@ -45,8 +45,8 @@ This function gives the corresponding p-values, the true test statistic
 and the bootstrap-version test statistics. The default (and valid)
 method implemented in this function is the null bootstrap, together with
 the equivalent test statistic and Kolmogorov-Smirnov test statistic. Via
-the argument, the user can specify other bootstrap resampling schemes
-and test statistics.
+the `bootstrapOptions` argument, the user can specify other bootstrap
+resampling schemes and test statistics.
 
 ``` r
 library(BootstrapTests)
@@ -114,7 +114,7 @@ print(result_valid)
 #>      indep        eq        KS       0.0456, ....    0.17                TRUE
 #>         NP      cent        L2       5.501166....    0.13                TRUE
 #>         NP      cent        KS       0.047, 0....    0.21                TRUE
-#>  ci_upper_95 ci_upper_99
+#>  quantile_95 quantile_99
 #>    23.389507   25.734951
 #>     0.073005    0.086023
 #>    21.958640   25.743274
@@ -145,7 +145,7 @@ print(result_invalid)
 #>         NP      cent        KS       0.0379, ....    0.18                TRUE
 #>         NP        eq        L2       20.45643....    0.89               FALSE
 #>         NP        eq        KS       0.074, 0....    0.91               FALSE
-#>  ci_upper_95 ci_upper_99
+#>  quantile_95 quantile_99
 #>    43.576013   56.420725
 #>     0.108030    0.112460
 #>    17.645728   21.958935
@@ -165,15 +165,17 @@ print(result_invalid)
 This function performs a bootstrap regression test for given data X,Y.
 The null hypothesis corresponds of a slope coefficient of zero, versus
 the alternative hypothesis of a non-zero slope coefficient. It uses an
-independence/null bootstrap , a non-parametric , a residual bootstrap ,
-a fixed design bootstrap , a fixed design null bootstrap , a hybrid null
-bootstrap as bootstrap resampling schemes to perform the bootstrap. This
-function gives the corresponding p-values, the true test statistic and
-the bootstrap-version test statistics. Furthermore, it also gives the
+independence/null bootstrap `"indep"`, a non-parametric `"NP"`, a
+residual bootstrap `"res_bs"`, a fixed design bootstrap
+`"fixed_design_bs"`, a fixed design null bootstrap
+`"fixed_design_bs_Hnull"`, a hybrid null bootstrap `"hybrid_null_bs"` as
+bootstrap resampling schemes to perform the bootstrap. This function
+gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics. Furthermore, it also gives the
 estimated slope.The default (and valid) method implemented in this
 function is the null bootstrap, together with the equivalent test
-statistic. Via the argument, the user can specify other bootstrap
-resampling schemes and test statistics.
+statistic. Via the `bootstrapOptions` argument, the user can specify
+other bootstrap resampling schemes and test statistics.
 
 ``` r
 library(BootstrapTests)
@@ -237,7 +239,7 @@ print(result_valid)
 #>  type_boot type_stat pvalues bootstrapped_tests theoretically_valid
 #>      indep        eq    0.20       4.882052....                TRUE
 #>         NP      cent    0.54       1.001348....                TRUE
-#>   ci_upper_95  ci_upper_99
+#>   quantile_95  quantile_99
 #>  3.355789e-15 3.611288e-15
 #>  4.582757e-15 5.404115e-15
 #> 
@@ -269,7 +271,7 @@ print(result_invalid)
 #>        fixed_design_bs        eq    0.88       3.413425....               FALSE
 #>         hybrid_null_bs      cent    0.60       5.146206....               FALSE
 #>         hybrid_null_bs        eq    0.41       3.174364....               FALSE
-#>   ci_upper_95  ci_upper_99
+#>   quantile_95  quantile_99
 #>  4.504114e-15 5.877080e-15
 #>  3.121898e-15 4.381178e-15
 #>  4.153874e-15 4.990254e-15
@@ -304,8 +306,8 @@ gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method
 implemented in this function is the null bootstrap, together with the
 equivalent test statistic and the canonical parameter estimator. Via the
-argument, the user can specify other bootstrap resampling schemes, test
-statistics, and parameter estimators.
+`bootstrapOptions` argument, the user can specify other bootstrap
+resampling schemes, test statistics, and parameter estimators.
 
 ``` r
 library(BootstrapTests)
