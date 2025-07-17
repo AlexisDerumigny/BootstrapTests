@@ -1,17 +1,23 @@
 
 #' Plot the bootstrap test statistics distribution
+#'
+#' In the regression test case, the estimated regression line is plotted as well.
+#'
 #' @param x an object of class \code{bootstrapTest_independence} or \code{bootstrapTest}
 #'
 #' @param xlim limits for the x-axis of the histogram
 #' @param breaks breaks for the histogram
 #' @param legend.x position of the legend on the x-axis
 #' @param legend.y position of the legend on the y-axis
+#' @param ask if \code{TRUE}, the user is asked to press Return to see the next
+#' plot. Used only if \code{x} is an object of class \code{bootstrapTest_regression}.
+#'
 #' @param ... additional arguments passed to the \code{hist} function
 #'
 #' @export
 plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
-                               legend.x = NULL, legend.y = NULL, ...){
-
+                               legend.x = NULL, legend.y = NULL,
+                               ask = interactive(), ...){
   # assign the user-specfied highlighted dataframe
   nrow(x$pvals_df) == 1
   if (nrow(x$pvals_df) == 1) {
@@ -87,6 +93,11 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   ####### For regression test, also plot the slope #######
 
   if ("bootstrapTest_regression" %in% class(x) ) {
+    if (ask) {
+      oask <- devAskNewPage(TRUE)
+      on.exit(devAskNewPage(oask))
+    }
+
     data <- x$data
     plot(data$X, data$Y,
          main = paste0(x$nameMethod," - Regression Plot"),

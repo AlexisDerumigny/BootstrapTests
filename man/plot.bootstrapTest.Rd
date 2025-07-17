@@ -4,7 +4,15 @@
 \alias{plot.bootstrapTest}
 \title{Plot the bootstrap test statistics distribution}
 \usage{
-\method{plot}{bootstrapTest}(x, xlim = NULL, breaks = NULL, legend.x = NULL, legend.y = NULL, ...)
+\method{plot}{bootstrapTest}(
+  x,
+  xlim = NULL,
+  breaks = NULL,
+  legend.x = NULL,
+  legend.y = NULL,
+  ask = interactive(),
+  ...
+)
 }
 \arguments{
 \item{x}{an object of class \code{bootstrapTest_independence} or \code{bootstrapTest}}
@@ -17,8 +25,11 @@
 
 \item{legend.y}{position of the legend on the y-axis}
 
+\item{ask}{if \code{TRUE}, the user is asked to press Return to see the next
+plot. Used only if \code{x} is an object of class \code{bootstrapTest_regression}.}
+
 \item{...}{additional arguments passed to the \code{hist} function}
 }
 \description{
-Plot the bootstrap test statistics distribution
+In the regression test case, the estimated regression line is plotted as well.
 }
