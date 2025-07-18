@@ -318,35 +318,78 @@ perform_independence_test <- function(
         # Empirical joint CDF on the bootstrap data
         FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid)
 
-        stat_st_cent_L2[iBootstrap] =
-          (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
 
-        stat_st_cent_KS[iBootstrap] =
-          max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+        # Calculate the test statistics based on the bootstrap data =========
 
-        stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+        if (bootstrapOptions == "all" && type_boot == "indep"){
 
-        stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
+          # only calculate theoretically valid options in this case
+          stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
 
+        } else if (bootstrapOptions == "all" && type_boot == "NP"){
+
+          # only calculate theoretically valid options in this case
+          stat_st_cent_L2[iBootstrap] =
+            (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
+          stat_st_cent_KS[iBootstrap] =
+            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+
+        } else {
+          stat_st_cent_L2[iBootstrap] =
+            (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
+
+          stat_st_cent_KS[iBootstrap] =
+            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+
+          stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+
+          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
+
+        }
       }
 
-      # Put dataframes in a list, alternating the entries
-      list_results[[1 + (iBoot - 1)*2]] =
-        data.frame(type_boot = type_boot,
-                   type_stat = "cent",
-                   norm_type = c("L2", "KS"),
-                   bootstrapped_tests = I(list(stat_st_cent_L2,
-                                               stat_st_cent_KS) )
-        )
-      list_results[[2 + (iBoot - 1)*2]] =
-        data.frame(type_boot = type_boot,
-                   type_stat = "eq",
-                   norm_type = c("L2", "KS"),
-                   bootstrapped_tests = I(list(stat_st_eq_L2,
-                                               stat_st_eq_KS) )
-        )
-    }
 
+
+      # Storing the bootstrap test stats in list ============================
+
+      if (bootstrapOptions == "all" && type_boot == "indep"){
+
+        df_new <- data.frame(type_boot = type_boot,
+                             type_stat = "eq",
+                             norm_type = c("L2", "KS"),
+                             bootstrapped_tests = I(list(stat_st_eq_L2,
+                                                         stat_st_eq_KS) ) )
+
+        # Append new dataframe to the list
+        list_results <- append(list_results, list(df_new))
+      } else if (bootstrapOptions == "all" && type_boot == "NP"){
+
+        df_new <- data.frame(type_boot = type_boot,
+                             type_stat = "cent",
+                             norm_type = c("L2", "KS"),
+                             bootstrapped_tests = I(list(stat_st_cent_L2,
+                                                         stat_st_cent_KS) ) )
+
+        # Append new dataframe to the list
+        list_results <- append(list_results, list(df_new))
+
+      } else {
+        # Put dataframes in a list, alternating the entries
+        list_results[[1 + (iBoot - 1)*2]] =
+          data.frame(type_boot = type_boot,
+                     type_stat = "cent",
+                     norm_type = c("L2", "KS"),
+                     bootstrapped_tests = I(list(stat_st_cent_L2,
+                                                 stat_st_cent_KS) ) )
+        list_results[[2 + (iBoot - 1)*2]] =
+          data.frame(type_boot = type_boot,
+                     type_stat = "eq",
+                     norm_type = c("L2", "KS"),
+                     bootstrapped_tests = I(list(stat_st_eq_L2,
+                                                 stat_st_eq_KS) ) )
+      }
+    }
   } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
              is.null(bootstrapOptions)){
     # If the user specified a combination of bootstrap options or simply nothing,
@@ -422,12 +465,12 @@ perform_independence_test <- function(
 
     # Put dataframe in a list to make it coherent with the previous case of
     # creating all bootstrap resmapling schemes
-    list_results[[1]] =
-      data.frame(type_boot = type_boot,
-                 type_stat = type_stat_user,
-                 norm_type = norm_type_user,
-                 bootstrapped_tests = I(list(stat_st) )
-      )
+    df_new <- data.frame(type_boot = type_boot,
+                         type_stat = type_stat_user,
+                         norm_type = norm_type_user,
+                         bootstrapped_tests = I(list(stat_st) ))
+
+    list_results <- append(list_results, list(df_new))
   }
 
   # Post-processing ========================================================
