@@ -295,7 +295,7 @@ perform_independence_test <- function(
 
     # Progress bar
     total_steps <- length(vec_type_boot) * nBootstrap
-    pb <- utils::txtProgressBar(min = 0, max = total_steps, style = 3)
+    pb <- pbapply::startpb(min = 0, max = total_steps)
     step <- 0
 
     for (iBoot in 1:length(vec_type_boot)){
@@ -354,7 +354,7 @@ perform_independence_test <- function(
 
         # Update progress bar
         step <- step + 1
-        utils::setTxtProgressBar(pb, step)
+        pbapply::setpb(pb, step)
       }
 
 
@@ -412,7 +412,7 @@ perform_independence_test <- function(
 
     # Progress bar
     total_steps <-  nBootstrap
-    pb <- utils::txtProgressBar(min = 0, max = total_steps, style = 3)
+    pb <- pbapply::startpb(min = 0, max = total_steps)
     step <- 0
 
     #initialisation
@@ -477,7 +477,7 @@ perform_independence_test <- function(
 
       # Update progress bar
       step <- step + 1
-      utils::setTxtProgressBar(pb, step)
+      pbapply::setpb(pb, step)
 
     }
 
@@ -527,7 +527,7 @@ perform_independence_test <- function(
   ) )
 
   # close progress bar
-  close(pb)
+  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_independence", "bootstrapTest")
