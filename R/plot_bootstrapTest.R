@@ -1,6 +1,12 @@
 
 #' Plot and print the bootstrap test statistics distribution
 #'
+#' The \code{plot} and \code{print} methods work for objects of class \code{bootstrapTest},
+#' or for the specific classes \code{bootstrapTest_independence}, \code{bootstrapTest_GoF},
+#' and \code{bootstrapTest_regression}. The \code{print} method prints the
+#' summary of the bootstrap test results. The \code{plot} method plots the distribution of
+#' bootstrapped test statistics as a histogram, with the true test statistic
+#' and the 95% quantile of the bootstrapped test statistics highlighted.
 #' In the regression test case, the estimated regression line is plotted as well.
 #'
 #' @param x an object of class \code{bootstrapTest_independence} or \code{bootstrapTest}
