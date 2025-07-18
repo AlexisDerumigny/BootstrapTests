@@ -476,7 +476,7 @@ perform_independence_test <- function(
   # Post-processing ========================================================
 
 
-  # Rowbind the dataframes in `list_results` into a dataframe
+  # Rowbind the dataframes in `list_results` into a large dataframe
   pvals_df = do.call(what = rbind, args = list_results)
 
   # Calculate pvalues
@@ -490,29 +490,11 @@ perform_independence_test <- function(
     }
   ) |> unlist()
 
+  # Add column to denote the theoretically valid combinations of bootstrap
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
 
-  # Select the right rows based on the user-specified bootstrap options
-  if ( !is.list(bootstrapOptions) &&
-       !is.null(bootstrapOptions) &&
-       bootstrapOptions == "all") {
-    # Return only rows where `theoretically_valid` is TRUE
-    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
-  } else if (!is.list(bootstrapOptions) &&
-             !is.null(bootstrapOptions) &&
-             bootstrapOptions == "all and also invalid"){
-    # Return all rows, including theoretically invalid combinations
-    pvals_df = pvals_df
-  } else if ( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
-             is.null(bootstrapOptions)){
-    # If the user specified a combination of bootstrap options or simply nothing
-    pvals_df = pvals_df[
-      pvals_df$type_boot == type_boot_user &
-      pvals_df$type_stat == type_stat_user &
-      pvals_df$norm_type == norm_type_user, ]
-  }
 
   result = ( list(
     # df of p-values
