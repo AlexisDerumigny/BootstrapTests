@@ -170,7 +170,8 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'    \item \code{beta} numeric value of the estimated slope of the regression model.
 #' }
 #'
-#' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}
+#' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}.
+#' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 #'
 #' @examples
 #' n <- 100
