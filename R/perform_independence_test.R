@@ -287,12 +287,16 @@ perform_independence_test <- function(
       !is.null(bootstrapOptions) &&
       (bootstrapOptions == "all and also invalid" ||
        bootstrapOptions == "all")
-      )
+  )
   {
-
+    # Initialisation
     list_results = list()
-
     vec_type_boot = c("indep", "NP")
+
+    # Progress bar
+    total_steps <- length(vec_type_boot) * nBootstrap
+    pb <- utils::txtProgressBar(min = 0, max = total_steps, style = 3)
+    step <- 0
 
     for (iBoot in 1:length(vec_type_boot)){
       type_boot = vec_type_boot[iBoot]
@@ -347,6 +351,10 @@ perform_independence_test <- function(
           stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
 
         }
+
+        # Update progress bar
+        step <- step + 1
+        utils::setTxtProgressBar(pb, step)
       }
 
 
@@ -402,6 +410,11 @@ perform_independence_test <- function(
     # Check the user-specified bootstrap options
     type_boot = type_boot_user
 
+    # Progress bar
+    total_steps <-  nBootstrap
+    pb <- utils::txtProgressBar(min = 0, max = total_steps, style = 3)
+    step <- 0
+
     #initialisation
     stat_st = rep(NA, nBootstrap)
 
@@ -424,43 +437,48 @@ perform_independence_test <- function(
               # If the user specified the L2 norm
               "L2" = {
                 switch (type_stat_user,
-                  "cent" = {
-                    # centered test statistic
-                    stat_st[iBootstrap] =
-                      (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
-                    },
-                  "eq" = {
-                    # equivalent test statistic
-                    stat_st[iBootstrap] =
-                      (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
-                  },
-                  {
-                    stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
-                  }
+                        "cent" = {
+                          # centered test statistic
+                          stat_st[iBootstrap] =
+                            (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
+                        },
+                        "eq" = {
+                          # equivalent test statistic
+                          stat_st[iBootstrap] =
+                            (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+                        },
+                        {
+                          stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
+                        }
                 )
               },
               # If the user specified the KS norm
               "KS" = { switch( type_stat_user,
-                  "cent" = {
-                    # centered test statistic
-                    stat_st[iBootstrap] =
-                      max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
-                  },
-                  "eq" = {
-                    # equivalent test statistic
-                    stat_st[iBootstrap] =
-                      max(abs(FX1FX2_st - FX12_st))
-                  },
-                  # If the user specified an unknown type_stat_user
-                  {
-                    stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
-                  }
-                )
+                               "cent" = {
+                                 # centered test statistic
+                                 stat_st[iBootstrap] =
+                                   max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+                               },
+                               "eq" = {
+                                 # equivalent test statistic
+                                 stat_st[iBootstrap] =
+                                   max(abs(FX1FX2_st - FX12_st))
+                               },
+                               # If the user specified an unknown type_stat_user
+                               {
+                                 stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
+                               }
+              )
               },
               {
                 stop("Unknown norm_type_user. Please choose either 'L2' or 'KS'.")
               }
       )
+
+      # Update progress bar
+      step <- step + 1
+      utils::setTxtProgressBar(pb, step)
+
     }
 
     # Put dataframe in a list to make it coherent with the previous case of
@@ -474,7 +492,6 @@ perform_independence_test <- function(
   }
 
   # Post-processing ========================================================
-
 
   # Rowbind the dataframes in `list_results` into a large dataframe
   pvals_df = do.call(what = rbind, args = list_results)
@@ -507,7 +524,10 @@ perform_independence_test <- function(
     nBootstrap = nBootstrap,
 
     nameMethod = "Bootstrap Independence Test"
-    ) )
+  ) )
+
+  # close progress bar
+  close(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_independence", "bootstrapTest")
