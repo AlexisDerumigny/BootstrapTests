@@ -280,18 +280,87 @@ perform_independence_test <- function(
 
   # Bootstrapping ===========================================================
 
-  list_results = list()
+  # Only calculate all combinations of bootstrap resampling schemes if user
+  # asks for them.
 
-  vec_type_boot = c("indep", "NP")
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      (bootstrapOptions == "all and also invalid" ||
+       bootstrapOptions == "all")
+      )
+  {
 
-  for (iBoot in 1:length(vec_type_boot)){
-    type_boot = vec_type_boot[iBoot]
+    list_results = list()
+
+    vec_type_boot = c("indep", "NP")
+
+    for (iBoot in 1:length(vec_type_boot)){
+      type_boot = vec_type_boot[iBoot]
+
+      #initialisation
+      stat_st_cent_L2 = rep(NA, nBootstrap)
+      stat_st_eq_L2 = rep(NA, nBootstrap)
+      stat_st_cent_KS = rep(NA, nBootstrap)
+      stat_st_eq_KS = rep(NA, nBootstrap)
+
+      for (iBootstrap in 1:nBootstrap){
+        # Generation of the bootstrapped data
+        dataBoot = generateBootstrapSamples(X1 = X1, X2 = X2,
+                                            type_boot = type_boot)
+        X1_st = dataBoot$X1_st
+        X2_st = dataBoot$X2_st
+
+        # Estimation of the product of the marginal CDFs
+        FX1_st = stats::ecdf(X1_st)(my_grid)
+        FX2_st = stats::ecdf(X2_st)(my_grid)
+        FX1FX2_st = outer(FX1_st, FX2_st)
+
+        # Empirical joint CDF on the bootstrap data
+        FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid)
+
+        stat_st_cent_L2[iBootstrap] =
+          (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
+
+        stat_st_cent_KS[iBootstrap] =
+          max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+
+        stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+
+        stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
+
+      }
+
+      # Put dataframes in a list, alternating the entries
+      list_results[[1 + (iBoot - 1)*2]] =
+        data.frame(type_boot = type_boot,
+                   type_stat = "cent",
+                   norm_type = c("L2", "KS"),
+                   bootstrapped_tests = I(list(stat_st_cent_L2,
+                                               stat_st_cent_KS) )
+        )
+      list_results[[2 + (iBoot - 1)*2]] =
+        data.frame(type_boot = type_boot,
+                   type_stat = "eq",
+                   norm_type = c("L2", "KS"),
+                   bootstrapped_tests = I(list(stat_st_eq_L2,
+                                               stat_st_eq_KS) )
+        )
+    }
+
+  } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing,
+    # we only calculate the bootstrap test statistics for the user-specified
+    # bootstrap options. That is what happens in this case.
+
+
+    # Make a list to store the results
+    list_results = list()
+    # Check the user-specified bootstrap options
+    type_boot = type_boot_user
 
     #initialisation
-    stat_st_cent_L2 = rep(NA, nBootstrap)
-    stat_st_eq_L2 = rep(NA, nBootstrap)
-    stat_st_cent_KS = rep(NA, nBootstrap)
-    stat_st_eq_KS = rep(NA, nBootstrap)
+    stat_st = rep(NA, nBootstrap)
 
     for (iBootstrap in 1:nBootstrap){
       # Generation of the bootstrapped data
@@ -308,34 +377,61 @@ perform_independence_test <- function(
       # Empirical joint CDF on the bootstrap data
       FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid)
 
-      stat_st_cent_L2[iBootstrap] =
-        (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
-
-      stat_st_cent_KS[iBootstrap] =
-        max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
-
-      stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
-
-      stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
-
+      switch (norm_type_user,
+              # If the user specified the L2 norm
+              "L2" = {
+                switch (type_stat_user,
+                  "cent" = {
+                    # centered test statistic
+                    stat_st[iBootstrap] =
+                      (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
+                    },
+                  "eq" = {
+                    # equivalent test statistic
+                    stat_st[iBootstrap] =
+                      (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
+                  },
+                  {
+                    stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
+                  }
+                )
+              },
+              # If the user specified the KS norm
+              "KS" = { switch( type_stat_user,
+                  "cent" = {
+                    # centered test statistic
+                    stat_st[iBootstrap] =
+                      max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+                  },
+                  "eq" = {
+                    # equivalent test statistic
+                    stat_st[iBootstrap] =
+                      max(abs(FX1FX2_st - FX12_st))
+                  },
+                  # If the user specified an unknown type_stat_user
+                  {
+                    stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
+                  }
+                )
+              },
+              {
+                stop("Unknown norm_type_user. Please choose either 'L2' or 'KS'.")
+              }
+      )
     }
 
-    # Put dataframes in a list, alternating the entries
-    list_results[[1 + (iBoot - 1)*2]] =
+    # Put dataframe in a list to make it coherent with the previous case of
+    # creating all bootstrap resmapling schemes
+    list_results[[1]] =
       data.frame(type_boot = type_boot,
-                 type_stat = "cent",
-                 norm_type = c("L2", "KS"),
-                 bootstrapped_tests = I(list(stat_st_cent_L2,
-                                             stat_st_cent_KS) )
-      )
-    list_results[[2 + (iBoot - 1)*2]] =
-      data.frame(type_boot = type_boot,
-                 type_stat = "eq",
-                 norm_type = c("L2", "KS"),
-                 bootstrapped_tests = I(list(stat_st_eq_L2,
-                                             stat_st_eq_KS) )
+                 type_stat = type_stat_user,
+                 norm_type = norm_type_user,
+                 bootstrapped_tests = I(list(stat_st) )
       )
   }
+
+  # Post-processing ========================================================
+
 
   # Rowbind the dataframes in `list_results` into a dataframe
   pvals_df = do.call(what = rbind, args = list_results)
@@ -366,7 +462,7 @@ perform_independence_test <- function(
              bootstrapOptions == "all and also invalid"){
     # Return all rows, including theoretically invalid combinations
     pvals_df = pvals_df
-  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
+  } else if ( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
              is.null(bootstrapOptions)){
     # If the user specified a combination of bootstrap options or simply nothing
     pvals_df = pvals_df[
