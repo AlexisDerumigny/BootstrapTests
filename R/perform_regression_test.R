@@ -170,8 +170,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'    \item \code{beta} numeric value of the estimated slope of the regression model.
 #' }
 #'
-#' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}.
-#' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
+#' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}
 #'
 #' @examples
 #' n <- 100
@@ -187,7 +186,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #' # Under H0
 #' X_data <- rnorm(n)
-#' Y_data <-  rnorm(n)  #these values are exactly constant (as b = 0 under H0)
+#' Y_data <-  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
 #' result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 #' print(result)
 #' plot(result)
