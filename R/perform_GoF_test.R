@@ -439,6 +439,11 @@ perform_GoF_test <- function(X_data,
     list_results = list()
     vec_type_boot = c("null", "NP")
 
+    # Progress bar
+    total_steps <- length(vec_type_boot) * nBootstrap
+    pb <- pbapply::startpb(min = 0, max = total_steps)
+    step <- 0
+
     for (iBoot in 1:length(vec_type_boot)){
       type_boot = vec_type_boot[iBoot]
 
@@ -537,7 +542,11 @@ perform_GoF_test <- function(X_data,
         stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
         stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
         stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
-        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
+        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt
+
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
 
       }
 
@@ -576,6 +585,11 @@ perform_GoF_test <- function(X_data,
 
     #initialisation
     stat_st = rep(NA, nBootstrap)
+
+    # Progress bar
+    total_steps <- nBootstrap
+    pb <- pbapply::startpb(min = 0, max = total_steps)
+    step <- 0
 
     for (iBootstrap in 1:nBootstrap){
 
@@ -727,6 +741,10 @@ perform_GoF_test <- function(X_data,
                 {stop(" error ")}
         )
       }
+
+      # Update progress bar
+      step <- step + 1
+      pbapply::setpb(pb, step)
     }
 
     # End of all bootstraps ===============================================
@@ -746,23 +764,6 @@ perform_GoF_test <- function(X_data,
                          bootstrapped_tests = I(list(stat_st) ))
 
     list_results <- append(list_results, list(df_new))
-
-    # list_results[[1 + (iBoot - 1)*2]] =
-    #   data.frame(type_boot = type_boot,
-    #              type_stat = "cent",
-    #              param_bs = c("MD", "MD-cent", "MLE"),
-    #              bootstrapped_tests = I(list(stat_st_cent,
-    #                                          stat_st_cent_MD,
-    #                                          stat_st_cent_MLE) )
-    #   )
-    # list_results[[2 + (iBoot - 1)*2]] =
-    #   data.frame(type_boot = type_boot,
-    #              type_stat = "eq",
-    #              param_bs = c("MD", "MD-cent", "MLE"),
-    #              bootstrapped_tests = I(list(stat_st_eq,
-    #                                          stat_st_eq_MD,
-    #                                          stat_st_eq_MLE) )
-    #   )
 
   }
 
@@ -818,6 +819,9 @@ perform_GoF_test <- function(X_data,
     # give bootstrap method a name
     nameMethod = "Bootstrap GoF Test"
   )
+
+  # close progress bar
+  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_GoF", "bootstrapTest")
