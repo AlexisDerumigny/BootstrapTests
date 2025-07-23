@@ -577,6 +577,30 @@ perform_GoF_test <- function(X_data,
   )
   {
 
+    # give all theoretically valid options of bootstrap schemes
+    option_1 = list(type_boot = "null",
+                    type_stat = "eq",
+                    param_bs = "MD")
+    option_2 = list(type_boot = "NP",
+                    type_stat = "cent",
+                    param_bs = "MD-cent")
+    option_3 = list(type_boot = "null",
+                    type_stat = "eq",
+                    param_bs = "MLE")
+    option_4 = list(type_boot = "NP",
+                    type_stat = "cent",
+                    param_bs = "MLE")
+    all_options_list = list(option_1, option_2, option_3, option_4)
+
+    for (option_list in all_options_list) {
+      gof_test_result <- perform_GoF_test(
+        X_data = X_data,
+        parametric_fam = parametric_fam,
+        nBootstrap = nBootstrap,
+        bootstrapOptions = option_list
+      )
+    }
+
 
   } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
              is.null(bootstrapOptions)){
