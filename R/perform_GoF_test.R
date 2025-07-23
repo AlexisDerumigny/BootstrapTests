@@ -408,8 +408,8 @@ perform_GoF_test <- function(X_data,
 
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values_MLE <- param_distr(grid_points = grid_points,
-                                                   parametric_fam = parametric_fam,
-                                                   param = estimated_param_MLE )$fitted_cdf_vals
+                                             parametric_fam = parametric_fam,
+                                             param = estimated_param_MLE )$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
@@ -425,132 +425,349 @@ perform_GoF_test <- function(X_data,
 
   # Bootstrapping ===========================================================
 
-  list_results = list()
+  # Only calculate all combinations of bootstrap resampling schemes if user
+  # asks for them.
 
-  vec_type_boot = c("null", "NP")
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      (bootstrapOptions == "all and also invalid" ||
+       bootstrapOptions == "all")
+  )
+  {
 
-  for (iBoot in 1:length(vec_type_boot)){
-    type_boot = vec_type_boot[iBoot]
+    # Initialisation
+    list_results = list()
+    vec_type_boot = c("null", "NP")
+
+    for (iBoot in 1:length(vec_type_boot)){
+      type_boot = vec_type_boot[iBoot]
+
+      #initialisation
+      stat_st_cent = rep(NA, nBootstrap)
+      stat_st_eq  = rep(NA, nBootstrap)
+      stat_st_cent_MD = rep(NA, nBootstrap)
+      stat_st_eq_MD  = rep(NA, nBootstrap)
+      stat_st_cent_MLE = rep(NA, nBootstrap)
+      stat_st_eq_MLE  = rep(NA, nBootstrap)
+
+
+      for (iBootstrap in 1:nBootstrap){
+        # Generation of the bootstrapped data
+        X_st <- generateBootstrapSamples_GOF(X_data,
+                                             type_boot = type_boot,
+                                             param = estimated_param)
+        X_st_MLE <- generateBootstrapSamples_GOF(X_data,
+                                                 type_boot = type_boot,
+                                                 param = estimated_param_MLE)
+
+        ## Estimate unknown distribution parameters to minimize the norm distance ##
+
+        # Initial guesses for the mean and sd parameters
+        initial_params_st <- estimate_params(X_st)
+
+        # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
+        fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
+                               grid_points = grid_points,
+                               observed_data = X_st,
+                               parametric_fam = parametric_fam)
+
+        # Fitting the centered MD estimator for the NP bootstrap scheme
+        fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
+                                  grid_points = grid_points,
+                                  bs_data = X_st,
+                                  observed_data = X_data,
+                                  params = estimated_param,
+                                  parametric_fam = parametric_fam)
+
+        # Extract the fitted `bootstrap-based` parameters
+        estimated_param_st <- fit_st$par
+        estimated_param_st_MD <- fit_st_MD$par
+        estimated_param_st_MLE <- estimate_params(X_st_MLE,
+                                                  parametric_fam)
+
+        # Calculate the empirical CDF values at the grid of X_st points, after
+        # fitting it on the X_st data (bootstrap data)
+        ecdf_values_st <- stats::ecdf(X_st)(grid_points)
+        ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
+
+        # Calculate the parametric CDF values at the grid of X_st points
+        parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
+                                                  parametric_fam = parametric_fam,
+                                                  param = estimated_param_st )$fitted_cdf_vals
+
+        parametrized_cdf_values_st_MD <- param_distr(grid_points,
+                                                     parametric_fam = parametric_fam,
+                                                     estimated_param_st_MD )$fitted_cdf_vals
+
+        parametrized_cdf_values_st_MLE <- param_distr(grid_points,
+                                                      parametric_fam = parametric_fam,
+                                                      param = estimated_param_st_MLE )$fitted_cdf_vals
+
+        # Calculate the infinity norm (sup norm): maximum absolute difference
+        max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
+                                    - ecdf_values +  parametrized_cdf_values ))
+
+        max_diff_cent_st_MD <- max(abs(ecdf_values_st
+                                       - parametrized_cdf_values_st_MD
+                                       - ecdf_values
+                                       +  parametrized_cdf_values ))
+
+        max_diff_eq_st <- infinity_norm_distance(grid_points,
+                                                 X_st,
+                                                 estimated_param_st,
+                                                 parametric_fam = parametric_fam)
+
+        max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
+                                                    X_st,
+                                                    estimated_param_st_MD,
+                                                    parametric_fam = parametric_fam)
+        max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
+                                                     X_st_MLE,
+                                                     estimated_param_st_MLE,
+                                                     parametric_fam = parametric_fam)
+
+        max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
+                                        - parametrized_cdf_values_st_MLE
+                                        - ecdf_values
+                                        + parametrized_cdf_values_MLE ))
+
+        # Calculating bootstrap test statistics
+        stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
+        stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
+        stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
+        stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
+        stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
+        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
+
+      }
+
+      # End of bootstrapping ===============================================
+
+      # Put dataframes in a list, alternating the entries
+      # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
+      # the Minimum Distance (MD) or the MLE estimator.
+      list_results[[1 + (iBoot - 1)*2]] =
+        data.frame(type_boot = type_boot,
+                   type_stat = "cent",
+                   param_bs = c("MD", "MD-cent", "MLE"),
+                   bootstrapped_tests = I(list(stat_st_cent,
+                                               stat_st_cent_MD,
+                                               stat_st_cent_MLE) )
+        )
+      list_results[[2 + (iBoot - 1)*2]] =
+        data.frame(type_boot = type_boot,
+                   type_stat = "eq",
+                   param_bs = c("MD", "MD-cent", "MLE"),
+                   bootstrapped_tests = I(list(stat_st_eq,
+                                               stat_st_eq_MD,
+                                               stat_st_eq_MLE) )
+        )
+    }
+  } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing,
+    # we only calculate the bootstrap test statistics for the user-specified
+    # bootstrap options. That is what happens in this case.
+
+    # Initialisation
+    list_results = list()
+    # Check the user-specified bootstrap options
+    type_boot = type_boot_user
 
     #initialisation
-    stat_st_cent = rep(NA, nBootstrap)
-    stat_st_eq  = rep(NA, nBootstrap)
-    stat_st_cent_MD = rep(NA, nBootstrap)
-    stat_st_eq_MD  = rep(NA, nBootstrap)
-    stat_st_cent_MLE = rep(NA, nBootstrap)
-    stat_st_eq_MLE  = rep(NA, nBootstrap)
-
+    stat_st = rep(NA, nBootstrap)
 
     for (iBootstrap in 1:nBootstrap){
-      # Generation of the bootstrapped data
-      X_st <- generateBootstrapSamples_GOF(X_data,
-                                           type_boot = type_boot,
-                                           param = estimated_param)
-      X_st_MLE <- generateBootstrapSamples_GOF(X_data,
-                                                     type_boot = type_boot,
-                                                     param = estimated_param_MLE)
 
-      ## Estimate unknown distribution parameters to minimize the norm distance ##
+      if (param_bs_user %in% c("MD-cent", "MD") ){
 
-      # Initial guesses for the mean and sd parameters
-      initial_params_st <- estimate_params(X_st)
+        X_st <- generateBootstrapSamples_GOF(X_data,
+                                             type_boot = type_boot,
+                                             param = estimated_param)
 
-      # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
-      fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
-                             grid_points = grid_points,
-                             observed_data = X_st,
-                             parametric_fam = parametric_fam)
+        # Initial guesses for the mean and sd parameters
+        initial_params_st <- estimate_params(X_st)
 
-      # Fitting the centered MD estimator for the NP bootstrap scheme
-      fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
-                                grid_points = grid_points,
-                                bs_data = X_st,
-                                observed_data = X_data,
-                                params = estimated_param,
-                                parametric_fam = parametric_fam)
+        # Calculate the empirical CDF values at the grid of X_st points, after
+        # fitting it on the X_st data (bootstrap data)
+        ecdf_values_st <- stats::ecdf(X_st)(grid_points)
 
-      # Extract the fitted `bootstrap-based` parameters
-      estimated_param_st <- fit_st$par
-      estimated_param_st_MD <- fit_st_MD$par
-      estimated_param_st_MLE <- estimate_params(X_st_MLE,
-                                                      parametric_fam)
+        # Fitting the centered MD estimator for the NP bootstrap scheme
+        fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
+                                  grid_points = grid_points,
+                                  bs_data = X_st,
+                                  observed_data = X_data,
+                                  params = estimated_param,
+                                  parametric_fam = parametric_fam)
 
-      # Calculate the empirical CDF values at the grid of X_st points, after
-      # fitting it on the X_st data (bootstrap data)
-      ecdf_values_st <- stats::ecdf(X_st)(grid_points)
-      ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
 
-      # Calculate the parametric CDF values at the grid of X_st points
-      parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
-                                                parametric_fam = parametric_fam,
-                                                param = estimated_param_st )$fitted_cdf_vals
+        # Extract the fitted `bootstrap-based` parameters
+        estimated_param_st_MD <- fit_st_MD$par
 
-      parametrized_cdf_values_st_MD <- param_distr(grid_points,
-                                                   parametric_fam = parametric_fam,
-                                                   estimated_param_st_MD )$fitted_cdf_vals
+        switch (param_bs_user,
+                "MD" = {
 
-      parametrized_cdf_values_st_MLE <- param_distr(grid_points,
-                                                          parametric_fam = parametric_fam,
-                                                          param = estimated_param_st_MLE )$fitted_cdf_vals
+                  # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
+                  fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
+                                         grid_points = grid_points,
+                                         observed_data = X_st,
+                                         parametric_fam = parametric_fam)
 
-      # Calculate the infinity norm (sup norm): maximum absolute difference
-      max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
-                                  - ecdf_values +  parametrized_cdf_values ))
+                  # Extract the fitted `bootstrap-based` parameters
+                  estimated_param_st <- fit_st$par
 
-      max_diff_cent_st_MD <- max(abs(ecdf_values_st
-                                     - parametrized_cdf_values_st_MD
-                                     - ecdf_values
-                                     +  parametrized_cdf_values ))
 
-      max_diff_eq_st <- infinity_norm_distance(grid_points,
-                                               X_st,
-                                               estimated_param_st,
-                                               parametric_fam = parametric_fam)
+                  switch(type_stat_user,
+                         "cent" = {
 
-      max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
-                                                  X_st,
-                                                  estimated_param_st_MD,
-                                                  parametric_fam = parametric_fam)
-      max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
-                                                         X_st_MLE,
-                                                         estimated_param_st_MLE,
-                                                         parametric_fam = parametric_fam)
+                           # Calculate the parametric CDF values at the grid of X_st points
+                           parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
+                                                                     parametric_fam = parametric_fam,
+                                                                     param = estimated_param_st )$fitted_cdf_vals
 
-      max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
-                                            - parametrized_cdf_values_st_MLE
-                                            - ecdf_values
-                                            + parametrized_cdf_values_MLE ))
+                           # Calculate the infinity norm (sup norm): maximum absolute difference
+                           max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
+                                                       - ecdf_values +  parametrized_cdf_values ))
 
-      # Calculating bootstrap test statistics
-      stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
-      stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
-      stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
-      stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
-      stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
-      stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
+                           # Calculating bootstrap test statistics
+                           stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
+                         },
+                         "eq" = {
 
+                           max_diff_eq_st <- infinity_norm_distance(grid_points,
+                                                                    X_st,
+                                                                    estimated_param_st,
+                                                                    parametric_fam = parametric_fam)
+
+
+                           # Calculating bootstrap test statistics
+                           stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
+
+                         },
+                         { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
+                  )
+
+
+                },
+                "MD-cent" ={
+                  switch(type_stat_user,
+                         "cent" = {
+                           # Calculate the parametric CDF values at the grid of X_st points
+                           parametrized_cdf_values_st_MD <- param_distr(grid_points,
+                                                                        parametric_fam = parametric_fam,
+                                                                        estimated_param_st_MD )$fitted_cdf_vals
+
+                           # Calculate the infinity norm (sup norm): maximum absolute difference
+                           max_diff_cent_st_MD <- max(abs(ecdf_values_st
+                                                          - parametrized_cdf_values_st_MD
+                                                          - ecdf_values
+                                                          +  parametrized_cdf_values ))
+                           # Calculating bootstrap test statistics
+                           stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
+                         },
+                         "eq" = {
+                           # Extract the fitted `bootstrap-based` parameters
+                           estimated_param_st_MD <- fit_st_MD$par
+
+                           max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
+                                                                       X_st,
+                                                                       estimated_param_st_MD,
+                                                                       parametric_fam = parametric_fam)
+
+                           # Calculating bootstrap test statistics
+                           stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
+                         },
+                         { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
+                  )
+
+                },
+                { stop("error in `param_bs_user`. Please use `MD` or `MD-cent`.") }
+        )
+      } else if (param_bs_user == "MLE"){
+        X_st_MLE <- generateBootstrapSamples_GOF(X_data,
+                                                 type_boot = type_boot,
+                                                 param = estimated_param_MLE)
+
+        # Extract the fitted `bootstrap-based` parameters
+        estimated_param_st_MLE <- estimate_params(X_st_MLE,
+                                                  parametric_fam)
+
+        switch (type_stat_user,
+                "cent" = {
+
+                  # Calculate the empirical CDF values at the grid of X_st points, after
+                  # fitting it on the X_st data (bootstrap data)
+                  ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
+
+                  # Calculate the parametric CDF values at the grid of X_st points
+                  parametrized_cdf_values_st_MLE <- param_distr(
+                    grid_points,
+                    parametric_fam = parametric_fam,
+                    param = estimated_param_st_MLE
+                  )$fitted_cdf_vals
+
+                  max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
+                                                  - parametrized_cdf_values_st_MLE
+                                                  - ecdf_values
+                                                  + parametrized_cdf_values_MLE ))
+
+                  # Calculating bootstrap test statistics
+                  stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
+                },
+                "eq" = {
+                  # Calculate the infinity norm (sup norm): maximum absolute difference
+                  max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
+                                                               X_st_MLE,
+                                                               estimated_param_st_MLE,
+                                                               parametric_fam = parametric_fam)
+
+                  # Calculating bootstrap test statistics
+                  stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
+                },
+                {stop(" error ")}
+        )
+      }
     }
+
+    # End of all bootstraps ===============================================
 
     # Put dataframes in a list, alternating the entries
     # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
     # the Minimum Distance (MD) or the MLE estimator.
-    list_results[[1 + (iBoot - 1)*2]] =
-      data.frame(type_boot = type_boot,
-                 type_stat = "cent",
-                 param_bs = c("MD", "MD-cent", "MLE"),
-                 bootstrapped_tests = I(list(stat_st_cent,
-                                             stat_st_cent_MD,
-                                             stat_st_cent_MLE) )
-      )
-    list_results[[2 + (iBoot - 1)*2]] =
-      data.frame(type_boot = type_boot,
-                 type_stat = "eq",
-                 param_bs = c("MD", "MD-cent", "MLE"),
-                 bootstrapped_tests = I(list(stat_st_eq,
-                                             stat_st_eq_MD,
-                                             stat_st_eq_MLE) )
-      )
+
+    # Put dataframe in a list to make it coherent with the previous case of
+    # creating all bootstrap resmapling schemes.
+    # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
+    # the Minimum Distance (MD) or the MLE estimator.
+
+    df_new <- data.frame(type_boot = type_boot,
+                         type_stat = type_stat_user,
+                         param_bs = param_bs_user,
+                         bootstrapped_tests = I(list(stat_st) ))
+
+    list_results <- append(list_results, list(df_new))
+
+    # list_results[[1 + (iBoot - 1)*2]] =
+    #   data.frame(type_boot = type_boot,
+    #              type_stat = "cent",
+    #              param_bs = c("MD", "MD-cent", "MLE"),
+    #              bootstrapped_tests = I(list(stat_st_cent,
+    #                                          stat_st_cent_MD,
+    #                                          stat_st_cent_MLE) )
+    #   )
+    # list_results[[2 + (iBoot - 1)*2]] =
+    #   data.frame(type_boot = type_boot,
+    #              type_stat = "eq",
+    #              param_bs = c("MD", "MD-cent", "MLE"),
+    #              bootstrapped_tests = I(list(stat_st_eq,
+    #                                          stat_st_eq_MD,
+    #                                          stat_st_eq_MLE) )
+    #   )
+
   }
+
+
+  # Done with all bootstrapping =============================================
 
   # Rowbind the dataframes in `list_results` into a dataframe
   pvals_df = do.call(what = rbind, args = list_results)
