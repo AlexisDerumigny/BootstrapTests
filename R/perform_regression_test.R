@@ -407,32 +407,10 @@ perform_regression_test <- function(X, Y,
           list_results = list()
         }
 
-        # # Create the p-values data frame
-        # pvals_df <- data.frame(
-        #   # To prevent factors from being created
-        #   stringsAsFactors = FALSE,
-        #   # Repeat each category option from bootstrap_names
-        #   type_boot = rep(valid_bootstrap_names , each = 2),
-        #   # Repeat each category option (cent, eq)
-        #   type_stat = rep(c("cent", "eq"), times = 6),
-        #   # Combine the vectors
-        #   pvalues   = rep(NA,12),
-        #   # # Combine the vectors
-        #   bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
-        # )
-
         if (type_boot %in% c("indep", "hybrid_null_bs") )
         {
           # Calculate pval
           p_val_eq = mean(as.numeric(true_stat < stat_st_eq))
-          #
-          # # add p-values to dataframe
-          # pvals_df$pvalues[pvals_df$type_boot == type_boot &
-          #                    pvals_df$type_stat=="eq"] = p_val_eq
-          #
-          # # add bootstrapped test statistics to dataframe
-          # pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
-          #                               pvals_df$type_stat == "eq" ] <- list(stat_st_eq)
 
           df_new <- data.frame(type_boot = type_boot,
                                type_stat = "eq",
@@ -445,12 +423,6 @@ perform_regression_test <- function(X, Y,
         }  else if ( type_boot %in% c("NP", "res_bs") ){
 
           p_val_cent = mean(as.numeric(true_stat < stat_st_cent))
-          # # add p-values to dataframe
-          # pvals_df$pvalues[pvals_df$type_boot == type_boot &
-          #                    pvals_df$type_stat == "cent"] = p_val_cent
-          # # add bootstrapped test statistics to dataframe
-          # pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
-          #                               pvals_df$type_stat == "cent" ] <- list(stat_st_cent)
 
           df_new <- data.frame(type_boot = type_boot,
                                type_stat = "cent",
