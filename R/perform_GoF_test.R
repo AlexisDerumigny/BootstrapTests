@@ -630,7 +630,7 @@ perform_GoF_test <- function(X_data,
                                                        - ecdf_values +  parametrized_cdf_values ))
 
                            # Calculating bootstrap test statistics
-                           stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
+                           stat_st[iBootstrap]            = max_diff_cent_st * sqrt(n)
                          },
                          "eq" = {
 
@@ -641,7 +641,7 @@ perform_GoF_test <- function(X_data,
 
 
                            # Calculating bootstrap test statistics
-                           stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
+                           stat_st[iBootstrap]              = max_diff_eq_st * sqrt(n)
 
                          },
                          { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
@@ -663,7 +663,7 @@ perform_GoF_test <- function(X_data,
                                                           - ecdf_values
                                                           +  parametrized_cdf_values ))
                            # Calculating bootstrap test statistics
-                           stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
+                           stat_st[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
                          },
                          "eq" = {
                            # Extract the fitted `bootstrap-based` parameters
@@ -675,7 +675,7 @@ perform_GoF_test <- function(X_data,
                                                                        parametric_fam = parametric_fam)
 
                            # Calculating bootstrap test statistics
-                           stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
+                           stat_st[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
                          },
                          { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
                   )
@@ -712,7 +712,7 @@ perform_GoF_test <- function(X_data,
                                                   + parametrized_cdf_values_MLE ))
 
                   # Calculating bootstrap test statistics
-                  stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
+                  stat_st[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
                 },
                 "eq" = {
                   # Calculate the infinity norm (sup norm): maximum absolute difference
@@ -722,7 +722,7 @@ perform_GoF_test <- function(X_data,
                                                                parametric_fam = parametric_fam)
 
                   # Calculating bootstrap test statistics
-                  stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
+                  stat_st[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
                 },
                 {stop(" error ")}
         )
@@ -805,28 +805,6 @@ perform_GoF_test <- function(X_data,
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
        pvals_df$param_bs == "MLE")
-
-  ### post-processing ###
-
-  # Select the right rows based on the user-specified bootstrap options
-  if ( !is.list(bootstrapOptions) &&
-       !is.null(bootstrapOptions) &&
-       bootstrapOptions == "all") {
-    # Return only rows where `theoretically_valid` is TRUE
-    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
-  } else if (!is.list(bootstrapOptions) &&
-             !is.null(bootstrapOptions) &&
-             bootstrapOptions == "all and also invalid"){
-    # Return all rows, including theoretically invalid combinations
-    pvals_df = pvals_df
-  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
-             is.null(bootstrapOptions)){
-    # If the user specified a combination of bootstrap options or simply nothing
-    pvals_df = pvals_df[
-      pvals_df$type_boot == type_boot_user &
-        pvals_df$type_stat == type_stat_user &
-        pvals_df$param_bs == param_bs_user, ]
-  }
 
 
   ### Create the result object ###
