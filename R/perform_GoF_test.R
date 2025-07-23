@@ -430,8 +430,7 @@ perform_GoF_test <- function(X_data,
 
   if (!is.list(bootstrapOptions) &&
       !is.null(bootstrapOptions) &&
-      (bootstrapOptions == "all and also invalid" ||
-       bootstrapOptions == "all")
+      (bootstrapOptions == "all and also invalid")
   )
   {
 
@@ -572,6 +571,13 @@ perform_GoF_test <- function(X_data,
                                                stat_st_eq_MLE) )
         )
     }
+  } else if(!is.list(bootstrapOptions) &&
+            !is.null(bootstrapOptions) &&
+            (bootstrapOptions == "all")
+  )
+  {
+
+
   } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
              is.null(bootstrapOptions)){
     # If the user specified a combination of bootstrap options or simply nothing,
