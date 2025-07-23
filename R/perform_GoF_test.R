@@ -542,7 +542,7 @@ perform_GoF_test <- function(X_data,
         stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
         stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
         stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
-        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt
+        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
 
         # Update progress bar
         step <- step + 1
