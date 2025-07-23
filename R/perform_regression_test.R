@@ -187,7 +187,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'
 #' # Under H0
 #' X_data <- rnorm(n)
-#' Y_data <-  rep(1, n)  #these values are exactly constant (as b = 0 under H0)
+#' Y_data <-  0 * X_data + rnorm(n)   # (as b = 0 under H0)
 #' result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 #' print(result)
 #' plot(result)
@@ -195,7 +195,8 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @export
 perform_regression_test <- function(X, Y,
                                     nBootstrap = 100,
-                                    bootstrapOptions = NULL){
+                                    bootstrapOptions = NULL)
+{
 
   # Initialize default values for the bootstrap options
   type_boot_user = "indep"
@@ -297,6 +298,8 @@ perform_regression_test <- function(X, Y,
     }
   }
 
+  # Computation of the original statistics ===============================
+
   # define the sample size
   n = length(X)
 
@@ -314,39 +317,236 @@ perform_regression_test <- function(X, Y,
   # calculate T_n = sqrt(n) * |b_hat|
   true_stat = sqrt(n) * abs(b_hat)
 
-  bootstrap_names <- c("indep", "NP",
-                       "res_bs", "fixed_design_bs_Hnull",
-                       "fixed_design_bs", "hybrid_null_bs")
 
-  # Create the p-values data frame
-  pvals_df <- data.frame(
-    # To prevent factors from being created
-    stringsAsFactors = FALSE,
-    # Repeat each category option from bootstrap_names
-    type_boot = rep(bootstrap_names, each = 2),
-    # Repeat each category option (cent, eq)
-    type_stat = rep(c("cent", "eq"), times = 6),
-    # Combine the vectors
-    pvalues   = rep(NA,12),
-    # # Combine the vectors
-    bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
+  # Bootstrapping ===========================================================
+
+  # Only calculate all combinations of bootstrap resampling schemes if user
+  # asks for them.
+
+  if (!is.list(bootstrapOptions) &&
+      !is.null(bootstrapOptions) &&
+      (bootstrapOptions == "all and also invalid" ||
+       bootstrapOptions == "all")
   )
+  {
 
-  # For all possible bootstrap resampling schemes, perform the bootstrap
-  # regression test.
+    bootstrap_names <- c("indep", "NP",
+                         "res_bs", "fixed_design_bs_Hnull",
+                         "fixed_design_bs", "hybrid_null_bs")
 
-  for (bs_scheme in bootstrap_names) {
+    valid_bootstrap_names <- c("indep", "NP",
+                               "res_bs", "hybrid_null_bs")
+    # Progress bar
+    total_steps <- length(bootstrap_names) * nBootstrap
+    pb <- pbapply::startpb(min = 0, max = total_steps)
+    step <- 0
+
+
+    # For all possible bootstrap resampling schemes, perform the bootstrap
+    # regression test.
+
+    for (iBoot in 1:length(bootstrap_names)) {
+      type_boot = bootstrap_names[iBoot]
+
+      # initialisation of the bootstrap test statistics values
+      stat_st_cent = rep(NA,nBootstrap)
+      stat_st_eq = rep(NA,nBootstrap)
+
+      for (iBootstrap in 1:nBootstrap){
+
+        # Generate bootstrap data
+        bootstrap_data = generate_bootstrap_data(X, Y, a_hat,
+                                                 b_hat, epsilon_hat,
+                                                 resampling_type = type_boot)
+        X_st = bootstrap_data$X_st
+        Y_st = bootstrap_data$Y_st
+
+        # Fit linear regression model on bootstrap data
+        bootstrap_sample <- data.frame(X_st = X_st,Y_st = Y_st)
+        bootstrap_model <- stats::lm(Y_st~X_st, data = bootstrap_sample)
+
+        # Calculate bootstrap test statistics T_n_^*, centered and equivalent
+        b_hat_st = bootstrap_model$coefficients[[2]]
+        stopifnot(!is.na(b_hat_st))
+
+        if (bootstrapOptions == "all" && (type_boot %in% valid_bootstrap_names) ) {
+          if (type_boot %in% c("indep", "hybrid_null_bs") ) {
+
+            stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
+            stopifnot( !is.na(stat_st_eq[iBootstrap]) )
+
+          } else if ( type_boot %in% c("NP", "res_bs") ){
+
+            stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
+            stopifnot( !is.na(stat_st_cent[iBootstrap]) )
+
+          } else {
+            stop("Unknown type_boot in the `b`")
+          }
+        } else if (bootstrapOptions == "all and also invalid") {
+
+          stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
+          stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
+          stopifnot(!is.na(stat_st_cent[iBootstrap])  || !is.na(stat_st_eq[iBootstrap]) )
+
+        }
+
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
+
+      }
+      # End of bootstrap ======================================================
+
+      # After bootstrapping - add test statistics to the dataframe ============
+
+      if (bootstrapOptions == "all" && (type_boot %in% valid_bootstrap_names) ) {
+
+        # initialise the list to store the results only in first iteration
+        if (iBoot == 1){
+          list_results = list()
+        }
+
+        # # Create the p-values data frame
+        # pvals_df <- data.frame(
+        #   # To prevent factors from being created
+        #   stringsAsFactors = FALSE,
+        #   # Repeat each category option from bootstrap_names
+        #   type_boot = rep(valid_bootstrap_names , each = 2),
+        #   # Repeat each category option (cent, eq)
+        #   type_stat = rep(c("cent", "eq"), times = 6),
+        #   # Combine the vectors
+        #   pvalues   = rep(NA,12),
+        #   # # Combine the vectors
+        #   bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
+        # )
+
+        if (type_boot %in% c("indep", "hybrid_null_bs") )
+        {
+          # Calculate pval
+          p_val_eq = mean(as.numeric(true_stat < stat_st_eq))
+          #
+          # # add p-values to dataframe
+          # pvals_df$pvalues[pvals_df$type_boot == type_boot &
+          #                    pvals_df$type_stat=="eq"] = p_val_eq
+          #
+          # # add bootstrapped test statistics to dataframe
+          # pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+          #                               pvals_df$type_stat == "eq" ] <- list(stat_st_eq)
+
+          df_new <- data.frame(type_boot = type_boot,
+                               type_stat = "eq",
+                               pvalues = p_val_eq,
+                               bootstrapped_tests = I(list(stat_st_eq) ) )
+
+          # Append new dataframe to the list
+          list_results <- append(list_results, list(df_new))
+
+        }  else if ( type_boot %in% c("NP", "res_bs") ){
+
+          p_val_cent = mean(as.numeric(true_stat < stat_st_cent))
+          # # add p-values to dataframe
+          # pvals_df$pvalues[pvals_df$type_boot == type_boot &
+          #                    pvals_df$type_stat == "cent"] = p_val_cent
+          # # add bootstrapped test statistics to dataframe
+          # pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+          #                               pvals_df$type_stat == "cent" ] <- list(stat_st_cent)
+
+          df_new <- data.frame(type_boot = type_boot,
+                               type_stat = "cent",
+                               pvalues = p_val_cent,
+                               bootstrapped_tests = I(list(stat_st_cent) ) )
+
+          # Append new dataframe to the list
+          list_results <- append(list_results, list(df_new))
+
+        } else {
+          stop("Unknown type_boot. Please choose either 'indep' or 'NP'.")
+        }
+
+        # rowbind together the dataframes in `list_results`:
+        if( iBoot == length(bootstrap_names)){
+          # Rowbind the dataframes in `list_results` into a large dataframe
+          pvals_df = do.call(what = rbind, args = list_results)
+        }
+
+      } else if (bootstrapOptions == "all and also invalid") {
+
+        # Initiate `pvals_df` only on first iteration
+        if (iBoot == 1){
+          # Create the p-values data frame
+          pvals_df <- data.frame(
+            # To prevent factors from being created
+            stringsAsFactors = FALSE,
+            # Repeat each category option from bootstrap_names
+            type_boot = rep(bootstrap_names, each = 2),
+            # Repeat each category option (cent, eq)
+            type_stat = rep(c("cent", "eq"), times = 6),
+            # Combine the vectors
+            pvalues   = rep(NA,12),
+            # # Combine the vectors
+            bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
+          )
+        }
+
+        # Calculate pvalues, for the centered and equivalent test statistics
+        p_val_cent = mean(as.numeric(true_stat < stat_st_cent))
+        p_val_eq = mean(as.numeric(true_stat < stat_st_eq))
+
+        # add p-values to dataframe
+        pvals_df$pvalues[pvals_df$type_boot == type_boot &
+                           pvals_df$type_stat == "cent"] = p_val_cent
+
+        pvals_df$pvalues[pvals_df$type_boot == type_boot &
+                           pvals_df$type_stat=="eq"] = p_val_eq
+
+        # add bootstrapped test statistics to dataframe
+        pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+                                      pvals_df$type_stat == "cent" ] <- list(stat_st_cent)
+
+        pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+                                      pvals_df$type_stat == "eq" ] <- list(stat_st_eq)
+      }
+    }
+  } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
+             is.null(bootstrapOptions)){
+    # If the user specified a combination of bootstrap options or simply nothing,
+    # we only calculate the bootstrap test statistics for the user-specified
+    # bootstrap options. That is what happens in this case.
+
+    # Check the user-specified bootstrap options
+    type_boot = type_boot_user
+
+    # Create the p-values data frame
+    pvals_df <- data.frame(
+      # To prevent factors from being created
+      stringsAsFactors = FALSE,
+      # Repeat each category option from bootstrap_names
+      type_boot = type_boot,
+      # Repeat each category option (cent,eq)
+      type_stat = type_stat_user,
+      # Combine the vectors
+      pvalues   = NA,
+      # # Combine the vectors
+      bootstrapped_tests = I( list( rep(NA, nBootstrap) ) )
+    )
+
+    # Perform the bootstrap regression test ================================
 
     # initialisation of the bootstrap test statistics values
-    stat_st_cent = rep(NA,nBootstrap)
-    stat_st_eq = rep(NA,nBootstrap)
+    stat_st = rep(NA,nBootstrap)
+
+    # Progress bar
+    total_steps <- nBootstrap
+    pb <- pbapply::startpb(min = 0, max = total_steps)
+    step <- 0
 
     for (iBootstrap in 1:nBootstrap){
 
       # Generate bootstrap data
       bootstrap_data = generate_bootstrap_data(X, Y, a_hat,
                                                b_hat, epsilon_hat,
-                                               resampling_type = bs_scheme)
+                                               resampling_type = type_boot)
       X_st = bootstrap_data$X_st
       Y_st = bootstrap_data$Y_st
 
@@ -357,60 +557,53 @@ perform_regression_test <- function(X, Y,
       # Calculate bootstrap test statistics T_n_^*, centered and equivalent
       b_hat_st = bootstrap_model$coefficients[[2]]
       stopifnot(!is.na(b_hat_st))
-      stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
-      stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
-      stopifnot(!is.na(stat_st_cent[iBootstrap])  && !is.na(stat_st_eq[iBootstrap]) )
+
+      switch (type_stat_user,
+              "cent" = {
+                # centered test statistic
+                stat_st[iBootstrap] = abs(b_hat_st) * sqrt(n)
+                stopifnot( !is.na(stat_st[iBootstrap]) )
+              },
+              "eq" = {
+                # equivalent test statistic
+                stat_st[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
+                stopifnot( !is.na(stat_st[iBootstrap]) )
+              },
+              {
+                stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
+              }
+      )
+
+      # Update progress bar
+      step <- step + 1
+      pbapply::setpb(pb, step)
     }
 
-    # Calculate pvalues, for the centered and equivalent test statistics
-    p_val_cent = mean(as.numeric(true_stat < stat_st_cent))
-    p_val_eq = mean(as.numeric(true_stat < stat_st_eq))
+    # After bootstrapping - add test statistics to the dataframe ================
 
+    # Calculate pval
+    p_val = mean(as.numeric(true_stat < stat_st))
 
     # add p-values to dataframe
-    pvals_df$pvalues[pvals_df$type_boot == bs_scheme &
-                       pvals_df$type_stat == "cent"] = p_val_cent
+    pvals_df$pvalues[pvals_df$type_boot == type_boot &
+                       pvals_df$type_stat==type_stat_user] = p_val
 
-    pvals_df$pvalues[pvals_df$type_boot == bs_scheme &
-                       pvals_df$type_stat=="eq"] = p_val_eq
-
-    # add boostrapped test statistics to dataframe
-    pvals_df$bootstrapped_tests[pvals_df$type_boot == bs_scheme &
-                                  pvals_df$type_stat == "cent" ] <- list(stat_st_cent)
-
-    pvals_df$bootstrapped_tests[pvals_df$type_boot == bs_scheme &
-                                  pvals_df$type_stat == "eq" ] <- list(stat_st_eq)
-
+    # add bootstrapped test statistics to dataframe
+    pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+                                  pvals_df$type_stat == type_stat_user ] <- list(stat_st)
   }
 
-  ### post-processing ###
+  # post-processing ================================================
 
 
   # Add a column to indicate whether the combination of bootstrap and
   # test statistic is theoretically valid
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
-    (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
+    (pvals_df$type_boot == "hybrid_null_bs" & pvals_df$type_stat == "eq") |
+    (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent") |
+  (pvals_df$type_boot == "res_bs"    & pvals_df$type_stat == "cent")
 
-
-  # Select the right rows based on the user-specified bootstrap options
-  if ( !is.list(bootstrapOptions) &&
-       !is.null(bootstrapOptions) &&
-       bootstrapOptions == "all") {
-    # Return only rows where `theoretically_valid` is TRUE
-    pvals_df = pvals_df[pvals_df$theoretically_valid == TRUE, ]
-  } else if (!is.list(bootstrapOptions) &&
-             !is.null(bootstrapOptions) &&
-             bootstrapOptions == "all and also invalid"){
-    # Return all rows, including theoretically invalid combinations
-    pvals_df = pvals_df
-  } else if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0 ||
-             is.null(bootstrapOptions)){
-    # If the user specified a combination of bootstrap options or simply nothing
-    pvals_df = pvals_df[
-      pvals_df$type_boot == type_boot_user &
-        pvals_df$type_stat == type_stat_user, ]
-  }
 
   ### Create the result object ###
   result <- list(
@@ -426,7 +619,10 @@ perform_regression_test <- function(X, Y,
     data = list(X = X, Y = Y),
     # give bootstrap method a name
     nameMethod = "Bootstrap Regression Test"
-    )
+  )
+
+  # close progress bar
+  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_regression", "bootstrapTest")
