@@ -9,7 +9,8 @@ perform_GoF_test(
   parametric_fam = "normal",
   nBootstrap = 100,
   show_progress = TRUE,
-  bootstrapOptions = NULL
+  bootstrapOptions = NULL,
+  verbose = 2
 )
 }
 \arguments{
@@ -59,7 +60,11 @@ to 100.}
   invalid ones.
 }
 A warning is raised if the given combination of \code{type_boot},
-\code{type_stat}, and \code{param_bs} is theoretically invalid.}
+\code{type_stat}, and \code{type_estimator_bootstrap} is theoretically invalid.}
+
+\item{verbose}{If \code{verbose = 0}, this function is silent and does not
+print anything. Increasing values of \code{verbose} print more details about
+the progress of the computations.}
 }
 \value{
 A class object with components \itemize{
@@ -108,7 +113,7 @@ result <- perform_GoF_test(X_data,
                           nBootstrap = 100,
                           bootstrapOptions = list(type_boot = "null",
                                                   type_stat = "eq",
-                                                  param_bs = "MLE")
+                                                  type_estimator_bootstrap = "MLE")
                          )
 print(result)
 plot(result)

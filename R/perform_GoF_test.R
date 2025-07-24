@@ -162,6 +162,187 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 
 
 
+
+
+#' Transform a list of options into a dataframe of bootstrap schemes with 1 row
+#'
+#'
+#' @noRd
+make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
+
+  if (is.null(bootstrapOptions) || length(bootstrapOptions) == 0){
+
+    # Initialize default values for the bootstrap options
+    df_bootstraps = data.frame(type_boot = "null",
+                               type_stat = "eq",
+                               type_estimator_bootstrap = "MLE")
+
+  } else if (is.list(bootstrapOptions)){
+
+
+    df_bootstraps = make_df_bootstraps_GoF_fromList(bootstrapOptions,
+                                                    verbose = verbose)
+
+
+  } else if (is.character(bootstrapOptions)){
+
+    switch (
+      bootstrapOptions,
+      "all" = {
+
+        df_bootstraps = data.frame(
+          type_boot =
+            c("null", "null", "NP"  , "NP" ),
+          type_stat =
+            c("eq"  , "eq"  , "cent", "cent" ),
+          type_estimator_bootstrap =
+            c("MLE" , "MD"  , "MLE" , "MD-cent")
+        )
+      },
+
+      "all and also invalid" = {
+
+        df_bootstraps = expand.grid(
+          type_boot = c("null", "NP"),
+          type_stat = c("eq"  , "cent" ),
+          type_estimator_bootstrap = c("MLE" , "MD"  , "MD-cent")
+        )
+
+        warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
+                "This will return all theoretically valid and invalid combinations of ",
+                "bootstrap resampling schemes, and test statistics. ",
+                "Please use with caution.")
+
+      },
+      {
+        stop("Invalid choice for bootstrapOptions. ",
+             "Please choose either 'all' or 'all and also invalid'. Current input is",
+             bootstrapOptions )
+      }
+    )
+  }
+
+  return (df_bootstraps)
+}
+
+
+make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose){
+
+  if ("type_boot" %in% names(bootstrapOptions)){
+    type_boot = bootstrapOptions$type_boot
+
+    if (! (type_boot %in% c("null", "NP") ) ){
+      stop("Invalid type_boot: either 'null' or 'NP'. Current input is ",
+           type_boot)
+    }
+
+    if (verbose){
+      cat("'type_boot' chosen by the user as: ", type_boot, "\n", sep = "")
+    }
+
+  } else {
+    type_boot = "null"
+
+    if (verbose){
+      cat("'type_boot' chosen by default as: ", type_boot, "\n", sep = "")
+    }
+  }
+
+  if ("type_stat" %in% names(bootstrapOptions)){
+    type_stat = bootstrapOptions$type_stat
+
+    if( ! (type_stat %in% c("eq", "cent") ) ){
+      stop("Invalid type_stat: either 'eq' or 'cent'. Current input is",
+           type_stat)
+    }
+
+    if (verbose){
+      cat("'type_stat' chosen by the user as: ", type_boot, "\n", sep = "")
+    }
+
+  } else {
+
+    mapping = c(null = "eq", NP = "cent")
+    type_stat = mapping[type_boot]
+
+    if (verbose){
+      cat("'type_stat' chosen by default as: ", type_stat,
+          " corresponding to type_boot = ", type_boot, "\n", sep = "")
+    }
+  }
+
+  if ("type_estimator_bootstrap" %in% names(bootstrapOptions)){
+    type_estimator_bootstrap = bootstrapOptions$type_estimator_bootstrap
+
+    if ( ! (type_estimator_bootstrap %in% c("MD", "MD-cent", "MLE") ) ){
+      stop("Invalid type_estimator_bootstrap: either 'MD', 'MD-cent' or 'MLE'.
+            Current input is", type_estimator_bootstrap)
+    }
+
+    if (verbose){
+      cat("'type_estimator_bootstrap' chosen by the user as: ",
+          type_estimator_bootstrap, "\n", sep = "")
+    }
+
+  } else {
+    type_estimator_bootstrap = "MLE"
+
+    if (verbose){
+      cat("'type_estimator_bootstrap' chosen by default as: ",
+          type_estimator_bootstrap, "\n", sep = "")
+    }
+  }
+
+  if ( !all(names(bootstrapOptions) %in%
+            c( "type_boot", "type_stat", "type_estimator_bootstrap" ) ) ){
+    stop("Please provide correct argument names for `bootstrapOptions`.
+            Valid names are: 'type_boot', 'type_stat', and 'type_estimator_bootstrap'. ")
+  }
+
+
+
+  # Give warning for theoretically invalid bootstrap schemes
+
+  if (type_boot == "null" && type_stat == "cent"){
+    warning(warningInvalidCombination("null", "cent", type_stat_valid = "eq"))
+  }
+  if (type_boot == "NP" && type_stat == "eq"){
+    warning(warningInvalidCombination("NP", "eq", type_stat_valid = "cent"))
+  }
+  if (type_boot == "NP" &&
+      type_stat == "cent" &&
+      type_estimator_bootstrap == "MD"){
+    warning(
+      "The combination of type_boot = 'NP', type_stat = 'cent', ",
+      "and `type_estimator_bootstrap` = 'MD' is theoretically invalid: ",
+      "the obtained p-value will not be valid. For this situation, you should ",
+      "better use type_estimator_bootstrap = 'MD-cent'")
+  }
+
+
+  # Initialize the bootstrap data frame
+  df_bootstraps = data.frame(type_boot = type_boot,
+                             type_stat = type_stat,
+                             type_estimator_bootstrap = type_estimator_bootstrap)
+
+  return (df_bootstraps)
+}
+
+
+warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
+  myWarning = warningCondition(
+    message = paste0(
+      "The combination of type_boot = '", type_boot ,
+      "' and type_stat = '", type_stat,"' ",
+      "is theoretically invalid: the obtained p-value will not be valid. ",
+      "For this choice of 'type_boot', you should rather use 'type_stat' = ",
+      type_stat_valid, ", which is theoretically valid."
+    )
+  )
+}
+
+
+
 #' Perform a univariate GoF hypothesis test via bootstrap resampling
 #'
 #' This function performs a bootstrap goodness-of-fit hypothesis test for a
@@ -228,7 +409,13 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'   invalid ones.
 #' }
 #' A warning is raised if the given combination of \code{type_boot},
-#' \code{type_stat}, and \code{param_bs} is theoretically invalid.
+#' \code{type_stat}, and \code{type_estimator_bootstrap} is theoretically invalid.
+#'
+#'
+#' @param verbose If \code{verbose = 0}, this function is silent and does not
+#' print anything. Increasing values of \code{verbose} print more details about
+#' the progress of the computations.
+#'
 #'
 #' @return A class object with components \itemize{
 #'    \item \code{pvals_df} a dataframe of p-values and bootstrapped test statistics:
@@ -261,7 +448,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'                           nBootstrap = 100,
 #'                           bootstrapOptions = list(type_boot = "null",
 #'                                                   type_stat = "eq",
-#'                                                   param_bs = "MLE")
+#'                                                   type_estimator_bootstrap = "MLE")
 #'                          )
 #' print(result)
 #' plot(result)
@@ -278,35 +465,10 @@ perform_GoF_test <- function(X_data,
                              parametric_fam = "normal",
                              nBootstrap = 100,
                              show_progress = TRUE,
-                             bootstrapOptions = NULL)
+                             bootstrapOptions = NULL,
+                             verbose = 2)
 {
-
-  # Initialize default values for the bootstrap options
-  type_boot_user = "null"
-  type_stat_user = "eq"
-  param_bs_user = "MLE"
-
-  # Read in the `bootstrapOptions` and set the user-specified options
-  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
-    if ("type_boot" %in% names(bootstrapOptions)){
-      type_boot_user = bootstrapOptions$type_boot
-    }
-    if ("type_stat" %in% names(bootstrapOptions)){
-      type_stat_user = bootstrapOptions$type_stat
-    }
-    if ("param_bs" %in% names(bootstrapOptions)){
-      param_bs_user = bootstrapOptions$param_bs
-    }
-    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat", "param_bs" )) ){
-      stop("Please provide correct argument names for `bootstrapOptions`.
-            Valid names are: 'type_boot', 'type_stat', and 'param_bs'. ")
-    }
-  } else if (!is.list(bootstrapOptions) &&
-             !is.null(bootstrapOptions) &&
-             !is.character(bootstrapOptions)){
-    stop("Invalid bootstrap options. Please check your inputs.")
-  }
-
+  # 1. First input checks  =====================================================
 
   # Checking the validity of the inputs
   if (length(nBootstrap) > 1 || !is.finite(nBootstrap) || nBootstrap <= 0){
@@ -325,477 +487,219 @@ perform_GoF_test <- function(X_data,
     stop("parametric_fam can only be the normal family.")
   }
 
-  if (type_boot_user %in% c("null", "NP") == FALSE){
-    stop("Choose valid type_boot_user: either 'null' or 'NP'. Current input is ",
-         type_boot_user)
-  }
-
-  if(type_stat_user %in% c("eq", "cent") == FALSE){
-    stop("Choose valid type_stat: either 'eq' or 'cent'. Current input is",
-         type_stat_user)
-  }
-
-  if (param_bs_user %in% c("MD", "MD-cent", "MLE") == FALSE){
-    stop("Choose valid param_bs_user: either 'MD', 'MD-cent' or 'MLE'.
-         Current input is", param_bs_user)
-  }
-
-  if (!is.list(bootstrapOptions) &&
-      !is.null(bootstrapOptions) &&
-      bootstrapOptions == "all and also invalid"){
-    warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
-            "This will return all theoretically valid and invalid combinations of ",
-            "bootstrap resampling schemes, and test statistics. ",
-            "Please use with caution.")
-  }
-
-  if (is.character(bootstrapOptions) &&
-      bootstrapOptions != "all and also invalid"  &&
-      bootstrapOptions != "all"){
-    warning("Invalid choice for bootstrapOptions. ",
-            "Please choose either 'all' or 'all and also invalid'. Current input is",
-            bootstrapOptions )
-  }
 
 
-  # Give warning for theoretically invalid bootstrap schemes
-  if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
-    if (type_boot_user == "null" && type_stat_user == "cent"){
-      warning("The combination of type_boot = 'null' and type_stat = 'cent' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "NP" && type_stat_user == "eq"){
-      warning("The combination of type_boot = 'NP' and type_stat = 'eq' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "res_bs" && type_stat_user == "eq"){
-      warning("The combination of type_boot = 're_bs' and type_stat = 'eq' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "NP" &&
-        type_stat_user == "cent" &&
-        param_bs_user == "MD"){
-      warning("The combination of type_boot = 'NP', type_stat = 'cent', ",
-              "and `param_bs` = 'MD' is theoretically invalid.
-              The p-values will not be valid.")
-    }
-  }
+  # 2. Finding the bootstraps that needs to be done  ===========================
 
-  # Computation of the original statistics ===========================
+  df_bootstraps = make_df_bootstraps_GoF(bootstrapOptions, verbose = verbose)
+
+
+  # 3. Computation of the original statistics  =================================
+
+  # Define sample size
+  n <- length(X_data)
 
   # TODO: make better grid
   # Grid points
   grid_points <- seq(min(X_data), max(X_data), length.out = 100)
 
-  # Define sample size
-  n <- length(X_data)
+
+  # Calculate the empirical CDF values at the grid of X points
+  ecdf_values <- stats::ecdf(X_data)(grid_points)
 
 
   estimated_param = list()
+  parametrized_cdf_values = list()
+  max_diff = numeric(0)
 
   # TODO: for other GoF-tests, change initial estimation parameters
   # Estimate unknown distribution parameters to minimize the norm distance
   # Initial guesses for the parameters in case of MD
   estimated_param[["MLE"]] <- estimate_params(X_data, parametric_fam)
 
-  # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
-  # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
-  fit <- stats::optim(par = estimated_param[["MLE"]],
-                      infinity_norm_distance,
-                      observed_data = X_data,
-                      grid_points = grid_points,
-                      parametric_fam = parametric_fam)
-
-  # Extract the fitted parameters (for normal family the mean and variance)
-  estimated_param[["MD"]] <- fit$par
-
-  # Calculate the empirical CDF values at the grid of X points
-  ecdf_values <- stats::ecdf(X_data)(grid_points)
-
   # Calculate the parametrised CDF values at the grid of X points
-  parametrized_cdf_values <- param_distr(grid_points = grid_points,
-                                         parametric_fam = parametric_fam,
-                                         param = estimated_param[["MD"]] )$fitted_cdf_vals
+  parametrized_cdf_values[["MLE"]] <- param_distr(grid_points = grid_points,
+                                                  parametric_fam = parametric_fam,
+                                                  param = estimated_param[["MLE"]] )$fitted_cdf_vals
 
-  # Calculate the parametrised CDF values at the grid of X points
-  parametrized_cdf_values_MLE <- param_distr(grid_points = grid_points,
-                                             parametric_fam = parametric_fam,
-                                             param = estimated_param[["MLE"]] )$fitted_cdf_vals
+  max_diff[["MLE"]] <- max(abs(ecdf_values - parametrized_cdf_values[["MLE"]]))
 
-  # Calculate the infinity norm (sup norm): maximum absolute difference
-  max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
-  max_diff_MLE <- max(abs(ecdf_values - parametrized_cdf_values_MLE))
+  doComputationsWithMD = ("MD" %in% df_bootstraps$type_estimator_bootstrap) ||
+    ("MD_cent" %in% df_bootstraps$type_estimator_bootstrap)
+
+  if (doComputationsWithMD){
+    # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
+    # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
+    fit <- stats::optim(par = estimated_param[["MLE"]],
+                        infinity_norm_distance,
+                        observed_data = X_data,
+                        grid_points = grid_points,
+                        parametric_fam = parametric_fam)
+
+    # Extract the fitted parameters (for normal family the mean and variance)
+    estimated_param[["MD"]] <- fit$par
+
+    # Calculate the parametrised CDF values at the grid of X points
+    parametrized_cdf_values[["MD"]] <- param_distr(grid_points = grid_points,
+                                                   parametric_fam = parametric_fam,
+                                                   param = estimated_param[["MD"]] )$fitted_cdf_vals
+
+    # Calculate the infinity norm (sup norm): maximum absolute difference
+    max_diff[["MD"]] <- max(abs(ecdf_values - parametrized_cdf_values[["MD"]]))
+  }
 
 
   # Vector containing true test statistics, for the supremum norm
-  true_stat = c(# Kolmogorov-Smirnov test statistic, with sqrt(n)
-    "KS_with_MD" = max_diff*sqrt(n),
-    "KS_with_MLE" = max_diff_MLE*sqrt(n)
-  )
+  true_stat_KS = sqrt(n) * max_diff
 
 
-  # Bootstrapping ===========================================================
+  # 4. Bootstrapping  ==========================================================
 
-  # Only calculate all combinations of bootstrap resampling schemes if user
-  # asks for them.
+  vec_type_boot = unique(df_bootstraps$type_boot)
 
-  if (!is.list(bootstrapOptions) &&
-      !is.null(bootstrapOptions) &&
-      (bootstrapOptions == "all and also invalid")
-  )
-  {
+  if (show_progress) {
+    # Progress bar
+    total_steps <- length(vec_type_boot) * nBootstrap
+    pb <- pbapply::startpb(min = 0, max = total_steps)
+    step <- 0
 
-    # Initialisation
-    list_results = list()
-    vec_type_boot = c("null", "NP")
+    on.exit(pbapply::closepb(pb))
+  }
 
-    if (show_progress) {
-      # Progress bar
-      total_steps <- length(vec_type_boot) * nBootstrap
-      pb <- pbapply::startpb(min = 0, max = total_steps)
-      step <- 0
+  list_results = list()
+  i_results = 1
 
-      on.exit(pbapply::closepb(pb))
-    }
+  for (iBoot in 1:length(vec_type_boot)){
+
+    type_boot = vec_type_boot[iBoot]
+
+    # Extract "full" bootstrap method types corresponding to the current type_boot
+    df_bootstraps_fixed_type_boot = df_bootstraps[df_bootstraps$type_boot == type_boot, ]
+
+    mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
+                                     `MD-cent` = "MD")
+
+    df_bootstraps_fixed_type_boot$type_estimator = mapping_parametric_bootstrap[
+      df_bootstraps_fixed_type_boot$type_estimator_bootstrap]
+
+    vec_type_estimator = unique(df_bootstraps_fixed_type_boot$type_estimator)
+
+    for (i_type_estimator in 1:length(vec_type_estimator)) {
+      type_estimator = vec_type_estimator[i_type_estimator]
+
+      # Extract "full" bootstrap method types corresponding to the current type_boot
+      df_bootstraps_current_type = df_bootstraps_fixed_type_boot[
+        df_bootstraps_fixed_type_boot$type_estimator == type_estimator, ]
 
 
-    for (iBoot in 1:length(vec_type_boot)){
-      type_boot = vec_type_boot[iBoot]
-
-      #initialisation
-      stat_st_cent = rep(NA, nBootstrap)
-      stat_st_eq  = rep(NA, nBootstrap)
-      stat_st_cent_MD = rep(NA, nBootstrap)
-      stat_st_eq_MD  = rep(NA, nBootstrap)
-      stat_st_cent_MLE = rep(NA, nBootstrap)
-      stat_st_eq_MLE  = rep(NA, nBootstrap)
-
+      matrix_stat_st = matrix(nrow = nBootstrap,
+                              ncol = nrow(df_bootstraps_current_type) )
 
       for (iBootstrap in 1:nBootstrap){
-        # Generation of the bootstrapped data
+
+
+        # 4.1. Generating data  ==================================================
+
         X_st <- generateBootstrapSamples_GOF(X_data,
                                              type_boot = type_boot,
-                                             param = estimated_param[["MD"]])
-        X_st_MLE <- generateBootstrapSamples_GOF(X_data,
-                                                 type_boot = type_boot,
-                                                 param = estimated_param[["MLE"]])
+                                             param = estimated_param[[type_estimator]])
 
-        ## Estimate unknown distribution parameters to minimize the norm distance ##
-
-        # Initial guesses for the mean and sd parameters
-        initial_params_st <- estimate_params(X_st, parametric_fam)
-
-        # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
-        fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
-                               grid_points = grid_points,
-                               observed_data = X_st,
-                               parametric_fam = parametric_fam)
-
-        # Fitting the centered MD estimator for the NP bootstrap scheme
-        fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
-                                  grid_points = grid_points,
-                                  bs_data = X_st,
-                                  observed_data = X_data,
-                                  params = estimated_param[["MD"]],
-                                  parametric_fam = parametric_fam)
-
-        # Extract the fitted `bootstrap-based` parameters
-        estimated_param_st <- fit_st$par
-        estimated_param_st_MD <- fit_st_MD$par
-        estimated_param_st_MLE <- estimate_params(X_st_MLE,
-                                                  parametric_fam)
+        # 4.2. Estimating non-parametric CDF  ====================================
 
         # Calculate the empirical CDF values at the grid of X_st points, after
         # fitting it on the X_st data (bootstrap data)
         ecdf_values_st <- stats::ecdf(X_st)(grid_points)
-        ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
-
-        # Calculate the parametric CDF values at the grid of X_st points
-        parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
-                                                  parametric_fam = parametric_fam,
-                                                  param = estimated_param_st )$fitted_cdf_vals
-
-        parametrized_cdf_values_st_MD <- param_distr(grid_points,
-                                                     parametric_fam = parametric_fam,
-                                                     estimated_param_st_MD )$fitted_cdf_vals
-
-        parametrized_cdf_values_st_MLE <- param_distr(grid_points,
-                                                      parametric_fam = parametric_fam,
-                                                      param = estimated_param_st_MLE )$fitted_cdf_vals
-
-        # Calculate the infinity norm (sup norm): maximum absolute difference
-        max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
-                                    - ecdf_values +  parametrized_cdf_values ))
-
-        max_diff_cent_st_MD <- max(abs(ecdf_values_st
-                                       - parametrized_cdf_values_st_MD
-                                       - ecdf_values
-                                       +  parametrized_cdf_values ))
-
-        max_diff_eq_st <- infinity_norm_distance(grid_points,
-                                                 X_st,
-                                                 estimated_param_st,
-                                                 parametric_fam = parametric_fam)
-
-        max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
-                                                    X_st,
-                                                    estimated_param_st_MD,
-                                                    parametric_fam = parametric_fam)
-        max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
-                                                     X_st_MLE,
-                                                     estimated_param_st_MLE,
-                                                     parametric_fam = parametric_fam)
-
-        max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
-                                        - parametrized_cdf_values_st_MLE
-                                        - ecdf_values
-                                        + parametrized_cdf_values_MLE ))
-
-        # Calculating bootstrap test statistics
-        stat_st_cent[iBootstrap]            = max_diff_cent_st * sqrt(n)
-        stat_st_eq[iBootstrap]              = max_diff_eq_st * sqrt(n)
-        stat_st_cent_MD[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
-        stat_st_eq_MD[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
-        stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
-        stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
 
 
-        if(show_progress){
-          # Update progress bar
-          step <- step + 1
-          pbapply::setpb(pb, step)
+        # 4.3. Estimating parameters  ============================================
+
+        estimated_param_st = list()
+
+        # Extract the fitted `bootstrap-based` parameters
+        # also used as initial guesses for the mean and sd parameters in case of MD
+        estimated_param_st[["MLE"]] <- estimate_params(X_st, parametric_fam)
+
+
+        if ("MD" %in% df_bootstraps_current_type$type_estimator_bootstrap){
+          # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
+          fit_st <- stats::optim(estimated_param_st[["MLE"]], infinity_norm_distance,
+                                 grid_points = grid_points,
+                                 observed_data = X_st,
+                                 parametric_fam = parametric_fam)
+
+          # Extract the fitted `bootstrap-based` parameters
+          estimated_param_st[["MD"]] <- fit_st$par
         }
 
+        if ("MD-cent" %in% df_bootstraps_current_type$type_estimator_bootstrap){
+          # Fitting the centered MD estimator for the NP bootstrap scheme
+          fit_st <- stats::optim(par = estimated_param_st[["MLE"]],
+                                 infinity_norm_distance_MD,
+                                 grid_points = grid_points,
+                                 bs_data = X_st,
+                                 observed_data = X_data,
+                                 params = estimated_param[["MD"]],
+                                 parametric_fam = parametric_fam)
+
+          # Extract the fitted `bootstrap-based` parameters
+          estimated_param_st[["MD-cent"]] <- fit_st$par
+        }
+
+
+        # 4.4. Computing the test statistics  ====================================
+
+
+        for (iCombination in 1:nrow(df_bootstraps_current_type)){
+
+          type_stat =
+            df_bootstraps_current_type[iCombination, "type_stat"]
+
+          type_estimator_bootstrap =
+            df_bootstraps_current_type[iCombination, "type_estimator_bootstrap"]
+
+          switch(type_stat,
+                 "cent" = {
+
+                   # Calculate the parametric CDF values at the grid of X_st points
+                   parametrized_cdf_values_st <- param_distr(
+                     grid_points = grid_points,
+                     parametric_fam = parametric_fam,
+                     param = estimated_param_st[[type_estimator_bootstrap]] )$fitted_cdf_vals
+
+                   # Calculate the infinity norm (sup norm): maximum absolute difference
+                   max_diff_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
+                                          - ecdf_values +  parametrized_cdf_values[["MD"]] ))
+                 },
+                 "eq" = {
+                   max_diff_st <- infinity_norm_distance(grid_points,
+                                                         X_st,
+                                                         estimated_param_st[[type_estimator_bootstrap]],
+                                                         parametric_fam = parametric_fam)
+
+                 }
+          )
+          # Calculating bootstrap test statistics
+          matrix_stat_st[iBootstrap, iCombination] = max_diff_st * sqrt(n)
+        }
       }
 
-      # End of bootstrapping ===============================================
+      for (iCombination in 1:nrow(df_bootstraps_current_type)){
 
-      # Put dataframes in a list, alternating the entries
-      # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
-      # the Minimum Distance (MD) or the MLE estimator.
-      list_results[[1 + (iBoot - 1)*2]] =
-        data.frame(type_boot = type_boot,
-                   type_stat = "cent",
-                   param_bs = c("MD", "MD-cent", "MLE"),
-                   bootstrapped_tests = I(list(stat_st_cent,
-                                               stat_st_cent_MD,
-                                               stat_st_cent_MLE) )
-        )
-      list_results[[2 + (iBoot - 1)*2]] =
-        data.frame(type_boot = type_boot,
-                   type_stat = "eq",
-                   param_bs = c("MD", "MD-cent", "MLE"),
-                   bootstrapped_tests = I(list(stat_st_eq,
-                                               stat_st_eq_MD,
-                                               stat_st_eq_MLE) )
-        )
-    }
-  } else if(!is.list(bootstrapOptions) &&
-            !is.null(bootstrapOptions) &&
-            (bootstrapOptions == "all")
-  )
-  {
-    # give all theoretically valid options of bootstrap schemes
-    option_1 = list(type_boot = "null",
-                    type_stat = "eq",
-                    param_bs = "MD")
-    option_2 = list(type_boot = "NP",
-                    type_stat = "cent",
-                    param_bs = "MD-cent")
-    option_3 = list(type_boot = "null",
-                    type_stat = "eq",
-                    param_bs = "MLE")
-    option_4 = list(type_boot = "NP",
-                    type_stat = "cent",
-                    param_bs = "MLE")
+        type_stat =
+          df_bootstraps_current_type[iCombination, "type_stat"]
 
-    # Create a list of all options
-    all_valid_schemes_list = list(option_1, option_2, option_3, option_4)
+        type_estimator_bootstrap =
+          df_bootstraps_current_type[iCombination, "type_estimator_bootstrap"]
 
-    if (show_progress) {
-      # Progress bar
-      total_steps <- length(all_valid_schemes_list)
-      pb <- pbapply::startpb(min = 0, max = total_steps)
-      step <- 0
+        list_results[[i_results]] = data.frame(
+          type_boot = type_boot,
+          type_stat = type_stat,
+          type_estimator_bootstrap = type_estimator_bootstrap,
 
-      on.exit(pbapply::closepb(pb))
-    }
-
-    # Initialise empty list to store results
-    list_gof_pvals_df = list()
-
-    for (option_list in all_valid_schemes_list) {
-      gof_test_result <- perform_GoF_test(
-        X_data = X_data,
-        parametric_fam = parametric_fam,
-        nBootstrap = nBootstrap,
-        show_progress = FALSE,
-        bootstrapOptions = option_list
-      )
-
-      gof_pvals_df = gof_test_result$pvals_df
-
-      # Add the result to the list
-      list_gof_pvals_df = append(list_gof_pvals_df, list(gof_pvals_df) )
-
-      if(show_progress){
-        # Update progress bar
-        step <- step + 1
-        pbapply::setpb(pb, step)
+          list_stat_st = I(list(matrix_stat_st[, iCombination]) ) )
       }
     }
-
-    # Rowbind the dataframes in `list_gof_results` into a dataframe
-    pvals_df = do.call(what = rbind, args = list_gof_pvals_df)
-
-    # add pvals dataframe to return result and overwrite it
-    gof_test_result$pvals_df = pvals_df
-
-    return(gof_test_result)
-
-  } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
-             is.null(bootstrapOptions)){
-    # If the user specified a combination of bootstrap options or simply nothing,
-    # we only calculate the bootstrap test statistics for the user-specified
-    # bootstrap options. That is what happens in this case.
-
-    # Initialisation
-    list_results = list()
-    # Check the user-specified bootstrap options
-    type_boot = type_boot_user
-
-    #initialisation
-    stat_st = rep(NA, nBootstrap)
-
-    if (show_progress) {
-      # Progress bar
-      total_steps <- nBootstrap
-      pb <- pbapply::startpb(min = 0, max = total_steps)
-      step <- 0
-
-      on.exit(pbapply::closepb(pb))
-    }
-
-
-
-    for (iBootstrap in 1:nBootstrap){
-
-      # 1. Generating data  ====================================================
-
-      mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
-                                       `MD-cent` = "MD")
-
-      type_estimator_param_bootstrap = mapping_parametric_bootstrap[param_bs_user]
-
-      X_st <- generateBootstrapSamples_GOF(
-        X_data,
-        type_boot = type_boot,
-        param = estimated_param[[type_estimator_param_bootstrap]])
-
-      # 2. Estimating non-parametric CDF  ======================================
-
-      # Calculate the empirical CDF values at the grid of X_st points, after
-      # fitting it on the X_st data (bootstrap data)
-      ecdf_values_st <- stats::ecdf(X_st)(grid_points)
-
-
-      # 3. Estimating parameters  ==============================================
-
-      estimated_param_st = list()
-
-      # Extract the fitted `bootstrap-based` parameters
-      # also used as initial guesses for the mean and sd parameters in case of MD
-      estimated_param_st[["MLE"]] <- estimate_params(X_st, parametric_fam)
-
-
-      if (param_bs_user == "MD"){
-        # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
-        fit_st <- stats::optim(estimated_param_st[["MLE"]], infinity_norm_distance,
-                               grid_points = grid_points,
-                               observed_data = X_st,
-                               parametric_fam = parametric_fam)
-
-        # Extract the fitted `bootstrap-based` parameters
-        estimated_param_st[["MD"]] <- fit_st$par
-      }
-
-      if (param_bs_user == "MD-cent"){
-        # Fitting the centered MD estimator for the NP bootstrap scheme
-        fit_st <- stats::optim(par = estimated_param_st[["MLE"]],
-                               infinity_norm_distance_MD,
-                               grid_points = grid_points,
-                               bs_data = X_st,
-                               observed_data = X_data,
-                               params = estimated_param[["MD"]],
-                               parametric_fam = parametric_fam)
-
-        # Extract the fitted `bootstrap-based` parameters
-        estimated_param_st[["MD-cent"]] <- fit_st$par
-      }
-
-
-      switch(type_stat_user,
-             "cent" = {
-
-               # Calculate the parametric CDF values at the grid of X_st points
-               parametrized_cdf_values_st <- param_distr(
-                 grid_points = grid_points,
-                 parametric_fam = parametric_fam,
-                 param = estimated_param_st[[param_bs_user]] )$fitted_cdf_vals
-
-
-               # Calculate the infinity norm (sup norm): maximum absolute difference
-               max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
-                                           - ecdf_values +  parametrized_cdf_values ))
-
-               # Calculating bootstrap test statistics
-               stat_st[iBootstrap]            = max_diff_cent_st * sqrt(n)
-             },
-
-             "eq" = {
-
-               max_diff_eq_st <- infinity_norm_distance(grid_points,
-                                                        X_st,
-                                                        estimated_param_st[[param_bs_user]],
-                                                        parametric_fam = parametric_fam)
-
-
-               # Calculating bootstrap test statistics
-               stat_st[iBootstrap]              = max_diff_eq_st * sqrt(n)
-
-             },
-             { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
-      )
-
-
-      if(show_progress){
-        # Update progress bar
-        step <- step + 1
-        pbapply::setpb(pb, step)
-      }
-
-    }
-
-    # End of all bootstraps ===============================================
-
-    # Put dataframes in a list, alternating the entries
-    # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
-    # the Minimum Distance (MD) or the MLE estimator.
-
-    # Put dataframe in a list to make it coherent with the previous case of
-    # creating all bootstrap resmapling schemes.
-    # `param_bs` corresponds to the (MD) bootstrap parameter estimator, so either
-    # the Minimum Distance (MD) or the MLE estimator.
-
-    df_new <- data.frame(type_boot = type_boot,
-                         type_stat = type_stat_user,
-                         param_bs = param_bs_user,
-                         bootstrapped_tests = I(list(stat_st) ))
-
-    list_results <- append(list_results, list(df_new))
-
   }
-
 
   # Done with all bootstrapping =============================================
 
@@ -807,14 +711,15 @@ perform_GoF_test <- function(X_data,
   pvals_df$pvalues = lapply(
     X = 1:nrow(pvals_df),
     FUN = function(i){
-      # Choose the appropriate true_stat based on the value of param_bs
-      true_stat_to_use <- if (pvals_df$param_bs[i] == "MLE") {
-        true_stat["KS_with_MLE"]
-      } else {
-        true_stat["KS_with_MD"]
-      }
+
+      type_estimator = if(pvals_df$type_estimator_bootstrap[i] == "MLE"){
+        "MLE"
+      } else "MD"
+
+      true_stat_to_use = true_stat_KS[type_estimator]
+
       pval = mean(as.numeric(
-        true_stat_to_use < pvals_df$bootstrapped_tests[i][[1]]
+        true_stat_to_use < pvals_df$list_stat_st[i][[1]]
       ) )
       return(pval)
     }
@@ -825,16 +730,16 @@ perform_GoF_test <- function(X_data,
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "null" &
        pvals_df$type_stat == "eq" &
-       pvals_df$param_bs == "MD")  |
+       pvals_df$type_estimator_bootstrap == "MD")  |
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
-       pvals_df$param_bs == "MD-cent") |
+       pvals_df$type_estimator_bootstrap == "MD-cent") |
     (pvals_df$type_boot == "null" &
        pvals_df$type_stat == "eq" &
-       pvals_df$param_bs == "MLE")|
+       pvals_df$type_estimator_bootstrap == "MLE")|
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
-       pvals_df$param_bs == "MLE")
+       pvals_df$type_estimator_bootstrap == "MLE")
 
 
   ### Create the result object ###
@@ -842,7 +747,7 @@ perform_GoF_test <- function(X_data,
     # df of p-values
     pvals_df = pvals_df,
     # true test statistics
-    true_stats = true_stat,
+    true_stats = true_stat_KS,
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
     # give bootstrap method a name
@@ -853,3 +758,6 @@ perform_GoF_test <- function(X_data,
   class(result) <- c("bootstrapTest_GoF", "bootstrapTest")
   return(result)
 }
+
+
+

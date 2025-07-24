@@ -27,9 +27,9 @@ test_that("GoF test output is well formatted", {
 
 test_that("GoF test throws errors for wrong input", {
   X_data = rgamma(10,2,3)
-  expect_error(perform_GoF_test(X_data, param_bs_user = ""))
-  expect_error(perform_GoF_test(X_data, type_stat_user = ""))
-  expect_error(perform_GoF_test(X_data, type_boot_user = ""))
+  expect_error(perform_GoF_test(X_data, type_estimator_bootstrap = ""))
+  expect_error(perform_GoF_test(X_data, type_stat = ""))
+  expect_error(perform_GoF_test(X_data, type_boot = ""))
   expect_error(perform_GoF_test(X_data, parametric_fam = ""))
   expect_error(perform_GoF_test(X_data, nBootstrap = ""))
 })
@@ -65,7 +65,7 @@ test_that("Different types of bootstrap options work as expected", {
     X_data, nBootstrap = 10,
     bootstrapOptions = list(type_boot = "null",
                             type_stat = "eq",
-                            param_bs = "MLE") )
+                            type_estimator_bootstrap = "MLE") )
 
   expect_identical(result_1, result_2)
 
