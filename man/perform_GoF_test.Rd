@@ -8,6 +8,7 @@ perform_GoF_test(
   X_data,
   parametric_fam = "normal",
   nBootstrap = 100,
+  show_progress = TRUE,
   bootstrapOptions = NULL
 )
 }
@@ -20,6 +21,8 @@ sample comes from \code{"parametric_fam"}, a specified parametric distribution.}
 
 \item{nBootstrap}{numeric value of the number of bootstrap resamples. Defaults
 to 100.}
+
+\item{show_progress}{logical value indicating whether to show a progress bar}
 
 \item{bootstrapOptions}{This can be one of \itemize{
   \item \code{NULL}
