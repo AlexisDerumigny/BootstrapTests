@@ -191,6 +191,8 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #' @param nBootstrap numeric value of the number of bootstrap resamples. Defaults
 #' to 100.
 #'
+#' @param show_progress logical value indicating whether to show a progress bar
+#'
 #' @param bootstrapOptions This can be one of \itemize{
 #'   \item \code{NULL}
 #'
@@ -268,6 +270,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 perform_GoF_test <- function(X_data,
                              parametric_fam = "normal",
                              nBootstrap = 100,
+                             show_progress = TRUE,
                              bootstrapOptions = NULL)
 {
 
@@ -438,10 +441,15 @@ perform_GoF_test <- function(X_data,
     list_results = list()
     vec_type_boot = c("null", "NP")
 
-    # Progress bar
-    total_steps <- length(vec_type_boot) * nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+    if (show_progress) {
+      # Progress bar
+      total_steps <- length(vec_type_boot) * nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+
+      on.exit(pbapply::closepb(pb))
+    }
+
 
     for (iBoot in 1:length(vec_type_boot)){
       type_boot = vec_type_boot[iBoot]
@@ -543,9 +551,12 @@ perform_GoF_test <- function(X_data,
         stat_st_cent_MLE[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
         stat_st_eq_MLE[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
 
-        # Update progress bar
-        step <- step + 1
-        pbapply::setpb(pb, step)
+
+        if(show_progress){
+          # Update progress bar
+          step <- step + 1
+          pbapply::setpb(pb, step)
+        }
 
       }
 
@@ -576,7 +587,6 @@ perform_GoF_test <- function(X_data,
             (bootstrapOptions == "all")
   )
   {
-
     # give all theoretically valid options of bootstrap schemes
     option_1 = list(type_boot = "null",
                     type_stat = "eq",
@@ -590,17 +600,50 @@ perform_GoF_test <- function(X_data,
     option_4 = list(type_boot = "NP",
                     type_stat = "cent",
                     param_bs = "MLE")
-    all_options_list = list(option_1, option_2, option_3, option_4)
 
-    for (option_list in all_options_list) {
+    # Create a list of all options
+    all_valid_schemes_list = list(option_1, option_2, option_3, option_4)
+
+    if (show_progress) {
+      # Progress bar
+      total_steps <- length(all_valid_schemes_list)
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+
+      on.exit(pbapply::closepb(pb))
+    }
+
+    # Initialise empty list to store results
+    list_gof_pvals_df = list()
+
+    for (option_list in all_valid_schemes_list) {
       gof_test_result <- perform_GoF_test(
         X_data = X_data,
         parametric_fam = parametric_fam,
         nBootstrap = nBootstrap,
+        show_progress = FALSE,
         bootstrapOptions = option_list
       )
+
+      gof_pvals_df = gof_test_result$pvals_df
+
+      # Add the result to the list
+      list_gof_pvals_df = append(list_gof_pvals_df, list(gof_pvals_df) )
+
+      if(show_progress){
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
+      }
     }
 
+    # Rowbind the dataframes in `list_gof_results` into a dataframe
+    pvals_df = do.call(what = rbind, args = list_gof_pvals_df)
+
+    # add pvals dataframe to return result and overwrite it
+    gof_test_result$pvals_df = pvals_df
+
+    return(gof_test_result)
 
   } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
              is.null(bootstrapOptions)){
@@ -616,10 +659,14 @@ perform_GoF_test <- function(X_data,
     #initialisation
     stat_st = rep(NA, nBootstrap)
 
-    # Progress bar
-    total_steps <- nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+    if (show_progress) {
+      # Progress bar
+      total_steps <- nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+
+      on.exit(pbapply::closepb(pb))
+    }
 
     for (iBootstrap in 1:nBootstrap){
 
@@ -772,9 +819,12 @@ perform_GoF_test <- function(X_data,
         )
       }
 
-      # Update progress bar
-      step <- step + 1
-      pbapply::setpb(pb, step)
+      if(show_progress){
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
+      }
+
     }
 
     # End of all bootstraps ===============================================
@@ -849,9 +899,6 @@ perform_GoF_test <- function(X_data,
     # give bootstrap method a name
     nameMethod = "Bootstrap GoF Test"
   )
-
-  # close progress bar
-  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_GoF", "bootstrapTest")
