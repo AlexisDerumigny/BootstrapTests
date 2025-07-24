@@ -383,23 +383,24 @@ perform_GoF_test <- function(X_data,
   # Define sample size
   n <- length(X_data)
 
+
+  estimated_param = list()
+
   # TODO: for other GoF-tests, change initial estimation parameters
   # Estimate unknown distribution parameters to minimize the norm distance
-  # Initial guesses for the parameters
-  initial_params <- estimate_params(X_data)
+  # Initial guesses for the parameters in case of MD
+  estimated_param[["MLE"]] <- estimate_params(X_data, parametric_fam)
 
   # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
   # parametric cdf. This gives parameter estimates in the Minimum Distance setting.
-  fit <- stats::optim(initial_params, infinity_norm_distance,
+  fit <- stats::optim(par = estimated_param[["MLE"]],
+                      infinity_norm_distance,
                       observed_data = X_data,
                       grid_points = grid_points,
                       parametric_fam = parametric_fam)
 
   # Extract the fitted parameters (for normal family the mean and variance)
-  estimated_param_MD <- fit$par
-
-  # Use standard empirical mean and variance as estimates
-  estimated_param_MLE <- estimate_params(X_data, parametric_fam)
+  estimated_param[["MD"]] <- fit$par
 
   # Calculate the empirical CDF values at the grid of X points
   ecdf_values <- stats::ecdf(X_data)(grid_points)
@@ -407,12 +408,12 @@ perform_GoF_test <- function(X_data,
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values <- param_distr(grid_points = grid_points,
                                          parametric_fam = parametric_fam,
-                                         param = estimated_param_MD )$fitted_cdf_vals
+                                         param = estimated_param[["MD"]] )$fitted_cdf_vals
 
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values_MLE <- param_distr(grid_points = grid_points,
                                              parametric_fam = parametric_fam,
-                                             param = estimated_param_MLE )$fitted_cdf_vals
+                                             param = estimated_param[["MLE"]] )$fitted_cdf_vals
 
   # Calculate the infinity norm (sup norm): maximum absolute difference
   max_diff <- max(abs(ecdf_values - parametrized_cdf_values))
@@ -467,10 +468,10 @@ perform_GoF_test <- function(X_data,
         # Generation of the bootstrapped data
         X_st <- generateBootstrapSamples_GOF(X_data,
                                              type_boot = type_boot,
-                                             param = estimated_param_MD)
+                                             param = estimated_param[["MD"]])
         X_st_MLE <- generateBootstrapSamples_GOF(X_data,
                                                  type_boot = type_boot,
-                                                 param = estimated_param_MLE)
+                                                 param = estimated_param[["MLE"]])
 
         ## Estimate unknown distribution parameters to minimize the norm distance ##
 
@@ -488,7 +489,7 @@ perform_GoF_test <- function(X_data,
                                   grid_points = grid_points,
                                   bs_data = X_st,
                                   observed_data = X_data,
-                                  params = estimated_param_MD,
+                                  params = estimated_param[["MD"]],
                                   parametric_fam = parametric_fam)
 
         # Extract the fitted `bootstrap-based` parameters
@@ -674,7 +675,7 @@ perform_GoF_test <- function(X_data,
 
         X_st <- generateBootstrapSamples_GOF(X_data,
                                              type_boot = type_boot,
-                                             param = estimated_param_MD)
+                                             param = estimated_param[["MD"]])
 
         # Initial guesses for the mean and sd parameters
         initial_params_st <- estimate_params(X_st, parametric_fam)
@@ -688,7 +689,7 @@ perform_GoF_test <- function(X_data,
                                   grid_points = grid_points,
                                   bs_data = X_st,
                                   observed_data = X_data,
-                                  params = estimated_param_MD,
+                                  params = estimated_param[["MD"]],
                                   parametric_fam = parametric_fam)
 
 
@@ -777,7 +778,7 @@ perform_GoF_test <- function(X_data,
       } else if (param_bs_user == "MLE"){
         X_st_MLE <- generateBootstrapSamples_GOF(X_data,
                                                  type_boot = type_boot,
-                                                 param = estimated_param_MLE)
+                                                 param = estimated_param[["MLE"]])
 
         # Extract the fitted `bootstrap-based` parameters
         estimated_param_st_MLE <- estimate_params(X_st_MLE,
