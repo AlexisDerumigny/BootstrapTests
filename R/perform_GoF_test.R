@@ -396,7 +396,7 @@ perform_GoF_test <- function(X_data,
                       parametric_fam = parametric_fam)
 
   # Extract the fitted parameters (for normal family the mean and variance)
-  estimated_param <- fit$par
+  estimated_param_MD <- fit$par
 
   # Use standard empirical mean and variance as estimates
   estimated_param_MLE <- estimate_params(X_data, parametric_fam)
@@ -407,7 +407,7 @@ perform_GoF_test <- function(X_data,
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values <- param_distr(grid_points = grid_points,
                                          parametric_fam = parametric_fam,
-                                         param = estimated_param )$fitted_cdf_vals
+                                         param = estimated_param_MD )$fitted_cdf_vals
 
   # Calculate the parametrised CDF values at the grid of X points
   parametrized_cdf_values_MLE <- param_distr(grid_points = grid_points,
@@ -467,7 +467,7 @@ perform_GoF_test <- function(X_data,
         # Generation of the bootstrapped data
         X_st <- generateBootstrapSamples_GOF(X_data,
                                              type_boot = type_boot,
-                                             param = estimated_param)
+                                             param = estimated_param_MD)
         X_st_MLE <- generateBootstrapSamples_GOF(X_data,
                                                  type_boot = type_boot,
                                                  param = estimated_param_MLE)
@@ -488,7 +488,7 @@ perform_GoF_test <- function(X_data,
                                   grid_points = grid_points,
                                   bs_data = X_st,
                                   observed_data = X_data,
-                                  params = estimated_param,
+                                  params = estimated_param_MD,
                                   parametric_fam = parametric_fam)
 
         # Extract the fitted `bootstrap-based` parameters
@@ -674,7 +674,7 @@ perform_GoF_test <- function(X_data,
 
         X_st <- generateBootstrapSamples_GOF(X_data,
                                              type_boot = type_boot,
-                                             param = estimated_param)
+                                             param = estimated_param_MD)
 
         # Initial guesses for the mean and sd parameters
         initial_params_st <- estimate_params(X_st)
@@ -688,7 +688,7 @@ perform_GoF_test <- function(X_data,
                                   grid_points = grid_points,
                                   bs_data = X_st,
                                   observed_data = X_data,
-                                  params = estimated_param,
+                                  params = estimated_param_MD,
                                   parametric_fam = parametric_fam)
 
 
