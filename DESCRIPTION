@@ -13,7 +13,10 @@ Description: Perform bootstrap-based hypothesis testing procedures on
     testing, testing the slope in a linear regression setting, and
     goodness-of-fit testing.
 License: GPL-3
+URL: https://github.com/AlexisDerumigny/BootstrapTests
+BugReports: https://github.com/AlexisDerumigny/BootstrapTests/issues
 Imports: 
+    pbapply (>= 1.7.2),
     stats (>= 4.4.0)
 Suggests: 
     testthat (>= 3.0.0)
@@ -22,5 +25,3 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = FALSE)
 RoxygenNote: 7.3.2
-BugReports: https://github.com/AlexisDerumigny/BootstrapTests/issues
-URL: https://github.com/AlexisDerumigny/BootstrapTests
