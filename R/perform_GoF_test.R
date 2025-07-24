@@ -207,11 +207,18 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
 #'         equivalent test statistic, or \code{"cent"} for the centered
 #'         test statistic.
 #'
-#'         \item \code{param_bs} defaults to \code{"MLE"} for the bootstrap
-#'         parameter estimator to be used. \code{param_bs} can be either
-#'         \code{"MD"} for the Minimum Distance estimator, \code{"MD-cent"} for
-#'         the centered Minimum Distance estimator, or \code{"MLE"}
-#'         for the MLE estimator (empirical mean and variance).
+#'         \item \code{type_estimator_bootstrap}: the bootstrap parameter
+#'         estimator to be used. It can be one of:
+#'         \itemize{
+#'            \item \code{"MLE"} for the MLE estimator
+#'            (for the normal distribution, this corresponds to the usual
+#'            empirical mean and variance).
+#'            This is the default option.
+#'
+#'            \item \code{"MD"} for the Minimum Distance estimator.
+#'
+#'            \item \code{"MD-cent"} for the centered Minimum Distance estimator.
+#'         }
 #'   }
 #'   \item \code{"all"} this gives test results for all theoretically valid
 #'   combinations of bootstrap resampling schemes.
