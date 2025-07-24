@@ -61,7 +61,7 @@ statistic and Kolmogorov-Smirnov test statistic.
 Via the `bootstrapOptions` argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 
-```{r example independence}
+```{r example_independence}
 library(BootstrapTests)
 n <- 100
 
@@ -106,7 +106,7 @@ in this function is the null bootstrap, together with the equivalent test
 statistic. Via the `bootstrapOptions` argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 
-```{r example linear regression}
+```{r example_linear_regression}
 library(BootstrapTests)
 
 n <- 100
@@ -152,7 +152,7 @@ and the MLE parameter estimator. Via the `bootstrapOptions`
 argument, the user can specify other bootstrap resampling schemes,
 test statistics, and parameter estimators.
 
-```{r example GOF}
+```{r example_GOF}
 library(BootstrapTests)
 
 n <- 100

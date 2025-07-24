@@ -74,7 +74,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example independence-1.png" width="100%" />
+<img src="man/figures/README-example_independence-1.png" width="100%" />
 
 ``` r
 
@@ -91,12 +91,12 @@ print(result)
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Type of norm used        : KS
-#>   p-value                  : 0.25
-#>   True test statistic      : 0.0620
+#>   p-value                  : 0.17
+#>   True test statistic      : 0.0640
 plot(result)
 ```
 
-<img src="man/figures/README-example independence-2.png" width="100%" />
+<img src="man/figures/README-example_independence-2.png" width="100%" />
 
 ``` r
 
@@ -110,19 +110,19 @@ print(result_valid)
 #> All test results:
 #> 
 #>  type_boot type_stat norm_type bootstrapped_tests pvalues theoretically_valid
-#>      indep        eq        L2       5.614498....    0.14                TRUE
-#>      indep        eq        KS       0.0456, ....    0.17                TRUE
-#>         NP      cent        L2       5.501166....    0.13                TRUE
-#>         NP      cent        KS       0.047, 0....    0.21                TRUE
+#>      indep        eq        L2       6.896435....    0.09                TRUE
+#>      indep        eq        KS       0.0498, ....    0.16                TRUE
+#>         NP      cent        L2       4.616682....    0.15                TRUE
+#>         NP      cent        KS       0.0371, ....    0.15                TRUE
 #>  quantile_95 quantile_99
-#>    23.389507   25.734951
-#>     0.073005    0.086023
-#>    21.958640   25.743274
-#>     0.072925    0.080827
+#>    19.383776   28.521103
+#>     0.077435    0.102921
+#>    15.241156   18.208424
+#>     0.069505    0.076838
 #> 
 #> True test statistics:
-#>      L2      KS 
-#> 16.9997  0.0620
+#>       L2       KS 
+#> 12.54544  0.06400
 ```
 
 ### Slope testing in linear regression setting
@@ -161,13 +161,13 @@ print(result)
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Slope coefficient β      : 0.7940995 
-#>   p-value                  : 0
-#>   True test statistic      : 7.9410
+#>   Slope coefficient β      : 1.063313 
+#>   p-value                  : 0.52
+#>   True test statistic      : 10.6331
 plot(result)
 ```
 
-<img src="man/figures/README-example linear regression-1.png" width="100%" /><img src="man/figures/README-example linear regression-2.png" width="100%" />
+<img src="man/figures/README-example_linear_regression-1.png" width="100%" /><img src="man/figures/README-example_linear_regression-2.png" width="100%" />
 
 ``` r
 
@@ -183,13 +183,13 @@ print(result)
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
-#>   Slope coefficient β      : 0.000209957 
-#>   p-value                  : 1
-#>   True test statistic      : 0.0021
+#>   Slope coefficient β      : 0.1073819 
+#>   p-value                  : 0.47
+#>   True test statistic      : 1.0738
 plot(result)
 ```
 
-<img src="man/figures/README-example linear regression-3.png" width="100%" /><img src="man/figures/README-example linear regression-4.png" width="100%" />
+<img src="man/figures/README-example_linear_regression-3.png" width="100%" /><img src="man/figures/README-example_linear_regression-4.png" width="100%" />
 
 ``` r
 
@@ -201,15 +201,19 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat pvalues bootstrapped_tests theoretically_valid quantile_95
-#>      indep        eq    1.00       1.491490....                TRUE    1.750612
-#>         NP      cent    0.98       0.500202....                TRUE    1.929458
-#>  quantile_99
-#>     2.553541
-#>     2.293660
+#>       type_boot type_stat pvalues bootstrapped_tests theoretically_valid
+#>           indep        eq    0.17       1.609890....                TRUE
+#>              NP      cent    0.21       1.077185....                TRUE
+#>          res_bs      cent    0.21       1.021042....                TRUE
+#>  hybrid_null_bs        eq    0.27       1.213092....                TRUE
+#>  quantile_95 quantile_99
+#>     1.483089    1.849676
+#>     1.677740    1.924484
+#>     1.755715    2.304829
+#>     1.691101    2.324841
 #> 
 #> True test statistics:
-#> [1] 0.00209957
+#> [1] 1.073819
 ```
 
 ### Goodness-of-fit testing
@@ -253,12 +257,12 @@ print(result)
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : MLE 
-#>   p-value                  : 0.04
-#>   True test statistic      : 0.9334
+#>   p-value                  : 0
+#>   True test statistic      : 1.5039
 plot(result)
 ```
 
-<img src="man/figures/README-example GOF-1.png" width="100%" />
+<img src="man/figures/README-example_GOF-1.png" width="100%" />
 
 ``` r
 
@@ -274,12 +278,12 @@ print(result)
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : MLE 
-#>   p-value                  : 0.04
-#>   True test statistic      : 0.8963
+#>   p-value                  : 0.23
+#>   True test statistic      : 0.6367
 plot(result)
 ```
 
-<img src="man/figures/README-example GOF-2.png" width="100%" />
+<img src="man/figures/README-example_GOF-2.png" width="100%" />
 
 ``` r
 
@@ -292,19 +296,19 @@ print(result_valid)
 #> All test results:
 #> 
 #>  type_boot type_stat param_bs bootstrapped_tests pvalues theoretically_valid
-#>       null        eq       MD       0.394892....    0.09                TRUE
-#>       null        eq      MLE       0.286271....    0.02                TRUE
-#>         NP      cent  MD-cent       0.319439....    0.09                TRUE
-#>         NP      cent      MLE       0.417932....    0.03                TRUE
+#>       null        eq       MD       0.354892....    0.44                TRUE
+#>         NP      cent  MD-cent       0.361876....    0.34                TRUE
+#>       null        eq      MLE       0.496769....    0.30                TRUE
+#>         NP      cent      MLE       0.918384....    0.29                TRUE
 #>  quantile_95 quantile_99
-#>    0.6243186   0.6394306
-#>    0.8198315   0.9002679
-#>    0.5687391   0.6975290
-#>    0.8120607   0.9138376
+#>    0.5975104   0.6376012
+#>    0.5634340   0.6155492
+#>    0.8343981   1.0837531
+#>    0.8515063   1.0263165
 #> 
 #> True test statistics:
 #>  KS_with_MD KS_with_MLE 
-#>   0.5509896   0.8963067
+#>   0.4175353   0.6366559
 ```
 
 ## References
