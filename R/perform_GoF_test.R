@@ -669,23 +669,33 @@ perform_GoF_test <- function(X_data,
       on.exit(pbapply::closepb(pb))
     }
 
+
+
     for (iBootstrap in 1:nBootstrap){
+
+      mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
+                                       `MD-cent` = "MD")
+
+      type_estimator_param_bootstrap = mapping_parametric_bootstrap[param_bs_user]
+
+      X_st <- generateBootstrapSamples_GOF(
+        X_data,
+        type_boot = type_boot,
+        param = estimated_param[[type_estimator_param_bootstrap]])
+
+      # Calculate the empirical CDF values at the grid of X_st points, after
+      # fitting it on the X_st data (bootstrap data)
+      ecdf_values_st <- stats::ecdf(X_st)(grid_points)
+
+      # Extract the fitted `bootstrap-based` parameters
+      # also used as initial guesses for the mean and sd parameters in case of MD
+      estimated_param_st_MLE <- estimate_params(X_st, parametric_fam)
+
 
       if (param_bs_user %in% c("MD-cent", "MD") ){
 
-        X_st <- generateBootstrapSamples_GOF(X_data,
-                                             type_boot = type_boot,
-                                             param = estimated_param[["MD"]])
-
-        # Initial guesses for the mean and sd parameters
-        initial_params_st <- estimate_params(X_st, parametric_fam)
-
-        # Calculate the empirical CDF values at the grid of X_st points, after
-        # fitting it on the X_st data (bootstrap data)
-        ecdf_values_st <- stats::ecdf(X_st)(grid_points)
-
         # Fitting the centered MD estimator for the NP bootstrap scheme
-        fit_st_MD <- stats::optim(initial_params_st, infinity_norm_distance_MD,
+        fit_st_MD <- stats::optim(estimated_param_st_MLE, infinity_norm_distance_MD,
                                   grid_points = grid_points,
                                   bs_data = X_st,
                                   observed_data = X_data,
@@ -700,7 +710,7 @@ perform_GoF_test <- function(X_data,
                 "MD" = {
 
                   # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
-                  fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
+                  fit_st <- stats::optim(estimated_param_st_MLE, infinity_norm_distance,
                                          grid_points = grid_points,
                                          observed_data = X_st,
                                          parametric_fam = parametric_fam)
@@ -776,20 +786,9 @@ perform_GoF_test <- function(X_data,
                 { stop("error in `param_bs_user`. Please use `MD` or `MD-cent`.") }
         )
       } else if (param_bs_user == "MLE"){
-        X_st_MLE <- generateBootstrapSamples_GOF(X_data,
-                                                 type_boot = type_boot,
-                                                 param = estimated_param[["MLE"]])
-
-        # Extract the fitted `bootstrap-based` parameters
-        estimated_param_st_MLE <- estimate_params(X_st_MLE,
-                                                  parametric_fam)
 
         switch (type_stat_user,
                 "cent" = {
-
-                  # Calculate the empirical CDF values at the grid of X_st points, after
-                  # fitting it on the X_st data (bootstrap data)
-                  ecdf_values_st_MLE <- stats::ecdf(X_st_MLE)(grid_points)
 
                   # Calculate the parametric CDF values at the grid of X_st points
                   parametrized_cdf_values_st_MLE <- param_distr(
@@ -806,10 +805,11 @@ perform_GoF_test <- function(X_data,
                   # Calculating bootstrap test statistics
                   stat_st[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
                 },
+
                 "eq" = {
                   # Calculate the infinity norm (sup norm): maximum absolute difference
                   max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
-                                                               X_st_MLE,
+                                                               X_st,
                                                                estimated_param_st_MLE,
                                                                parametric_fam = parametric_fam)
 
