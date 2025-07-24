@@ -177,6 +177,9 @@ perform_independence_test <- function(
     }
     if ("type_stat" %in% names(bootstrapOptions)){
       type_stat_user = bootstrapOptions$type_stat
+    } else {
+      mapping = c(indep = "eq", NP = "cent")
+      type_stat_user = mapping[type_boot_user]
     }
     if ("norm_type" %in% names(bootstrapOptions)){
       norm_type_user = bootstrapOptions$norm_type
