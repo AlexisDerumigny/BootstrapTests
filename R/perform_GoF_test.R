@@ -9,7 +9,7 @@
 #'
 #' @noRd
 #'
-estimate_params <- function(data, parametric_fam = "normal"){
+estimate_params <- function(data, parametric_fam){
 
   switch (parametric_fam,
           "normal" = {
@@ -475,7 +475,7 @@ perform_GoF_test <- function(X_data,
         ## Estimate unknown distribution parameters to minimize the norm distance ##
 
         # Initial guesses for the mean and sd parameters
-        initial_params_st <- estimate_params(X_st)
+        initial_params_st <- estimate_params(X_st, parametric_fam)
 
         # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
         fit_st <- stats::optim(initial_params_st, infinity_norm_distance,
@@ -677,7 +677,7 @@ perform_GoF_test <- function(X_data,
                                              param = estimated_param_MD)
 
         # Initial guesses for the mean and sd parameters
-        initial_params_st <- estimate_params(X_st)
+        initial_params_st <- estimate_params(X_st, parametric_fam)
 
         # Calculate the empirical CDF values at the grid of X_st points, after
         # fitting it on the X_st data (bootstrap data)
