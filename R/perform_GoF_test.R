@@ -673,6 +673,8 @@ perform_GoF_test <- function(X_data,
 
     for (iBootstrap in 1:nBootstrap){
 
+      # 1. Generating data  ====================================================
+
       mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
                                        `MD-cent` = "MD")
 
@@ -683,142 +685,81 @@ perform_GoF_test <- function(X_data,
         type_boot = type_boot,
         param = estimated_param[[type_estimator_param_bootstrap]])
 
+      # 2. Estimating non-parametric CDF  ======================================
+
       # Calculate the empirical CDF values at the grid of X_st points, after
       # fitting it on the X_st data (bootstrap data)
       ecdf_values_st <- stats::ecdf(X_st)(grid_points)
 
+
+      # 3. Estimating parameters  ==============================================
+
+      estimated_param_st = list()
+
       # Extract the fitted `bootstrap-based` parameters
       # also used as initial guesses for the mean and sd parameters in case of MD
-      estimated_param_st_MLE <- estimate_params(X_st, parametric_fam)
+      estimated_param_st[["MLE"]] <- estimate_params(X_st, parametric_fam)
 
 
-      if (param_bs_user %in% c("MD-cent", "MD") ){
-
-        # Fitting the centered MD estimator for the NP bootstrap scheme
-        fit_st_MD <- stats::optim(estimated_param_st_MLE, infinity_norm_distance_MD,
-                                  grid_points = grid_points,
-                                  bs_data = X_st,
-                                  observed_data = X_data,
-                                  params = estimated_param[["MD"]],
-                                  parametric_fam = parametric_fam)
-
+      if (param_bs_user == "MD"){
+        # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
+        fit_st <- stats::optim(estimated_param_st[["MLE"]], infinity_norm_distance,
+                               grid_points = grid_points,
+                               observed_data = X_st,
+                               parametric_fam = parametric_fam)
 
         # Extract the fitted `bootstrap-based` parameters
-        estimated_param_st_MD <- fit_st_MD$par
-
-        switch (param_bs_user,
-                "MD" = {
-
-                  # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
-                  fit_st <- stats::optim(estimated_param_st_MLE, infinity_norm_distance,
-                                         grid_points = grid_points,
-                                         observed_data = X_st,
-                                         parametric_fam = parametric_fam)
-
-                  # Extract the fitted `bootstrap-based` parameters
-                  estimated_param_st <- fit_st$par
-
-
-                  switch(type_stat_user,
-                         "cent" = {
-
-                           # Calculate the parametric CDF values at the grid of X_st points
-                           parametrized_cdf_values_st <- param_distr(grid_points = grid_points,
-                                                                     parametric_fam = parametric_fam,
-                                                                     param = estimated_param_st )$fitted_cdf_vals
-
-                           # Calculate the infinity norm (sup norm): maximum absolute difference
-                           max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
-                                                       - ecdf_values +  parametrized_cdf_values ))
-
-                           # Calculating bootstrap test statistics
-                           stat_st[iBootstrap]            = max_diff_cent_st * sqrt(n)
-                         },
-                         "eq" = {
-
-                           max_diff_eq_st <- infinity_norm_distance(grid_points,
-                                                                    X_st,
-                                                                    estimated_param_st,
-                                                                    parametric_fam = parametric_fam)
-
-
-                           # Calculating bootstrap test statistics
-                           stat_st[iBootstrap]              = max_diff_eq_st * sqrt(n)
-
-                         },
-                         { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
-                  )
-
-
-                },
-                "MD-cent" ={
-                  switch(type_stat_user,
-                         "cent" = {
-                           # Calculate the parametric CDF values at the grid of X_st points
-                           parametrized_cdf_values_st_MD <- param_distr(grid_points,
-                                                                        parametric_fam = parametric_fam,
-                                                                        estimated_param_st_MD )$fitted_cdf_vals
-
-                           # Calculate the infinity norm (sup norm): maximum absolute difference
-                           max_diff_cent_st_MD <- max(abs(ecdf_values_st
-                                                          - parametrized_cdf_values_st_MD
-                                                          - ecdf_values
-                                                          +  parametrized_cdf_values ))
-                           # Calculating bootstrap test statistics
-                           stat_st[iBootstrap]         = max_diff_cent_st_MD * sqrt(n)
-                         },
-                         "eq" = {
-                           # Extract the fitted `bootstrap-based` parameters
-                           estimated_param_st_MD <- fit_st_MD$par
-
-                           max_diff_eq_st_MD <- infinity_norm_distance(grid_points,
-                                                                       X_st,
-                                                                       estimated_param_st_MD,
-                                                                       parametric_fam = parametric_fam)
-
-                           # Calculating bootstrap test statistics
-                           stat_st[iBootstrap]           = max_diff_eq_st_MD * sqrt(n)
-                         },
-                         { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
-                  )
-
-                },
-                { stop("error in `param_bs_user`. Please use `MD` or `MD-cent`.") }
-        )
-      } else if (param_bs_user == "MLE"){
-
-        switch (type_stat_user,
-                "cent" = {
-
-                  # Calculate the parametric CDF values at the grid of X_st points
-                  parametrized_cdf_values_st_MLE <- param_distr(
-                    grid_points,
-                    parametric_fam = parametric_fam,
-                    param = estimated_param_st_MLE
-                  )$fitted_cdf_vals
-
-                  max_diff_cent_st_MLE <- max(abs(ecdf_values_st_MLE
-                                                  - parametrized_cdf_values_st_MLE
-                                                  - ecdf_values
-                                                  + parametrized_cdf_values_MLE ))
-
-                  # Calculating bootstrap test statistics
-                  stat_st[iBootstrap]  = max_diff_cent_st_MLE * sqrt(n)
-                },
-
-                "eq" = {
-                  # Calculate the infinity norm (sup norm): maximum absolute difference
-                  max_diff_eq_st_MLE <- infinity_norm_distance(grid_points,
-                                                               X_st,
-                                                               estimated_param_st_MLE,
-                                                               parametric_fam = parametric_fam)
-
-                  # Calculating bootstrap test statistics
-                  stat_st[iBootstrap]    = max_diff_eq_st_MLE * sqrt(n)
-                },
-                {stop(" error ")}
-        )
+        estimated_param_st[["MD"]] <- fit_st$par
       }
+
+      if (param_bs_user == "MD-cent"){
+        # Fitting the centered MD estimator for the NP bootstrap scheme
+        fit_st <- stats::optim(par = estimated_param_st[["MLE"]],
+                               infinity_norm_distance_MD,
+                               grid_points = grid_points,
+                               bs_data = X_st,
+                               observed_data = X_data,
+                               params = estimated_param[["MD"]],
+                               parametric_fam = parametric_fam)
+
+        # Extract the fitted `bootstrap-based` parameters
+        estimated_param_st[["MD-cent"]] <- fit_st$par
+      }
+
+
+      switch(type_stat_user,
+             "cent" = {
+
+               # Calculate the parametric CDF values at the grid of X_st points
+               parametrized_cdf_values_st <- param_distr(
+                 grid_points = grid_points,
+                 parametric_fam = parametric_fam,
+                 param = estimated_param_st[[param_bs_user]] )$fitted_cdf_vals
+
+
+               # Calculate the infinity norm (sup norm): maximum absolute difference
+               max_diff_cent_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
+                                           - ecdf_values +  parametrized_cdf_values ))
+
+               # Calculating bootstrap test statistics
+               stat_st[iBootstrap]            = max_diff_cent_st * sqrt(n)
+             },
+
+             "eq" = {
+
+               max_diff_eq_st <- infinity_norm_distance(grid_points,
+                                                        X_st,
+                                                        estimated_param_st[[param_bs_user]],
+                                                        parametric_fam = parametric_fam)
+
+
+               # Calculating bootstrap test statistics
+               stat_st[iBootstrap]              = max_diff_eq_st * sqrt(n)
+
+             },
+             { stop( "error in `type_stat_user`. Please use `eq` or `cent`." ) }
+      )
+
 
       if(show_progress){
         # Update progress bar
