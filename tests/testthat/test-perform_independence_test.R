@@ -49,6 +49,7 @@ test_that("Different types of bootstrap options work as expected", {
   n = 100
 
   # Under H1
+  set.seed(10)
   X1 = rnorm(n)
   X2 = X1 + rnorm(n)
   set.seed(10)

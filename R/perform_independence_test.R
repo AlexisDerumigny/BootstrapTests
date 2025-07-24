@@ -515,6 +515,8 @@ perform_independence_test <- function(
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent")
 
+  # No rownames for the moment (maybe later if needed?)
+  row.names(pvals_df) <- NULL
 
   result = ( list(
     # df of p-values
