@@ -46,7 +46,14 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
     true_stat <- x$true_stats[[df$norm_type]]
   } else if("bootstrapTest_GoF" %in% class(x)){
 
-    true_stat <- x$true_stats[[df$type_estimator_bootstrap]]
+    # make distinction between MLE and MD based bootstrap methods
+    mapping_parametric_bootstrap = c(MLE = "MLE", `MD-eq` = "MD",
+                                     `MD-cent` = "MD")
+
+    # add column `type_estimator` with MLE or MD based estimator
+    type_estimator = mapping_parametric_bootstrap[df$type_estimator_bootstrap]
+
+    true_stat <- x$true_stats[[type_estimator]]
 
   } else {
     true_stat <- x$true_stats

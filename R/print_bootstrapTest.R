@@ -26,7 +26,7 @@ print.bootstrapTest <- function(x, ...){
         'MLE' = {
           x$true_stats["MLE"]
         },
-        'MD' = {
+        'MD-eq' = {
           x$true_stats["MD"]
         },
         'MD-cent' = {
