@@ -2,8 +2,13 @@
 #' @rdname plot.bootstrapTest
 #' @export
 print.bootstrapTest <- function(x, ...){
-  # print a nice layout
-  welcome_message_name <- paste0("         🎯" , x$nameMethod, " Results 🎯\n")
+  # print a nice layout=========================================================
+
+  # dart emoji storing as 8 digits hex unicode: this dart_emoji_string = "\\U0001f3af"
+  # dart_emoji_string <- sprintf("\\U%08x", utf8ToInt("🎯"))
+  dart_emoji_string <- "\\U0001f3af"
+  dart_emoji <- eval(parse(text = paste0('"', dart_emoji_string, '"')))
+  welcome_message_name <- paste0("         ", dart_emoji, x$nameMethod, " Results", dart_emoji, "\n")
   equal_signs <- paste(rep("=", nchar(welcome_message_name) + 6), collapse = "")
   cat(welcome_message_name, equal_signs, "\n\n")
 
@@ -44,7 +49,11 @@ print.bootstrapTest <- function(x, ...){
     if ("bootstrapTest_independence" %in% class(x)){
       cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
     } else if ("bootstrapTest_regression" %in% class(x)){
-      cat("  Slope coefficient β      :", x$beta, "\n")
+      # store β as 4 digits hex unicode: this beta_string = "\\u03b2"
+      # beta_string <- sprintf("\\u%04x", utf8ToInt("β"))
+      beta_string <- "\\u03b2"
+      beta_symbol <- eval(parse(text = paste0('"', beta_string, '"')))
+      cat("  Slope coefficient",beta_symbol,"     :", x$beta, "\n")
     } else if ("bootstrapTest_GoF" %in% class(x)){
       cat("  Bootstrap estimator used :", row$type_estimator_bootstrap, "\n")
     }
