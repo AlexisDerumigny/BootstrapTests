@@ -258,7 +258,7 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
     }
 
     if (verbose){
-      cat("'type_stat' chosen by the user as: ", type_boot, "\n", sep = "")
+      cat("'type_stat' chosen by the user as: ", type_stat, "\n", sep = "")
     }
 
   } else {
@@ -556,6 +556,10 @@ perform_GoF_test <- function(X_data,
   doComputationsWithMD =
     ("MD-eq" %in% df_bootstraps$type_estimator_bootstrap) ||
     ("MD-cent" %in% df_bootstraps$type_estimator_bootstrap)
+
+  if(verbose == 2){
+    cat(" value of 'doComputationsWithMD' is  ", doComputationsWithMD, "\n")
+  }
 
   if (doComputationsWithMD){
     # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
