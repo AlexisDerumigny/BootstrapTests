@@ -19,13 +19,13 @@ print.bootstrapTest <- function(x, ...){
       true_stat <- switch(
         row$type_estimator_bootstrap,
         'MLE' = {
-          x$true_stats["KS_with_MLE"]
+          x$true_stats["MLE"]
         },
         'MD' = {
-          x$true_stats["KS_with_MD"]
+          x$true_stats["MD"]
         },
         'MD-cent' = {
-          x$true_stats["KS_with_MD"]
+          x$true_stats["MD"]
         },
         stop("Unknown 'type_estimator_bootstrap': ", row$type_estimator_bootstrap)
       )
