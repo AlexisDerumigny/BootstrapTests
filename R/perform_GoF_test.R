@@ -697,6 +697,8 @@ perform_GoF_test <- function(X_data,
           type_estimator_bootstrap = type_estimator_bootstrap,
 
           list_stat_st = I(list(matrix_stat_st[, iCombination]) ) )
+
+        i_results = i_results + 1
       }
     }
   }

@@ -92,14 +92,20 @@ test_that("Different types of bootstrap options work as expected", {
   })
 
   set.seed(10)
-  result_6 = perform_GoF_test(X_data, nBootstrap = 10,
+  result_6 = perform_GoF_test(X_data, nBootstrap = 3,
                                        bootstrapOptions = "all")
+
+  expect_identical(nrow(result_6$pvals_df), 4L)
 
   set.seed(10)
   expect_warning({
     result_7 = perform_GoF_test(X_data, nBootstrap = 10,
                                          bootstrapOptions = "all and also invalid")
   })
+
+  total_number_bootstrap_combinations = 2L * 2L * 3L
+  expect_identical(nrow(result_7$pvals_df), total_number_bootstrap_combinations)
+
 
   # expect that the results are not identical, as the `result_7' also gives
   # invalid bootstrap schemes
