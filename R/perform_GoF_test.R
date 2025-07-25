@@ -553,8 +553,9 @@ perform_GoF_test <- function(X_data,
 
   max_diff[["MLE"]] <- max(abs(ecdf_values - parametrized_cdf_values[["MLE"]]))
 
-  doComputationsWithMD = ("MD-eq" %in% df_bootstraps$type_estimator_bootstrap) ||
-    ("MD_cent" %in% df_bootstraps$type_estimator_bootstrap)
+  doComputationsWithMD =
+    ("MD-eq" %in% df_bootstraps$type_estimator_bootstrap) ||
+    ("MD-cent" %in% df_bootstraps$type_estimator_bootstrap)
 
   if (doComputationsWithMD){
     # Use the 'stats::optim' function to minimize the infinity norm between ecdf and
