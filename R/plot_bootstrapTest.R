@@ -45,7 +45,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   if ("bootstrapTest_independence" %in% class(x)){
     true_stat <- x$true_stats[[df$norm_type]]
   } else if("bootstrapTest_GoF" %in% class(x)){
-    if (df$param_bs == "MLE") {
+    if (df$type_estimator_bootstrap == "MLE") {
       # for the MLE parameter estimates, we need different true test stat
       true_stat <- x$true_stats[[2]]
     } else {

@@ -246,7 +246,7 @@ result <- perform_GoF_test(X_data,
                          nBootstrap = 100,
                          bootstrapOptions = list(type_boot = "null",
                                                  type_stat = "eq",
-                                                 param_bs = "MLE")
+                                                 type_estimator_bootstrap = "MLE")
                         )
 print(result)
 #>          🎯Bootstrap GoF Test Results 🎯
@@ -295,7 +295,7 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat param_bs bootstrapped_tests pvalues theoretically_valid
+#>  type_boot type_stat type_estimator_bootstrap bootstrapped_tests pvalues theoretically_valid
 #>       null        eq       MD       0.354892....    0.44                TRUE
 #>         NP      cent  MD-cent       0.361876....    0.34                TRUE
 #>       null        eq      MLE       0.496769....    0.30                TRUE

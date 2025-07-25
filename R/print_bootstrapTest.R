@@ -17,7 +17,7 @@ print.bootstrapTest <- function(x, ...){
     } else if("bootstrapTest_GoF" %in% class(x)){
 
       true_stat <- switch(
-        row$param_bs,
+        row$type_estimator_bootstrap,
         'MLE' = {
           x$true_stats["KS_with_MLE"]
         },
@@ -27,7 +27,7 @@ print.bootstrapTest <- function(x, ...){
         'MD-cent' = {
           x$true_stats["KS_with_MD"]
         },
-        stop("Unknown 'param_bs': ", row$param_bs)
+        stop("Unknown 'type_estimator_bootstrap': ", row$type_estimator_bootstrap)
       )
     } else {
       true_stat <- x$true_stats
@@ -46,7 +46,7 @@ print.bootstrapTest <- function(x, ...){
     } else if ("bootstrapTest_regression" %in% class(x)){
       cat("  Slope coefficient β      :", x$beta, "\n")
     } else if ("bootstrapTest_GoF" %in% class(x)){
-      cat("  Bootstrap estimator used :", row$param_bs, "\n")
+      cat("  Bootstrap estimator used :", row$type_estimator_bootstrap, "\n")
     }
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
