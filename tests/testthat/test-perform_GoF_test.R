@@ -65,10 +65,11 @@ test_that("Different types of bootstrap options work as expected", {
 
   set.seed(10)
   result_1 = perform_GoF_test(X_data, nBootstrap = 10, verbose = 0)
+
   set.seed(10)
   result_2 = perform_GoF_test(
     X_data, nBootstrap = 10,
-    bootstrapOptions = list(type_boot = "null",
+    bootstrapOptions = list(type_boot = "param",
                             type_stat = "eq",
                             type_estimator_bootstrap = "MLE"),
     verbose = 0 )
@@ -78,7 +79,7 @@ test_that("Different types of bootstrap options work as expected", {
   set.seed(10)
   result_3 = perform_GoF_test(
     X_data, nBootstrap = 10,
-    bootstrapOptions = list(type_boot = "null"),
+    bootstrapOptions = list(type_boot = "param"),
     verbose = 0 )
 
   # use the same seed to have equal result
@@ -97,7 +98,7 @@ test_that("Different types of bootstrap options work as expected", {
   expect_warning({
     result_5 = perform_GoF_test(
       X_data, nBootstrap = 10,
-      bootstrapOptions = list(type_boot = "null",
+      bootstrapOptions = list(type_boot = "param",
                               type_stat = "cent"),
       verbose = 0 )
   })

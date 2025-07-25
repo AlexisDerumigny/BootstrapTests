@@ -26,30 +26,49 @@ to 100.}
 \item{show_progress}{logical value indicating whether to show a progress bar}
 
 \item{bootstrapOptions}{This can be one of \itemize{
-  \item \code{NULL}
+  \item \code{NULL}. This uses the default options \code{type_boot = "param"},
+  \code{type_stat = "eq"} and \code{type_estimator_bootstrap = "MLE"}.
 
-  \item a list with at most 3 elements names \itemize{
-        \item \code{type_boot} defaults to the \code{"null"} bootstrap
-        resampling scheme to be used. \code{type_boot} can be either
-        \code{"null"} for the null/parametric bootstrap, or \code{"NP"} for the
-        non-parametric bootstrap.
+  \item a list with at most 3 elements named: \itemize{
+        \item \code{type_boot} type of bootstrap resampling scheme. It must be
+        one of
+        \itemize{
+          \item \code{"param"} for the parametric bootstrap (i.e. under the null).
+          This is the default.
+          \item \code{"NP"} for the non-parametric bootstrap
+          (i.e. n out of n bootstrap).
+        }
 
-        \item \code{type_stat} defaults to \code{"eq"} for the type of test
-        statistic to be used. This can be either \code{"eq"} for the
-        equivalent test statistic, or \code{"cent"} for the centered
-        test statistic.
+        \item \code{type_stat} type of test statistic to be used.  It must be
+        one of
+        \itemize{
+          \item \code{"eq"} for the equivalent test statistic
+          \eqn{T_n^* = \sqrt{n} || \hat{F}^* - F_{\hat\theta^*} ||}
+
+          \item \code{"cent"} for the centered test statistic
+          \eqn{T_n^* = \sqrt{n} || \hat{F}^* - \hat{F} + F_{\hat\theta} - F_{\hat\theta^*} ||}
+        }
+        For each \code{type_boot} there is only one valid choice of \code{type_stat}
+        to be made. If \code{type_stat} is not specified, the valid choice is
+        automatically used.
 
         \item \code{type_estimator_bootstrap}: the bootstrap parameter
-        estimator to be used. It can be one of:
+        estimator to be used. It must be one of:
         \itemize{
            \item \code{"MLE"} for the MLE estimator
            (for the normal distribution, this corresponds to the usual
            empirical mean and variance).
-           This is the default option.
+
+           This is always a valid choice in the case that the combination
+           \code{(type_boot, type_stat)} is valid (as defined above).
+           Therefore, this is the default option. It is also the fastest type
+           of estimator.
 
            \item \code{"MD"} for the Minimum Distance estimator.
+           This is a valid choice if and only if \code{type_stat = "eq"}.
 
            \item \code{"MD-cent"} for the centered Minimum Distance estimator.
+           This is a valid choice if and only if \code{type_stat = "cent"}.
         }
   }
   \item \code{"all"} this gives test results for all theoretically valid
@@ -92,7 +111,7 @@ This function performs a bootstrap goodness-of-fit hypothesis test for a
 specific univariate parametric family. The null hypothesis corresponds to the
 sample coming from the specified parametric family, while the alternative
 hypothesis corresponds to the sample not coming from the specified
-parametric family. This function implements a null bootstrap and
+parametric family. This function implements a param bootstrap and
 a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 statistic. To estimate the parameters of the parametric family, either a minimum
 distance estimator, or a MLE estimator (the sample mean and variance)
@@ -100,7 +119,7 @@ is used. On the bootstrap sample, we have also implemented a centered MD estimat
 as in the paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method implemented
-in this function is the null bootstrap, together with the equivalent test statistic
+in this function is the param bootstrap, together with the equivalent test statistic
 and the MLE parameter estimator. Via the \code{bootstrapOptions}
 argument, the user can specify other bootstrap resampling schemes,
 test statistics, and parameter estimators.
@@ -111,7 +130,7 @@ n <- 100
 X_data <- rgamma(n,2,3)
 result <- perform_GoF_test(X_data,
                           nBootstrap = 100,
-                          bootstrapOptions = list(type_boot = "null",
+                          bootstrapOptions = list(type_boot = "param",
                                                   type_stat = "eq",
                                                   type_estimator_bootstrap = "MLE")
                          )

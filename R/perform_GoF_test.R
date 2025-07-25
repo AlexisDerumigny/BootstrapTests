@@ -122,7 +122,7 @@ infinity_norm_distance_MD <- function(grid_points, bs_data,
 
 #' This function generates bootstrap samples for the GoF testing, by
 #' inputting the data and the type_boot (the type of bootstrap to be performed).
-#' Furthermore, in case of parametric "null" bootstrap, parameters need to be
+#' Furthermore, in case of "param" bootstrap, parameters need to be
 #' inputted as well.
 #'
 #' @noRd
@@ -131,10 +131,10 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
                                          parametric_fam = "normal"){
 
   # Input checks
-  if( type_boot == "null" & anyNA(param) ){
-    stop("For the null bootstrap you need estimated params")
+  if( type_boot == "param" & anyNA(param) ){
+    stop("For the param bootstrap you need estimated params")
   }
-  stopifnot(type_boot == "null" | type_boot == "NP" )
+  stopifnot(type_boot == "param" | type_boot == "NP" )
   stopifnot(is.vector(X_data) && is.numeric(X_data) )
 
   # Extract sample size form X_data
@@ -143,7 +143,7 @@ generateBootstrapSamples_GOF <- function(X_data, type_boot, param = NA,
   switch (
     type_boot,
 
-    "null" = {
+    "param" = {
       estim_distr <- param_distr(grid_points = X_data, parametric_fam = parametric_fam, param)
       X_st = estim_distr$generated_vals
     },
@@ -173,7 +173,7 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
   if (is.null(bootstrapOptions) || length(bootstrapOptions) == 0){
 
     # Initialize default values for the bootstrap options
-    df_bootstraps = data.frame(type_boot = "null",
+    df_bootstraps = data.frame(type_boot = "param",
                                type_stat = "eq",
                                type_estimator_bootstrap = "MLE")
 
@@ -192,7 +192,7 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
 
         df_bootstraps = data.frame(
           type_boot =
-            c("null", "null", "NP"  , "NP" ),
+            c("param", "param", "NP"  , "NP" ),
           type_stat =
             c("eq"  , "eq"  , "cent", "cent" ),
           type_estimator_bootstrap =
@@ -203,7 +203,7 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
       "all and also invalid" = {
 
         df_bootstraps = expand.grid(
-          type_boot = c("null", "NP"),
+          type_boot = c("param", "NP"),
           type_stat = c("eq"  , "cent" ),
           type_estimator_bootstrap = c("MLE" , "MD"  , "MD-cent"),
           stringsAsFactors = FALSE
@@ -232,8 +232,8 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
   if ("type_boot" %in% names(bootstrapOptions)){
     type_boot = bootstrapOptions$type_boot
 
-    if (! (type_boot %in% c("null", "NP") ) ){
-      stop("Invalid type_boot: either 'null' or 'NP'. Current input is ",
+    if (! (type_boot %in% c("param", "NP") ) ){
+      stop("Invalid type_boot: either 'param' or 'NP'. Current input is ",
            type_boot)
     }
 
@@ -242,7 +242,7 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
     }
 
   } else {
-    type_boot = "null"
+    type_boot = "param"
 
     if (verbose){
       cat("'type_boot' chosen by default as: ", type_boot, "\n", sep = "")
@@ -263,7 +263,7 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
 
   } else {
 
-    mapping = c(null = "eq", NP = "cent")
+    mapping = c(param = "eq", NP = "cent")
     type_stat = mapping[type_boot]
 
     if (verbose){
@@ -304,8 +304,8 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
 
   # Give warning for theoretically invalid bootstrap schemes
 
-  if (type_boot == "null" && type_stat == "cent"){
-    warning(warningInvalidCombination("null", "cent", type_stat_valid = "eq"))
+  if (type_boot == "param" && type_stat == "cent"){
+    warning(warningInvalidCombination("param", "cent", type_stat_valid = "eq"))
   }
   if (type_boot == "NP" && type_stat == "eq"){
     warning(warningInvalidCombination("NP", "eq", type_stat_valid = "cent"))
@@ -350,7 +350,7 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' specific univariate parametric family. The null hypothesis corresponds to the
 #' sample coming from the specified parametric family, while the alternative
 #' hypothesis corresponds to the sample not coming from the specified
-#' parametric family. This function implements a null bootstrap and
+#' parametric family. This function implements a param bootstrap and
 #' a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 #' statistic. To estimate the parameters of the parametric family, either a minimum
 #' distance estimator, or a MLE estimator (the sample mean and variance)
@@ -358,7 +358,7 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' as in the paper. For now, only a test of normality is implemented. This function
 #' gives the corresponding p-values, the true test statistic and the
 #' bootstrap-version test statistics. The default (and valid) method implemented
-#' in this function is the null bootstrap, together with the equivalent test statistic
+#' in this function is the param bootstrap, together with the equivalent test statistic
 #' and the MLE parameter estimator. Via the \code{bootstrapOptions}
 #' argument, the user can specify other bootstrap resampling schemes,
 #' test statistics, and parameter estimators.
@@ -376,30 +376,49 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' @param show_progress logical value indicating whether to show a progress bar
 #'
 #' @param bootstrapOptions This can be one of \itemize{
-#'   \item \code{NULL}
+#'   \item \code{NULL}. This uses the default options \code{type_boot = "param"},
+#'   \code{type_stat = "eq"} and \code{type_estimator_bootstrap = "MLE"}.
 #'
-#'   \item a list with at most 3 elements names \itemize{
-#'         \item \code{type_boot} defaults to the \code{"null"} bootstrap
-#'         resampling scheme to be used. \code{type_boot} can be either
-#'         \code{"null"} for the null/parametric bootstrap, or \code{"NP"} for the
-#'         non-parametric bootstrap.
+#'   \item a list with at most 3 elements named: \itemize{
+#'         \item \code{type_boot} type of bootstrap resampling scheme. It must be
+#'         one of
+#'         \itemize{
+#'           \item \code{"param"} for the parametric bootstrap (i.e. under the null).
+#'           This is the default.
+#'           \item \code{"NP"} for the non-parametric bootstrap
+#'           (i.e. n out of n bootstrap).
+#'         }
 #'
-#'         \item \code{type_stat} defaults to \code{"eq"} for the type of test
-#'         statistic to be used. This can be either \code{"eq"} for the
-#'         equivalent test statistic, or \code{"cent"} for the centered
-#'         test statistic.
+#'         \item \code{type_stat} type of test statistic to be used.  It must be
+#'         one of
+#'         \itemize{
+#'           \item \code{"eq"} for the equivalent test statistic
+#'           \eqn{T_n^* = \sqrt{n} || \hat{F}^* - F_{\hat\theta^*} ||}
+#'
+#'           \item \code{"cent"} for the centered test statistic
+#'           \eqn{T_n^* = \sqrt{n} || \hat{F}^* - \hat{F} + F_{\hat\theta} - F_{\hat\theta^*} ||}
+#'         }
+#'         For each \code{type_boot} there is only one valid choice of \code{type_stat}
+#'         to be made. If \code{type_stat} is not specified, the valid choice is
+#'         automatically used.
 #'
 #'         \item \code{type_estimator_bootstrap}: the bootstrap parameter
-#'         estimator to be used. It can be one of:
+#'         estimator to be used. It must be one of:
 #'         \itemize{
 #'            \item \code{"MLE"} for the MLE estimator
 #'            (for the normal distribution, this corresponds to the usual
 #'            empirical mean and variance).
-#'            This is the default option.
+#'
+#'            This is always a valid choice in the case that the combination
+#'            \code{(type_boot, type_stat)} is valid (as defined above).
+#'            Therefore, this is the default option. It is also the fastest type
+#'            of estimator.
 #'
 #'            \item \code{"MD"} for the Minimum Distance estimator.
+#'            This is a valid choice if and only if \code{type_stat = "eq"}.
 #'
 #'            \item \code{"MD-cent"} for the centered Minimum Distance estimator.
+#'            This is a valid choice if and only if \code{type_stat = "cent"}.
 #'         }
 #'   }
 #'   \item \code{"all"} this gives test results for all theoretically valid
@@ -447,7 +466,7 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' X_data <- rgamma(n,2,3)
 #' result <- perform_GoF_test(X_data,
 #'                           nBootstrap = 100,
-#'                           bootstrapOptions = list(type_boot = "null",
+#'                           bootstrapOptions = list(type_boot = "param",
 #'                                                   type_stat = "eq",
 #'                                                   type_estimator_bootstrap = "MLE")
 #'                          )
@@ -769,13 +788,13 @@ perform_GoF_test <- function(X_data,
   # The NP and centred test statistic also needs
   # a centred MD bootstrap parameter estimator.
   pvals_df$theoretically_valid =
-    (pvals_df$type_boot == "null" &
+    (pvals_df$type_boot == "param" &
        pvals_df$type_stat == "eq" &
        pvals_df$type_estimator_bootstrap == "MD")  |
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
        pvals_df$type_estimator_bootstrap == "MD-cent") |
-    (pvals_df$type_boot == "null" &
+    (pvals_df$type_boot == "param" &
        pvals_df$type_stat == "eq" &
        pvals_df$type_estimator_bootstrap == "MLE")|
     (pvals_df$type_boot == "NP" &

@@ -160,7 +160,7 @@ n <- 100
 X_data <- rgamma(n,2,3)
 result <- perform_GoF_test(X_data,
                          nBootstrap = 100,
-                         bootstrapOptions = list(type_boot = "null",
+                         bootstrapOptions = list(type_boot = "param",
                                                  type_stat = "eq",
                                                  param_bs = "MLE")
                         )
