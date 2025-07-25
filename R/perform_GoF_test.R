@@ -205,7 +205,8 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
         df_bootstraps = expand.grid(
           type_boot = c("null", "NP"),
           type_stat = c("eq"  , "cent" ),
-          type_estimator_bootstrap = c("MLE" , "MD"  , "MD-cent")
+          type_estimator_bootstrap = c("MLE" , "MD"  , "MD-cent"),
+          stringsAsFactors = FALSE
         )
 
         warning("Using 'all and also invalid' as bootstrapOptions is not recommended. ",
