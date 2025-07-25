@@ -558,11 +558,11 @@ perform_GoF_test <- function(X_data,
 
   vec_type_boot = unique(df_bootstraps$type_boot)
 
-  if (show_progress) {
+  if (show_progress && verbose == 0) {
     # Progress bar
-    total_steps <- length(vec_type_boot) * nBootstrap
+    total_steps <- nrow(df_bootstraps) * nBootstrap
     pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+    step <- 1
 
     on.exit(pbapply::closepb(pb))
   }
@@ -577,6 +577,10 @@ perform_GoF_test <- function(X_data,
     # Extract "full" bootstrap method types corresponding to the current type_boot
     df_bootstraps_fixed_type_boot = df_bootstraps[df_bootstraps$type_boot == type_boot, ]
 
+    if (verbose){
+      cat("type_boot:", type_boot, "\n")
+    }
+
     mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
                                      `MD-cent` = "MD")
 
@@ -588,6 +592,10 @@ perform_GoF_test <- function(X_data,
     for (i_type_estimator in 1:length(vec_type_estimator)) {
       type_estimator = vec_type_estimator[i_type_estimator]
 
+      if (verbose){
+        cat("type_estimator:", type_estimator, "\n")
+      }
+
       # Extract "full" bootstrap method types corresponding to the current type_boot
       df_bootstraps_current_type = df_bootstraps_fixed_type_boot[
         df_bootstraps_fixed_type_boot$type_estimator == type_estimator, ]
@@ -596,8 +604,16 @@ perform_GoF_test <- function(X_data,
       matrix_stat_st = matrix(nrow = nBootstrap,
                               ncol = nrow(df_bootstraps_current_type) )
 
+      if (show_progress && verbose > 0) {
+        pb <- pbapply::startpb(min = 0, max = nBootstrap)
+        step <- 1
+      }
+
       for (iBootstrap in 1:nBootstrap){
 
+        if (verbose > 1){
+          cat("Bootstrap replication:", iBootstrap, "\n")
+        }
 
         # 4.1. Generating data  ==================================================
 
@@ -658,6 +674,12 @@ perform_GoF_test <- function(X_data,
           type_estimator_bootstrap =
             df_bootstraps_current_type[iCombination, "type_estimator_bootstrap"]
 
+          if (verbose > 1){
+            cat("iCombination: ", iCombination,
+                ", type_stat = '", type_stat,
+                "', type_estimator_bootstrap = '", type_estimator_bootstrap, "'. ", sep = "")
+          }
+
           switch(type_stat,
                  "cent" = {
 
@@ -679,9 +701,25 @@ perform_GoF_test <- function(X_data,
 
                  }
           )
+
           # Calculating bootstrap test statistics
           matrix_stat_st[iBootstrap, iCombination] = max_diff_st * sqrt(n)
+
+          if (verbose > 1){
+            cat("T^* =", matrix_stat_st[iBootstrap, iCombination], "\n")
+          }
+
+          if (show_progress) {
+            pbapply::setpb(pb = pb, value = step)
+            step = step + 1
+          }
         }
+      }
+
+
+
+      if (show_progress && verbose > 0) {
+        pbapply::closepb(pb)
       }
 
       for (iCombination in 1:nrow(df_bootstraps_current_type)){
