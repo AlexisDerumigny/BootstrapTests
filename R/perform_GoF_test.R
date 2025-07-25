@@ -196,7 +196,7 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
           type_stat =
             c("eq"  , "eq"  , "cent", "cent" ),
           type_estimator_bootstrap =
-            c("MLE" , "MD"  , "MLE" , "MD-cent")
+            c("MLE" , "MD-eq"  , "MLE" , "MD-cent")
         )
       },
 
@@ -205,7 +205,7 @@ make_df_bootstraps_GoF <- function(bootstrapOptions, verbose){
         df_bootstraps = expand.grid(
           type_boot = c("param", "NP"),
           type_stat = c("eq"  , "cent" ),
-          type_estimator_bootstrap = c("MLE" , "MD"  , "MD-cent"),
+          type_estimator_bootstrap = c("MLE" , "MD-eq"  , "MD-cent"),
           stringsAsFactors = FALSE
         )
 
@@ -275,8 +275,8 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
   if ("type_estimator_bootstrap" %in% names(bootstrapOptions)){
     type_estimator_bootstrap = bootstrapOptions$type_estimator_bootstrap
 
-    if ( ! (type_estimator_bootstrap %in% c("MD", "MD-cent", "MLE") ) ){
-      stop("Invalid type_estimator_bootstrap: either 'MD', 'MD-cent' or 'MLE'.
+    if ( ! (type_estimator_bootstrap %in% c("MD-eq", "MD-cent", "MLE") ) ){
+      stop("Invalid type_estimator_bootstrap: either 'MD-eq', 'MD-cent' or 'MLE'.
             Current input is", type_estimator_bootstrap)
     }
 
@@ -312,10 +312,10 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
   }
   if (type_boot == "NP" &&
       type_stat == "cent" &&
-      type_estimator_bootstrap == "MD"){
+      type_estimator_bootstrap == "MD-eq"){
     warning(
       "The combination of type_boot = 'NP', type_stat = 'cent', ",
-      "and `type_estimator_bootstrap` = 'MD' is theoretically invalid: ",
+      "and `type_estimator_bootstrap` = 'MD-eq' is theoretically invalid: ",
       "the obtained p-value will not be valid. For this situation, you should ",
       "better use type_estimator_bootstrap = 'MD-cent'")
   }
@@ -324,9 +324,9 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
       type_estimator_bootstrap == "MD-cent"){
     warning(
       "The combination of type_boot = 'param', type_stat = 'eq', ",
-      "and `type_estimator_bootstrap` = 'MD' is theoretically invalid: ",
+      "and `type_estimator_bootstrap` = 'MD-eq' is theoretically invalid: ",
       "the obtained p-value will not be valid. For this situation, you should ",
-      "better use type_estimator_bootstrap = 'MD'")
+      "better use type_estimator_bootstrap = 'MD-eq'")
   }
 
 
@@ -423,7 +423,7 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #'            Therefore, this is the default option. It is also the fastest type
 #'            of estimator.
 #'
-#'            \item \code{"MD"} for the Minimum Distance estimator.
+#'            \item \code{"MD-eq"} for the Minimum Distance estimator.
 #'            This is a valid choice if and only if \code{type_stat = "eq"}.
 #'
 #'            \item \code{"MD-cent"} for the centered Minimum Distance estimator.
@@ -553,7 +553,7 @@ perform_GoF_test <- function(X_data,
 
   max_diff[["MLE"]] <- max(abs(ecdf_values - parametrized_cdf_values[["MLE"]]))
 
-  doComputationsWithMD = ("MD" %in% df_bootstraps$type_estimator_bootstrap) ||
+  doComputationsWithMD = ("MD-eq" %in% df_bootstraps$type_estimator_bootstrap) ||
     ("MD_cent" %in% df_bootstraps$type_estimator_bootstrap)
 
   if (doComputationsWithMD){
@@ -609,9 +609,11 @@ perform_GoF_test <- function(X_data,
       cat("type_boot:", type_boot, "\n")
     }
 
-    mapping_parametric_bootstrap = c(MLE = "MLE", MD = "MD",
+    # make distinction between MLE and MD based bootstrap methods
+    mapping_parametric_bootstrap = c(MLE = "MLE", `MD-eq` = "MD",
                                      `MD-cent` = "MD")
 
+    # add column `type_estimator` with MLE or MD based estimator
     df_bootstraps_fixed_type_boot$type_estimator = mapping_parametric_bootstrap[
       df_bootstraps_fixed_type_boot$type_estimator_bootstrap]
 
@@ -665,7 +667,7 @@ perform_GoF_test <- function(X_data,
         estimated_param_st[["MLE"]] <- estimate_params(X_st, parametric_fam)
 
 
-        if ("MD" %in% df_bootstraps_current_type$type_estimator_bootstrap){
+        if ("MD-eq" %in% df_bootstraps_current_type$type_estimator_bootstrap){
           # Use the 'stats::optim' function to minimize the dist. funct for the param. distri.
           fit_st <- stats::optim(estimated_param_st[["MLE"]], infinity_norm_distance,
                                  grid_points = grid_points,
@@ -673,7 +675,7 @@ perform_GoF_test <- function(X_data,
                                  parametric_fam = parametric_fam)
 
           # Extract the fitted `bootstrap-based` parameters
-          estimated_param_st[["MD"]] <- fit_st$par
+          estimated_param_st[["MD-eq"]] <- fit_st$par
         }
 
         if ("MD-cent" %in% df_bootstraps_current_type$type_estimator_bootstrap){
@@ -799,7 +801,7 @@ perform_GoF_test <- function(X_data,
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "param" &
        pvals_df$type_stat == "eq" &
-       pvals_df$type_estimator_bootstrap == "MD")  |
+       pvals_df$type_estimator_bootstrap == "MD-eq")  |
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
        pvals_df$type_estimator_bootstrap == "MD-cent") |
