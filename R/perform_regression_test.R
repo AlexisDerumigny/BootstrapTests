@@ -209,6 +209,12 @@ perform_regression_test <- function(X, Y,
     }
     if ("type_stat" %in% names(bootstrapOptions)){
       type_stat_user = bootstrapOptions$type_stat
+    } else {
+      mapping = c(indep = "eq",
+                  NP = "cent",
+                  res_bs = "cent",
+                  hybr_null_bs = "eq")
+      type_stat_user = mapping[type_boot_user]
     }
     if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat" )) ){
       stop("Please provide correct argument names for `bootstrapOptions`.
@@ -575,6 +581,9 @@ perform_regression_test <- function(X, Y,
     (pvals_df$type_boot == "hybrid_null_bs" & pvals_df$type_stat == "eq") |
     (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent") |
   (pvals_df$type_boot == "res_bs"    & pvals_df$type_stat == "cent")
+
+  # No rownames for the moment (maybe later if needed?)
+  row.names(pvals_df) <- NULL
 
 
   ### Create the result object ###
