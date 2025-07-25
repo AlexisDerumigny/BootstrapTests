@@ -84,23 +84,52 @@ compute_joint_ecdf <- function(X1, X2, my_grid) {
 #' @param nBootstrap number of bootstrap repetitions.
 #'
 #' @param bootstrapOptions This can be one of \itemize{
-#'   \item \code{NULL}
+#'   \item \code{NULL} This uses the default options \code{type_boot = "indep"},
+#'   \code{type_stat = "eq"} and \code{norm_type = "KS"}.
 #'
 #'   \item a list with at most 3 elements names \itemize{
-#'         \item \code{type_boot} defaults to the \code{"indep"} bootstrap
-#'         resampling scheme to be used. \code{type_boot} can be either
-#'         \code{"indep"} for the independence/null bootstrap, or \code{"NP"}
-#'         for the non-parametric bootstrap.
+#'         \item \code{type_boot} type of bootstrap resampling scheme. It must be
+#'         one of
+#'         \itemize{
+#'            \item \code{"indep"} for the independence bootstrap
+#'            (i.e. under the null). This is the default.
+#'            \item \code{"NP"} for the non-parametric bootstrap
+#'            (i.e. n out of n bootstrap).
+#'         }
 #'
-#'         \item \code{type_stat} defaults to \code{"eq"} for the type of test
-#'         statistic to be used. This can be either \code{"eq"} for the
-#'         equivalent test statistic, or \code{"cent"} for the centered
-#'         test statistic.
+#'         \item \code{type_stat}  type of test statistic to be used.  It must be
+#'         one of
+#'         \itemize{
+#'           \item \code{"eq"} for the equivalent test statistic
+#'           \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^* ||}
 #'
-#'         \item \code{norm_type} defaults to \code{"KS"} for the type of norm
-#'         to bes used for the test statistic. \code{norm_type} can be either
-#'         \code{"KS"} for the Kolmogorov-Smirnov type test statistic or
-#'         \code{"L2"} for the L2-type test statistic.
+#'           \item \code{"cent"} for the centered test statistic
+#'           \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^*
+#'           -  (\hat{F}_{(X,Y)} - \hat{F}_{X} \hat{F}_{Y}) ||}
+#'         }
+#'         For each \code{type_boot} there is only one valid choice of \code{type_stat}
+#'         to be made. If \code{type_stat} is not specified, the valid choice is
+#'         automatically used.
+#'
+#'         \item \code{norm_type} type of norm to be used for the test statistic.
+#'          It must be one of
+#'         \itemize{
+#'            \item \code{"KS"} for the Kolmogorov-Smirnov type test statistic.
+#'            This is the default. It is given as
+#'            \eqn{
+#'                T_n = \sup_{(x, y) \in \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
+#'                \big| \hat{F}_{(X,Y),n}(x , y) - \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y)
+#'                \big|
+#'                }
+#'            \item \code{"L2"} for the L2-type test statistic.
+#'            \eqn{ T_n = \sqrt{n}\sqrt{\int_{(x, y) \in
+#'                  \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
+#'                  \big( \hat{F}_{(X,Y),n}(x , y) -
+#'                  \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y) \big)^2
+#'                  \mathrm{d}x\mathrm{d}y }
+#'                }
+#'         }
+#'
 #'   }
 #'
 #'   \item \code{"all"} this gives test results for all theoretically valid
