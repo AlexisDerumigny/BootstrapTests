@@ -14,18 +14,37 @@ perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
 \item{nBootstrap}{numeric value of the amount of bootstrap resamples}
 
 \item{bootstrapOptions}{This can be one of \itemize{
-  \item \code{NULL}
+  \item \code{NULL} This uses the default options \code{type_boot = "indep"},
+  \code{type_stat = "eq"}.
 
   \item a list with at most 2 elements names \itemize{
-        \item \code{type_boot} defaults to the \code{"indep"} bootstrap
-        resampling scheme to be used. \code{type_boot} can be either
-        \code{"indep"} for the independence/null bootstrap, or \code{"NP"}
-        for the non-parametric bootstrap.
+        \item \code{type_boot} type of bootstrap resampling scheme. It must be
+        one of
+        \itemize{
+           \item \code{"indep"} for the independence bootstrap
+           (i.e. under the null). This is the default.
+           \item \code{"NP"} for the non-parametric bootstrap
+           (i.e. n out of n bootstrap).
+           \item \code{"res_bs"} for the residual bootstrap.
+           \item \code{"hybrid_null_bs"} for the hybrid null bootstrap
+           \item \code{"fixed_design_bs"} for the fixed design bootstrap
+           \item \code{"fixed_design_bs_Hnull"} for the fixed design null bootstrap.
+        }
 
-        \item \code{type_stat} defaults to \code{"eq"} for the type of test
-        statistic to be used. This can be either \code{"eq"} for the
-        equivalent test statistic, or \code{"cent"} for the centered
-        test statistic.
+        \item \code{type_stat} type of test statistic to be used.  It must be
+        one of
+        \itemize{
+          \item \code{"eq"} for the equivalent test statistic
+          \eqn{ T_n^* = \sqrt{n} | \hat{b}^*  |  }.
+          This is the default.
+
+          \item \code{"cent"} for the centered test statistic
+          \eqn{ T_n^* = \sqrt{n} | \hat{b}^* - \hat{b} |  }
+        }
+        For each \code{type_boot} there is only one valid choice of \code{type_stat}
+        to be made. If \code{type_stat} is not specified, the valid choice is
+        automatically used.
+
   }
   \item \code{"all"} this gives test results for all theoretically valid
   combinations of bootstrap resampling schemes.
