@@ -10,7 +10,7 @@ perform_GoF_test(
   nBootstrap = 100,
   show_progress = TRUE,
   bootstrapOptions = NULL,
-  verbose = 2
+  verbose = 0
 )
 }
 \arguments{

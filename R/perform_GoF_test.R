@@ -486,7 +486,7 @@ perform_GoF_test <- function(X_data,
                              nBootstrap = 100,
                              show_progress = TRUE,
                              bootstrapOptions = NULL,
-                             verbose = 2)
+                             verbose = 0)
 {
   # 1. First input checks  =====================================================
 
