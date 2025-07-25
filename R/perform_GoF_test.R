@@ -319,6 +319,15 @@ make_df_bootstraps_GoF_fromList <- function(bootstrapOptions, verbose = verbose)
       "the obtained p-value will not be valid. For this situation, you should ",
       "better use type_estimator_bootstrap = 'MD-cent'")
   }
+  if (type_boot == "param" &&
+      type_stat == "eq" &&
+      type_estimator_bootstrap == "MD-cent"){
+    warning(
+      "The combination of type_boot = 'param', type_stat = 'eq', ",
+      "and `type_estimator_bootstrap` = 'MD' is theoretically invalid: ",
+      "the obtained p-value will not be valid. For this situation, you should ",
+      "better use type_estimator_bootstrap = 'MD'")
+  }
 
 
   # Initialize the bootstrap data frame
@@ -796,7 +805,7 @@ perform_GoF_test <- function(X_data,
        pvals_df$type_estimator_bootstrap == "MD-cent") |
     (pvals_df$type_boot == "param" &
        pvals_df$type_stat == "eq" &
-       pvals_df$type_estimator_bootstrap == "MLE")|
+       pvals_df$type_estimator_bootstrap == "MLE") |
     (pvals_df$type_boot == "NP" &
        pvals_df$type_stat == "cent" &
        pvals_df$type_estimator_bootstrap == "MLE")
