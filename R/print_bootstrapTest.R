@@ -34,8 +34,8 @@ print.bootstrapTest <- function(x, ...){
     }
 
     # Get quantiles
-    row$quantile_95 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
-    row$quantile_99 <- sapply(row$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+    row$quantile_95 <- sapply(row$list_stat_st, function(x) stats::quantile(x, 0.95))
+    row$quantile_99 <- sapply(row$list_stat_st, function(x) stats::quantile(x, 0.99))
 
     cat("Performed test:\n")
     cat(sprintf("  Bootstrap type           : %s\n", row$type_boot))
@@ -61,8 +61,8 @@ print.bootstrapTest <- function(x, ...){
     df <- x$pvals_df
 
     # Get quantiles
-    df$quantile_95 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.95))
-    df$quantile_99 <- sapply(df$bootstrapped_tests, function(x) stats::quantile(x, 0.99))
+    df$quantile_95 <- sapply(df$list_stat_st, function(x) stats::quantile(x, 0.95))
+    df$quantile_99 <- sapply(df$list_stat_st, function(x) stats::quantile(x, 0.99))
 
     # Print all test results
     cat("All test results:\n\n")

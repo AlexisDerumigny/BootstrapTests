@@ -4,6 +4,7 @@
 # Package BootstrapTests
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 This package BootstrapTests implements several methods to perform
@@ -109,16 +110,11 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat norm_type bootstrapped_tests pvalues theoretically_valid
-#>      indep        eq        L2       6.896435....    0.09                TRUE
-#>      indep        eq        KS       0.0498, ....    0.16                TRUE
-#>         NP      cent        L2       4.616682....    0.15                TRUE
-#>         NP      cent        KS       0.0371, ....    0.15                TRUE
-#>  quantile_95 quantile_99
-#>    19.383776   28.521103
-#>     0.077435    0.102921
-#>    15.241156   18.208424
-#>     0.069505    0.076838
+#>  type_boot type_stat norm_type list_stat_st pvalues theoretically_valid quantile_95 quantile_99
+#>      indep        eq        L2 6.896435....    0.09                TRUE   19.383776   28.521103
+#>      indep        eq        KS 0.0498, ....    0.16                TRUE    0.077435    0.102921
+#>         NP      cent        L2 4.616682....    0.15                TRUE   15.241156   18.208424
+#>         NP      cent        KS 0.0371, ....    0.15                TRUE    0.069505    0.076838
 #> 
 #> True test statistics:
 #>       L2       KS 
@@ -201,16 +197,11 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>       type_boot type_stat pvalues bootstrapped_tests theoretically_valid
-#>           indep        eq    0.17       1.609890....                TRUE
-#>              NP      cent    0.21       1.077185....                TRUE
-#>          res_bs      cent    0.21       1.021042....                TRUE
-#>  hybrid_null_bs        eq    0.27       1.213092....                TRUE
-#>  quantile_95 quantile_99
-#>     1.483089    1.849676
-#>     1.677740    1.924484
-#>     1.755715    2.304829
-#>     1.691101    2.324841
+#>       type_boot type_stat pvalues list_stat_st theoretically_valid quantile_95 quantile_99
+#>           indep        eq    0.17 1.609890....                TRUE    1.483089    1.849676
+#>              NP      cent    0.21 1.077185....                TRUE    1.677740    1.924484
+#>          res_bs      cent    0.21 1.021042....                TRUE    1.755715    2.304829
+#>  hybrid_null_bs        eq    0.27 1.213092....                TRUE    1.691101    2.324841
 #> 
 #> True test statistics:
 #> [1] 1.073819
@@ -244,7 +235,7 @@ n <- 100
 X_data <- rgamma(n,2,3)
 result <- perform_GoF_test(X_data,
                          nBootstrap = 100,
-                         bootstrapOptions = list(type_boot = "null",
+                         bootstrapOptions = list(type_boot = "param",
                                                  type_stat = "eq",
                                                  type_estimator_bootstrap = "MLE")
                         )
@@ -253,7 +244,7 @@ print(result)
 #>  =============================================== 
 #> 
 #> Performed test:
-#>   Bootstrap type           : null
+#>   Bootstrap type           : param
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : MLE 
@@ -274,12 +265,12 @@ print(result)
 #>  =============================================== 
 #> 
 #> Performed test:
-#>   Bootstrap type           : null
+#>   Bootstrap type           : param
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Bootstrap estimator used : MLE 
-#>   p-value                  : 0.23
-#>   True test statistic      : 0.6367
+#>   p-value                  : 0.85
+#>   True test statistic      : 0.3931
 plot(result)
 ```
 
@@ -295,20 +286,15 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat type_estimator_bootstrap bootstrapped_tests pvalues theoretically_valid
-#>       null        eq       MD       0.354892....    0.44                TRUE
-#>         NP      cent  MD-cent       0.361876....    0.34                TRUE
-#>       null        eq      MLE       0.496769....    0.30                TRUE
-#>         NP      cent      MLE       0.918384....    0.29                TRUE
-#>  quantile_95 quantile_99
-#>    0.5975104   0.6376012
-#>    0.5634340   0.6155492
-#>    0.8343981   1.0837531
-#>    0.8515063   1.0263165
+#>  type_boot type_stat type_estimator_bootstrap list_stat_st pvalues theoretically_valid quantile_95 quantile_99
+#>      param        eq                      MLE 0.451881....    0.87                TRUE   0.8199992   0.9566776
+#>      param        eq                       MD 0.345201....    0.79                TRUE   0.5972507   0.6779756
+#>         NP      cent                      MLE 0.522512....    0.85                TRUE   0.8179136   1.0207223
+#>         NP      cent                  MD-cent 0.509454....    0.74                TRUE   0.6017127   0.6678917
 #> 
 #> True test statistics:
-#>  KS_with_MD KS_with_MLE 
-#>   0.4175353   0.6366559
+#>       MLE        MD 
+#> 0.3930881 0.3432352
 ```
 
 ## References

@@ -415,7 +415,7 @@ perform_regression_test <- function(X, Y,
           df_new <- data.frame(type_boot = type_boot,
                                type_stat = "eq",
                                pvalues = p_val_eq,
-                               bootstrapped_tests = I(list(stat_st_eq) ) )
+                               list_stat_st = I(list(stat_st_eq) ) )
 
           # Append new dataframe to the list
           list_results <- append(list_results, list(df_new))
@@ -427,7 +427,7 @@ perform_regression_test <- function(X, Y,
           df_new <- data.frame(type_boot = type_boot,
                                type_stat = "cent",
                                pvalues = p_val_cent,
-                               bootstrapped_tests = I(list(stat_st_cent) ) )
+                               list_stat_st = I(list(stat_st_cent) ) )
 
           # Append new dataframe to the list
           list_results <- append(list_results, list(df_new))
@@ -457,7 +457,7 @@ perform_regression_test <- function(X, Y,
             # Combine the vectors
             pvalues   = rep(NA,12),
             # # Combine the vectors
-            bootstrapped_tests = I( rep(list( rep(NA, nBootstrap) ), 12) )
+            list_stat_st = I( rep(list( rep(NA, nBootstrap) ), 12) )
           )
         }
 
@@ -473,10 +473,10 @@ perform_regression_test <- function(X, Y,
                            pvals_df$type_stat=="eq"] = p_val_eq
 
         # add bootstrapped test statistics to dataframe
-        pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+        pvals_df$list_stat_st[pvals_df$type_boot == type_boot &
                                       pvals_df$type_stat == "cent" ] <- list(stat_st_cent)
 
-        pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+        pvals_df$list_stat_st[pvals_df$type_boot == type_boot &
                                       pvals_df$type_stat == "eq" ] <- list(stat_st_eq)
       }
     }
@@ -500,7 +500,7 @@ perform_regression_test <- function(X, Y,
       # Combine the vectors
       pvalues   = NA,
       # # Combine the vectors
-      bootstrapped_tests = I( list( rep(NA, nBootstrap) ) )
+      list_stat_st = I( list( rep(NA, nBootstrap) ) )
     )
 
     # Perform the bootstrap regression test ================================
@@ -561,7 +561,7 @@ perform_regression_test <- function(X, Y,
                        pvals_df$type_stat==type_stat_user] = p_val
 
     # add bootstrapped test statistics to dataframe
-    pvals_df$bootstrapped_tests[pvals_df$type_boot == type_boot &
+    pvals_df$list_stat_st[pvals_df$type_boot == type_boot &
                                   pvals_df$type_stat == type_stat_user ] <- list(stat_st)
   }
 

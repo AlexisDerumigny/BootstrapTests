@@ -369,8 +369,8 @@ perform_independence_test <- function(
         df_new <- data.frame(type_boot = type_boot,
                              type_stat = "eq",
                              norm_type = c("L2", "KS"),
-                             bootstrapped_tests = I(list(stat_st_eq_L2,
-                                                         stat_st_eq_KS) ) )
+                             list_stat_st = I(list(stat_st_eq_L2,
+                                                   stat_st_eq_KS) ) )
 
         # Append new dataframe to the list
         list_results <- append(list_results, list(df_new))
@@ -379,8 +379,8 @@ perform_independence_test <- function(
         df_new <- data.frame(type_boot = type_boot,
                              type_stat = "cent",
                              norm_type = c("L2", "KS"),
-                             bootstrapped_tests = I(list(stat_st_cent_L2,
-                                                         stat_st_cent_KS) ) )
+                             list_stat_st = I(list(stat_st_cent_L2,
+                                                   stat_st_cent_KS) ) )
 
         # Append new dataframe to the list
         list_results <- append(list_results, list(df_new))
@@ -391,14 +391,14 @@ perform_independence_test <- function(
           data.frame(type_boot = type_boot,
                      type_stat = "cent",
                      norm_type = c("L2", "KS"),
-                     bootstrapped_tests = I(list(stat_st_cent_L2,
-                                                 stat_st_cent_KS) ) )
+                     list_stat_st = I(list(stat_st_cent_L2,
+                                           stat_st_cent_KS) ) )
         list_results[[2 + (iBoot - 1)*2]] =
           data.frame(type_boot = type_boot,
                      type_stat = "eq",
                      norm_type = c("L2", "KS"),
-                     bootstrapped_tests = I(list(stat_st_eq_L2,
-                                                 stat_st_eq_KS) ) )
+                     list_stat_st = I(list(stat_st_eq_L2,
+                                           stat_st_eq_KS) ) )
       }
     }
   } else if( (is.list(bootstrapOptions) && length(bootstrapOptions) > 0) ||
@@ -489,7 +489,7 @@ perform_independence_test <- function(
     df_new <- data.frame(type_boot = type_boot,
                          type_stat = type_stat_user,
                          norm_type = norm_type_user,
-                         bootstrapped_tests = I(list(stat_st) ))
+                         list_stat_st = I(list(stat_st) ))
 
     list_results <- append(list_results, list(df_new))
   }
@@ -505,7 +505,7 @@ perform_independence_test <- function(
     X = 1:nrow(pvals_df),
     FUN = function(i){
       pval = mean(as.numeric(
-        true_stats[pvals_df$norm_type[i]] < pvals_df$bootstrapped_tests[i][[1]]
+        true_stats[pvals_df$norm_type[i]] < pvals_df$list_stat_st[i][[1]]
       ) )
     }
   ) |> unlist()

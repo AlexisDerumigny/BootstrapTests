@@ -53,7 +53,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   }
 
   # Unlist and assign
-  bootstrapped_test <- unlist(df$bootstrapped_tests)
+  bootstrapped_test <- unlist(df$list_stat_st)
 
   # Make histogram of bootstrapped test statistics
   min_ = min(c(bootstrapped_test, true_stat))
