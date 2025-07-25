@@ -669,7 +669,7 @@ perform_GoF_test <- function(X_data,
 
                    # Calculate the infinity norm (sup norm): maximum absolute difference
                    max_diff_st <- max(abs(ecdf_values_st - parametrized_cdf_values_st
-                                          - ecdf_values +  parametrized_cdf_values[["MD"]] ))
+                                          - ecdf_values +  parametrized_cdf_values[[type_estimator]] ))
                  },
                  "eq" = {
                    max_diff_st <- infinity_norm_distance(grid_points,
