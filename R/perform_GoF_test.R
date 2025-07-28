@@ -382,6 +382,18 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' @param nBootstrap numeric value of the number of bootstrap resamples. Defaults
 #' to 100.
 #'
+#' @param mygrid description of the grid used to compute the CDFs on. This must be
+#' one of \itemize{
+#'   \item \code{NULL}: a regularly spaced grid from the minimum value to the
+#'   maximum value with \code{100} points is used. This is the default.
+#'
+#'   \item A numeric of size 1. This is used at the length of the grid, replacing
+#'   \code{100} in the above explanation.
+#'
+#'   \item A numeric vector of size larger than 1. This is directly used as the
+#'   grid.
+#' }
+#'
 #' @param show_progress logical value indicating whether to show a progress bar
 #'
 #' @param bootstrapOptions This can be one of \itemize{
@@ -503,6 +515,7 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 perform_GoF_test <- function(X_data,
                              parametric_fam = "normal",
                              nBootstrap = 100,
+                             mygrid = NULL,
                              show_progress = TRUE,
                              bootstrapOptions = NULL,
                              verbose = 0)
@@ -538,10 +551,15 @@ perform_GoF_test <- function(X_data,
   # Define sample size
   n <- length(X_data)
 
-  # TODO: make better grid
   # Grid points
-  grid_points <- seq(min(X_data), max(X_data), length.out = 100)
-
+  if (is.null(mygrid)){
+    mygrid = 100
+  }
+  if (is.numeric(mygrid) && length(mygrid) == 1){
+    grid_points <- seq(min(X_data), max(X_data), length.out = mygrid)
+  } else {
+    grid_points = mygrid
+  }
 
   # Calculate the empirical CDF values at the grid of X points
   ecdf_values <- stats::ecdf(X_data)(grid_points)
