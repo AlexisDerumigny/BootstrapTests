@@ -12,6 +12,7 @@
   legend.x = NULL,
   legend.y = NULL,
   ask = interactive(),
+  plot_estimated_line = NULL,
   ...
 )
 
@@ -30,6 +31,12 @@
 
 \item{ask}{if \code{TRUE}, the user is asked to press Return to see the next
 plot. Used only if \code{x} is an object of class \code{bootstrapTest_regression}.}
+
+\item{plot_estimated_line}{Boolean describing whether to plot the estimated
+regression line in case \code{x} is of class \code{"bootstrapTest_regression"},
+i.e. output from \code{perform_regression_test}. By default,
+\code{plot_estimated_line = NULL}, with the meaning that the plot is done
+only if one estimated way of bootstrapping is given.}
 
 \item{...}{additional arguments passed to the \code{hist} function
 (in the case of the \code{plot} method) or ignored (in the case of the
