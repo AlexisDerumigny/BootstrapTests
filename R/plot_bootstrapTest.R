@@ -17,6 +17,12 @@
 #' @param ask if \code{TRUE}, the user is asked to press Return to see the next
 #' plot. Used only if \code{x} is an object of class \code{bootstrapTest_regression}.
 #'
+#' @param plot_estimated_line Boolean describing whether to plot the estimated
+#' regression line in case \code{x} is of class \code{"bootstrapTest_regression"},
+#' i.e. output from \code{perform_regression_test}. By default,
+#' \code{plot_estimated_line = NULL}, with the meaning that the plot is done
+#' only if one estimated way of bootstrapping is given.
+#'
 #' @param ... additional arguments passed to the \code{hist} function
 #' (in the case of the \code{plot} method) or ignored (in the case of the
 #' \code{print} method).
@@ -31,15 +37,33 @@
 #' @export
 plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                                legend.x = NULL, legend.y = NULL,
-                               ask = interactive(), ...){
+                               ask = interactive(),
+                               plot_estimated_line = NULL, ...){
   # assign the user-specfied highlighted dataframe
-  nrow(x$pvals_df) == 1
+
   if (nrow(x$pvals_df) == 1) {
     df <- x$pvals_df
   } else {
-    stop("The pvals_df should have only one row,
-         so do not input multiple bootstrap method combinations.
-         Please check the input data.")
+    N = ceiling(sqrt(nrow(x$pvals_df)))
+    if (isTRUE(plot_estimated_line)){
+      Nrow = N * 2
+    } else {
+      Nrow = N
+      plot_estimated_line = FALSE
+    }
+    oldpar = graphics::par(mfrow = c(Nrow, N))
+    on.exit(graphics::par(oldpar))
+
+    for (i in 1:nrow(x$pvals_df)){
+      y = x
+      y$pvals_df <- x$pvals_df[i, ]
+
+      plot(y, xlim = xlim, breaks = breaks,
+           legend.x = legend.x, legend.y = legend.y, ask = FALSE,
+           plot_estimated_line = plot_estimated_line, ...)
+    }
+
+    return (invisible(NULL))
   }
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
@@ -109,7 +133,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
   ####### For regression test, also plot the slope #######
 
-  if ("bootstrapTest_regression" %in% class(x) ) {
+  if ("bootstrapTest_regression" %in% class(x) && !isFALSE(plot_estimated_line)) {
     if (ask) {
       oask <- grDevices::devAskNewPage(TRUE)
       on.exit(grDevices::devAskNewPage(oask))
