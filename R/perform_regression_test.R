@@ -221,6 +221,14 @@ perform_regression_test <- function(X, Y,
   type_boot_user = "indep"
   type_stat_user = "eq"
 
+  # Mapping vector from bootstrap options to the valid test statistics
+  map_bootstrap_to_stat = c( indep                  = "eq",
+                             NP                      = "cent",
+                             res_bs                  = "cent",
+                             hybrid_null_bs          = "eq",
+                             fixed_design_bs         = "cent",
+                             fixed_design_bs_Hnull   = "eq")
+
   # Read in the `bootstrapOptions` and set the user-specified options
   if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
     if ("type_boot" %in% names(bootstrapOptions)){
@@ -229,11 +237,8 @@ perform_regression_test <- function(X, Y,
     if ("type_stat" %in% names(bootstrapOptions)){
       type_stat_user = bootstrapOptions$type_stat
     } else {
-      mapping = c(indep = "eq",
-                  NP = "cent",
-                  res_bs = "cent",
-                  hybr_null_bs = "eq")
-      type_stat_user = mapping[type_boot_user]
+      # If user did not specify type_stat, we map it to the valid type_stat.
+      type_stat_user = map_bootstrap_to_stat[type_boot_user]
     }
     if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat" )) ){
       stop("Please provide correct argument names for `bootstrapOptions`.
@@ -297,29 +302,10 @@ perform_regression_test <- function(X, Y,
 
   # Give warning for theoretically invalid bootstrap schemes
   if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
-    if (type_boot_user == "indep" && type_stat_user == "cent"){
-      warning("The combination of type_boot = 'indep' and type_stat = 'cent' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "NP" && type_stat_user == "eq"){
-      warning("The combination of type_boot = 'NP' and type_stat = 'eq' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "res_bs" && type_stat_user == "eq"){
-      warning("The combination of type_boot = 're_bs' and type_stat = 'eq' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "hybrid_null_bs" && type_stat_user == "cent"){
-      warning("The combination of type_boot = 'hybrid_null_bs' and type_stat = 'cent' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "fixed_design_bs_Hnull" && type_stat_user == "cent"){
-      warning("The combination of type_boot = 'fixed_design_bs_Hnull' and type_stat = 'cent' ",
-              "is theoretically invalid. The p-values will not be valid.")
-    }
-    if (type_boot_user == "fixed_design_bs" && type_stat_user == "eq"){
-      warning("The combination of type_boot = 'fixed_design_bs' and type_stat = 'eq' ",
-              "is theoretically invalid. The p-values will not be valid.")
+    if ( type_stat_user != map_bootstrap_to_stat[type_boot_user] ){
+      warning("The combination of type_boot = '", type_boot_user, "'
+              and type_stat = '", type_stat_user, "' is theoretically invalid.
+              The p-values will not be valid.")
     }
   }
 
