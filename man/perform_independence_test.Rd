@@ -40,10 +40,10 @@ a grid of their choice.}
         one of
         \itemize{
           \item \code{"eq"} for the equivalent test statistic
-          \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^* ||}
+          \deqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^* ||}
 
           \item \code{"cent"} for the centered test statistic
-          \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^*
+          \deqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^*
           -  (\hat{F}_{(X,Y)} - \hat{F}_{X} \hat{F}_{Y}) ||}
         }
         For each \code{type_boot} there is only one valid choice of \code{type_stat}
@@ -55,20 +55,19 @@ a grid of their choice.}
         \itemize{
            \item \code{"KS"} for the Kolmogorov-Smirnov type test statistic.
            This is the default. It is given as
-           \eqn{
-               T_n = \sup_{(x, y) \in \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
+           \deqn{
+               T_n = \sqrt{n} \sup_{(x, y) \in \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
                \big| \hat{F}_{(X,Y),n}(x , y) - \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y)
                \big|
                }
-           \item \code{"L2"} for the L2-type test statistic.
-           \eqn{ T_n = \sqrt{n}\sqrt{\int_{(x, y) \in
+           \item \code{"L2"} for the squared L2-norm test statistic.
+           \deqn{ T_n = \sqrt{n}\int_{(x, y) \in
                  \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
                  \big( \hat{F}_{(X,Y),n}(x , y) -
                  \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y) \big)^2
-                 \mathrm{d}x\mathrm{d}y }
+                 \mathrm{d}x\mathrm{d}y
                }
         }
-
   }
 
   \item \code{"all"} this gives test results for all theoretically valid

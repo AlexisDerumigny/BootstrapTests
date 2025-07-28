@@ -101,10 +101,10 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'         one of
 #'         \itemize{
 #'           \item \code{"eq"} for the equivalent test statistic
-#'           \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^* ||}
+#'           \deqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^* ||}
 #'
 #'           \item \code{"cent"} for the centered test statistic
-#'           \eqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^*
+#'           \deqn{T_n^* = \sqrt{n} || \hat{F}_{(X,Y)}^* - \hat{F}_{X}^* \hat{F}_{Y}^*
 #'           -  (\hat{F}_{(X,Y)} - \hat{F}_{X} \hat{F}_{Y}) ||}
 #'         }
 #'         For each \code{type_boot} there is only one valid choice of \code{type_stat}
@@ -116,20 +116,19 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'         \itemize{
 #'            \item \code{"KS"} for the Kolmogorov-Smirnov type test statistic.
 #'            This is the default. It is given as
-#'            \eqn{
-#'                T_n = \sup_{(x, y) \in \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
+#'            \deqn{
+#'                T_n = \sqrt{n} \sup_{(x, y) \in \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
 #'                \big| \hat{F}_{(X,Y),n}(x , y) - \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y)
 #'                \big|
 #'                }
-#'            \item \code{"L2"} for the L2-type test statistic.
-#'            \eqn{ T_n = \sqrt{n}\sqrt{\int_{(x, y) \in
+#'            \item \code{"L2"} for the squared L2-norm test statistic.
+#'            \deqn{ T_n = \sqrt{n}\int_{(x, y) \in
 #'                  \mathbb{R}\rule{0pt}{0.6em}^{p+q}}
 #'                  \big( \hat{F}_{(X,Y),n}(x , y) -
 #'                  \hat{F}_{X,n}(x) \hat{F}_{Y,n}(y) \big)^2
-#'                  \mathrm{d}x\mathrm{d}y }
+#'                  \mathrm{d}x\mathrm{d}y
 #'                }
 #'         }
-#'
 #'   }
 #'
 #'   \item \code{"all"} this gives test results for all theoretically valid
@@ -315,9 +314,9 @@ perform_independence_test <- function(
   FX12 <- compute_joint_ecdf(X1, X2, my_grid1, my_grid2)
 
   # Vector containing all the true test statistics, for the different norms
-  true_stats = c("L2" = (sum((FX1FX2 - FX12)^2))*sqrt(n) ,
-                 # Kolmogorov-Smirnov test statistic, without sqrt(n)
-                 "KS" = max(abs(FX1FX2 - FX12))          )
+  true_stats = c("L2" = (sum((FX1FX2 - FX12)^2)) * sqrt(n) ,
+                 # Kolmogorov-Smirnov test statistic
+                 "KS" = max(abs(FX1FX2 - FX12))  * sqrt(n) )
 
 
   # Bootstrapping ===========================================================
@@ -371,7 +370,7 @@ perform_independence_test <- function(
 
           # only calculate theoretically valid options in this case
           stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
-          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
+          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st)) * sqrt(n)
 
         } else if (bootstrapOptions == "all" && type_boot == "NP"){
 
@@ -379,18 +378,18 @@ perform_independence_test <- function(
           stat_st_cent_L2[iBootstrap] =
             (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
           stat_st_cent_KS[iBootstrap] =
-            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st)) * sqrt(n)
 
         } else {
           stat_st_cent_L2[iBootstrap] =
             (sum((FX1FX2_st - FX1FX2 + FX12 - FX12_st)^2)) * sqrt(n)
 
           stat_st_cent_KS[iBootstrap] =
-            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+            max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st)) * sqrt(n)
 
           stat_st_eq_L2[iBootstrap] = (sum((FX1FX2_st - FX12_st)^2)) * sqrt(n)
 
-          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st))
+          stat_st_eq_KS[iBootstrap] = max(abs(FX1FX2_st - FX12_st)) * sqrt(n)
 
         }
 
@@ -499,12 +498,12 @@ perform_independence_test <- function(
                                "cent" = {
                                  # centered test statistic
                                  stat_st[iBootstrap] =
-                                   max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st))
+                                   max(abs(FX1FX2_st - FX1FX2 + FX12 - FX12_st)) * sqrt(n)
                                },
                                "eq" = {
                                  # equivalent test statistic
                                  stat_st[iBootstrap] =
-                                   max(abs(FX1FX2_st - FX12_st))
+                                   max(abs(FX1FX2_st - FX12_st)) * sqrt(n)
                                },
                                # If the user specified an unknown type_stat_user
                                {
