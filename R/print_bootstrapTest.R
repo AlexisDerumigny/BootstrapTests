@@ -18,7 +18,7 @@ print.bootstrapTest <- function(x, ...){
 
     # Get the true statistic
     if ("bootstrapTest_independence" %in% class(x)){
-      true_stat <- x$true_stats[[row$norm_type]]
+      true_stat <- x$true_stats[[row$type_norm]]
     } else if("bootstrapTest_GoF" %in% class(x)){
 
       true_stat <- switch(
@@ -47,7 +47,7 @@ print.bootstrapTest <- function(x, ...){
     cat(sprintf("  Bootstrap repetitions    : %d\n", x$nBootstrap))
     cat(sprintf("  Type of test statistic   : %s\n", row$type_stat))
     if ("bootstrapTest_independence" %in% class(x)){
-      cat(sprintf("  Type of norm used        : %s\n", row$norm_type))
+      cat(sprintf("  Type of norm used        : %s\n", row$type_norm))
     } else if ("bootstrapTest_regression" %in% class(x)){
       # store β as 4 digits hex unicode: this beta_string = "\\u03b2"
       # beta_string <- sprintf("\\u%04x", utf8ToInt("β"))

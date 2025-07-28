@@ -85,7 +85,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'
 #' @param bootstrapOptions This can be one of \itemize{
 #'   \item \code{NULL} This uses the default options \code{type_boot = "indep"},
-#'   \code{type_stat = "eq"} and \code{norm_type = "KS"}.
+#'   \code{type_stat = "eq"} and \code{type_norm = "KS"}.
 #'
 #'   \item a list with at most 3 elements names \itemize{
 #'         \item \code{type_boot} type of bootstrap resampling scheme. It must be
@@ -111,7 +111,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'         to be made. If \code{type_stat} is not specified, the valid choice is
 #'         automatically used.
 #'
-#'         \item \code{norm_type} type of norm to be used for the test statistic.
+#'         \item \code{type_norm} type of norm to be used for the test statistic.
 #'          It must be one of
 #'         \itemize{
 #'            \item \code{"KS"} for the Kolmogorov-Smirnov type test statistic.
@@ -174,7 +174,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'    X1, X2, nBootstrap = 50,
 #'    bootstrapOptions = list(type_boot = "indep",
 #'                            type_stat = "eq",
-#'                            norm_type = "KS") )
+#'                            type_norm = "KS") )
 #' print(result)
 #' plot(result)
 #'
@@ -197,7 +197,7 @@ perform_independence_test <- function(
   # Initialize default values for the bootstrap options
   type_boot_user = "indep"
   type_stat_user = "eq"
-  norm_type_user = "KS"
+  type_norm_user = "KS"
 
   # Read in the `bootstrapOptions` and set the user-specified options
   if (is.list(bootstrapOptions) && length(bootstrapOptions) > 0){
@@ -210,12 +210,12 @@ perform_independence_test <- function(
       mapping = c(indep = "eq", NP = "cent")
       type_stat_user = mapping[type_boot_user]
     }
-    if ("norm_type" %in% names(bootstrapOptions)){
-      norm_type_user = bootstrapOptions$norm_type
+    if ("type_norm" %in% names(bootstrapOptions)){
+      type_norm_user = bootstrapOptions$type_norm
     }
-    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat", "norm_type" )) ){
+    if ( !all(names(bootstrapOptions) %in% c( "type_boot", "type_stat", "type_norm" )) ){
       stop("Please provide correct argument names for `bootstrapOptions`.
-            Valid names are: 'type_boot', 'type_stat', and 'norm_type'.")
+            Valid names are: 'type_boot', 'type_stat', and 'type_norm'.")
     }
   } else if (!is.list(bootstrapOptions) &&
              !is.null(bootstrapOptions) &&
@@ -252,9 +252,9 @@ perform_independence_test <- function(
          type_stat_user)
   }
 
-  if (norm_type_user %in% c("KS","L2") == FALSE){
-    stop("Choose valid norm_type_user: either 'KS' or 'L2'. Current input is ",
-         norm_type_user)
+  if (type_norm_user %in% c("KS","L2") == FALSE){
+    stop("Choose valid type_norm_user: either 'KS' or 'L2'. Current input is ",
+         type_norm_user)
   }
 
   if (!is.list(bootstrapOptions) &&
@@ -407,7 +407,7 @@ perform_independence_test <- function(
 
         df_new <- data.frame(type_boot = type_boot,
                              type_stat = "eq",
-                             norm_type = c("L2", "KS"),
+                             type_norm = c("L2", "KS"),
                              list_stat_st = I(list(stat_st_eq_L2,
                                                    stat_st_eq_KS) ) )
 
@@ -417,7 +417,7 @@ perform_independence_test <- function(
 
         df_new <- data.frame(type_boot = type_boot,
                              type_stat = "cent",
-                             norm_type = c("L2", "KS"),
+                             type_norm = c("L2", "KS"),
                              list_stat_st = I(list(stat_st_cent_L2,
                                                    stat_st_cent_KS) ) )
 
@@ -429,13 +429,13 @@ perform_independence_test <- function(
         list_results[[1 + (iBoot - 1)*2]] =
           data.frame(type_boot = type_boot,
                      type_stat = "cent",
-                     norm_type = c("L2", "KS"),
+                     type_norm = c("L2", "KS"),
                      list_stat_st = I(list(stat_st_cent_L2,
                                            stat_st_cent_KS) ) )
         list_results[[2 + (iBoot - 1)*2]] =
           data.frame(type_boot = type_boot,
                      type_stat = "eq",
-                     norm_type = c("L2", "KS"),
+                     type_norm = c("L2", "KS"),
                      list_stat_st = I(list(stat_st_eq_L2,
                                            stat_st_eq_KS) ) )
       }
@@ -475,7 +475,7 @@ perform_independence_test <- function(
       # Empirical joint CDF on the bootstrap data
       FX12_st <- compute_joint_ecdf(X1_st, X2_st, my_grid1, my_grid2)
 
-      switch (norm_type_user,
+      switch (type_norm_user,
               # If the user specified the L2 norm
               "L2" = {
                 switch (type_stat_user,
@@ -513,7 +513,7 @@ perform_independence_test <- function(
               )
               },
               {
-                stop("Unknown norm_type_user. Please choose either 'L2' or 'KS'.")
+                stop("Unknown type_norm_user. Please choose either 'L2' or 'KS'.")
               }
       )
 
@@ -527,7 +527,7 @@ perform_independence_test <- function(
     # creating all bootstrap resmapling schemes
     df_new <- data.frame(type_boot = type_boot,
                          type_stat = type_stat_user,
-                         norm_type = norm_type_user,
+                         type_norm = type_norm_user,
                          list_stat_st = I(list(stat_st) ))
 
     list_results <- append(list_results, list(df_new))
@@ -543,7 +543,7 @@ perform_independence_test <- function(
     X = 1:nrow(pvals_df),
     FUN = function(i){
       pval = mean(as.numeric(
-        true_stats[pvals_df$norm_type[i]] < pvals_df$list_stat_st[i][[1]]
+        true_stats[pvals_df$type_norm[i]] < pvals_df$list_stat_st[i][[1]]
       ) )
     }
   )

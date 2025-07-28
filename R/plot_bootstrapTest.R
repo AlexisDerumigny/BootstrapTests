@@ -68,7 +68,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   }
   # Get the true statistic
   if ("bootstrapTest_independence" %in% class(x)){
-    true_stat <- x$true_stats[[df$norm_type]]
+    true_stat <- x$true_stats[[df$type_norm]]
   } else if("bootstrapTest_GoF" %in% class(x)){
 
     # make distinction between MLE and MD based bootstrap methods
@@ -105,7 +105,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                 "type_boot = '", df$type_boot, "' , ",
                 "type_stat = '", df$type_stat, "'")
   if ("bootstrapTest_independence" %in% class(x)){
-    xlab = paste0(xlab, ", norm_type = '", df$norm_type, "'")
+    xlab = paste0(xlab, ", type_norm = '", df$type_norm, "'")
   } else if ("bootstrapTest_GoF" %in% class(x)){
     xlab = paste0(xlab, ", type_estimator_bootstrap = '",
                   df$type_estimator_bootstrap, "'")

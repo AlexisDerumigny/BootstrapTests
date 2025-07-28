@@ -24,7 +24,7 @@ a grid of their choice.}
 
 \item{bootstrapOptions}{This can be one of \itemize{
   \item \code{NULL} This uses the default options \code{type_boot = "indep"},
-  \code{type_stat = "eq"} and \code{norm_type = "KS"}.
+  \code{type_stat = "eq"} and \code{type_norm = "KS"}.
 
   \item a list with at most 3 elements names \itemize{
         \item \code{type_boot} type of bootstrap resampling scheme. It must be
@@ -50,7 +50,7 @@ a grid of their choice.}
         to be made. If \code{type_stat} is not specified, the valid choice is
         automatically used.
 
-        \item \code{norm_type} type of norm to be used for the test statistic.
+        \item \code{type_norm} type of norm to be used for the test statistic.
          It must be one of
         \itemize{
            \item \code{"KS"} for the Kolmogorov-Smirnov type test statistic.
@@ -124,7 +124,7 @@ result <- perform_independence_test(
    X1, X2, nBootstrap = 50,
    bootstrapOptions = list(type_boot = "indep",
                            type_stat = "eq",
-                           norm_type = "KS") )
+                           type_norm = "KS") )
 print(result)
 plot(result)
 

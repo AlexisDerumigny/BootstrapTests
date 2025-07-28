@@ -73,7 +73,7 @@ result <- perform_independence_test(
   X1, X2, nBootstrap = 100,
   bootstrapOptions = list(type_boot = "indep",
                           type_stat = "eq",
-                          norm_type = "KS") )
+                          type_norm = "KS") )
 print(result)
 plot(result)
 

@@ -60,7 +60,7 @@ result <- perform_independence_test(
   X1, X2, nBootstrap = 100,
   bootstrapOptions = list(type_boot = "indep",
                           type_stat = "eq",
-                          norm_type = "KS") )
+                          type_norm = "KS") )
 print(result)
 #>          🎯Bootstrap Independence Test Results 🎯
 #>  ======================================================== 
@@ -110,7 +110,7 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>  type_boot type_stat norm_type list_stat_st pvalues theoretically_valid quantile_95 quantile_99
+#>  type_boot type_stat type_norm list_stat_st pvalues theoretically_valid quantile_95 quantile_99
 #>      indep        eq        L2 6.896435....    0.09                TRUE   19.383776   28.521103
 #>      indep        eq        KS 0.0498, ....    0.16                TRUE    0.077435    0.102921
 #>         NP      cent        L2 4.616682....    0.15                TRUE   15.241156   18.208424

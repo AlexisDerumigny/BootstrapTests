@@ -30,7 +30,7 @@ test_that("Independence test throws errors for wrong input", {
   X1 = rnorm(10)
   X2 = rnorm(10)
   expect_error(perform_independence_test(X1,X2,
-                                         bootstrapOptions = list(norm_type = "")))
+                                         bootstrapOptions = list(type_norm = "")))
   expect_error(perform_independence_test(X1,X2,
                                          bootstrapOptions = list(type_stat = "")))
   expect_error(perform_independence_test(X1,X2,
@@ -38,7 +38,7 @@ test_that("Independence test throws errors for wrong input", {
   expect_error(perform_independence_test(X1,X2, nBootstrap = ""))
 
   # Check the `bootstrapOptions`
-  expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(norm_type = "K S")))
+  expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(type_norm = "K S")))
   expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(typo = "KS")))
   expect_error(perform_independence_test(X1,X2, bootstrapOptions = list(boot_type = "KS")))
 })
@@ -59,7 +59,7 @@ test_that("Different types of bootstrap options work as expected", {
     X1, X2, nBootstrap = 30,
     bootstrapOptions = list(type_boot = "indep",
                             type_stat = "eq",
-                            norm_type = "KS") )
+                            type_norm = "KS") )
 
   expect_identical(result_1, result_2)
   set.seed(10)
