@@ -99,9 +99,19 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
     breaks = pretty(c(0, 1.1 * max_), n = breaks)
   }
+
+  xlab = paste0("Bootstrapped test statistics, \n",
+                "type_boot = '", df$type_boot, "' , ",
+                "type_stat = '", df$type_stat, "'")
+  if ("bootstrapTest_independence" %in% class(x)){
+    xlab = paste0(xlab, ", norm_type = '", df$norm_type, "'")
+  } else if ("bootstrapTest_GoF" %in% class(x)){
+    xlab = paste0(xlab, ", type_estimator_bootstrap = '",
+                  df$type_estimator_bootstrap, "'")
+  }
   graphics::hist(bootstrapped_test,
                  main = x$nameMethod,
-                 xlab = "Bootstrapped test statistic",
+                 xlab = xlab,
                  xlim = xlim,
                  breaks = breaks)
 
