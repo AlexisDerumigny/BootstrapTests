@@ -115,13 +115,13 @@ Via the \code{bootstrapOptions} argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 }
 \examples{
-n <- 100
+n <- 10
 
 # Under H1
 X1 <- rnorm(n)
 X2 <- X1 + rnorm(n)
 result <- perform_independence_test(
-   X1, X2, nBootstrap = 100,
+   X1, X2, nBootstrap = 50,
    bootstrapOptions = list(type_boot = "indep",
                            type_stat = "eq",
                            norm_type = "KS") )
@@ -131,7 +131,7 @@ plot(result)
 # Under H0
 X1 <- rnorm(n)
 X2 <- rnorm(n)
-result <- perform_independence_test(X1, X2, nBootstrap = 100)
+result <- perform_independence_test(X1, X2, nBootstrap = 50)
 print(result)
 plot(result)
 
