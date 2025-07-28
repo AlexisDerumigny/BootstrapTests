@@ -792,9 +792,8 @@ perform_GoF_test <- function(X_data,
   # Rowbind the dataframes in `list_results` into a dataframe
   pvals_df = do.call(what = rbind, args = list_results)
 
-  # Calculate pvalues
-  # list apply to the list `pvalues` and use `|> unlist()` to unlist it
-  pvals_df$pvalues = lapply(
+  # Compute pvalues
+  list_pvalues = lapply(
     X = 1:nrow(pvals_df),
     FUN = function(i){
 
@@ -809,7 +808,8 @@ perform_GoF_test <- function(X_data,
       ) )
       return(pval)
     }
-  ) |> unlist()
+  )
+  pvals_df$pvalues = unlist(list_pvalues)
 
   # The NP and centred test statistic also needs
   # a centred MD bootstrap parameter estimator.

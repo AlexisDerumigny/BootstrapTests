@@ -528,16 +528,16 @@ perform_independence_test <- function(
   # Rowbind the dataframes in `list_results` into a large dataframe
   pvals_df = do.call(what = rbind, args = list_results)
 
-  # Calculate pvalues
-  # list apply to the list `pvalues` and use `|> unlist()` to unlist it
-  pvals_df$pvalues = lapply(
+  # Compute pvalues
+  list_pvalues = lapply(
     X = 1:nrow(pvals_df),
     FUN = function(i){
       pval = mean(as.numeric(
         true_stats[pvals_df$norm_type[i]] < pvals_df$list_stat_st[i][[1]]
       ) )
     }
-  ) |> unlist()
+  )
+  pvals_df$pvalues = unlist(list_pvalues)
 
   # Add column to denote the theoretically valid combinations of bootstrap
   pvals_df$theoretically_valid =
