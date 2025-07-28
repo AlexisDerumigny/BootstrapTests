@@ -44,14 +44,14 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
   if (nrow(x$pvals_df) == 1) {
     df <- x$pvals_df
   } else {
-    N = ceiling(sqrt(nrow(x$pvals_df)))
+
     if (isTRUE(plot_estimated_line)){
-      Nrow = N * 2
+      N = ceiling(sqrt(nrow(x$pvals_df) + 1))
     } else {
-      Nrow = N
+      N = ceiling(sqrt(nrow(x$pvals_df)))
       plot_estimated_line = FALSE
     }
-    oldpar = graphics::par(mfrow = c(Nrow, N))
+    oldpar = graphics::par(mfrow = c(N, N))
     on.exit(graphics::par(oldpar))
 
     for (i in 1:nrow(x$pvals_df)){
@@ -60,7 +60,8 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
 
       plot(y, xlim = xlim, breaks = breaks,
            legend.x = legend.x, legend.y = legend.y, ask = FALSE,
-           plot_estimated_line = plot_estimated_line, ...)
+           plot_estimated_line = (i == nrow(x$pvals_df)),
+           ...)
     }
 
     return (invisible(NULL))

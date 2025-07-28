@@ -41,4 +41,7 @@ test_that("plot.bootstrapTest works for multiple bootstrapping types at the same
                                       bootstrapOptions = "all and also invalid") )
 
   expect_no_error(plot(result))
+
+  expect_no_error(plot(result, plot_estimated_line = TRUE))
+
 })
