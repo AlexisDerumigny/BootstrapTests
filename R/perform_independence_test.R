@@ -75,11 +75,21 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #' @param X1,X2 numerical vectors of the same size. The independence test tests
 #' whether \code{X1} is independent from \code{X2}.
 #'
-#' @param my_grid the grid on which the empirical CDFs are estimated. It defaults
-#' to \code{NULL}, so it is chosen automatically. However, the user can input
-#' a grid of their choice.
-#  TODO: implement a different grid for X1 and X2.
-#  TODO: can the grid be chosen automatically? For example quantiles of X1, X2?
+#' @param my_grid the grid on which the CDFs are estimated. This must be one of
+#' \itemize{
+#'   \item \code{NULL}: a regularly spaced grid from the minimum value to the
+#'   maximum value of each variable with \code{20} points is used. This is the
+#'   default.
+#'
+#'   \item A numeric of size 1. This is used at the length of both grids, replacing
+#'   \code{20} in the above explanation.
+#'
+#'   \item A numeric vector of size larger than 1. This is directly used as the
+#'   grid for both variables.
+#'
+#'   \item A list of two numeric vectors, which are used as the grids for both
+#'   variables \code{X1} and \code{X2} respectively.
+#' }
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
