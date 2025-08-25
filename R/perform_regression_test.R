@@ -222,7 +222,7 @@ perform_regression_test <- function(X, Y,
   type_stat_user = "eq"
 
   # Mapping vector from bootstrap options to the valid test statistics
-  map_bootstrap_to_stat = c( indep                  = "eq",
+  map_bootstrap_to_stat = c( indep                   = "eq",
                              NP                      = "cent",
                              res_bs                  = "cent",
                              hybrid_null_bs          = "eq",

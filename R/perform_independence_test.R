@@ -174,7 +174,7 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 #'
 #' @examples
-#' n <- 10
+#' n <- 100
 #'
 #' # Under H1
 #' X1 <- rnorm(n)
