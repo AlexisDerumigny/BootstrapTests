@@ -544,12 +544,12 @@ perform_regression_test <- function(X, Y,
       switch (type_stat_user,
               "cent" = {
                 # centered test statistic
-                stat_st[iBootstrap] = abs(b_hat_st) * sqrt(n)
+                stat_st[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
                 stopifnot( !is.na(stat_st[iBootstrap]) )
               },
               "eq" = {
                 # equivalent test statistic
-                stat_st[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
+                stat_st[iBootstrap] = abs(b_hat_st) * sqrt(n)
                 stopifnot( !is.na(stat_st[iBootstrap]) )
               },
               {
