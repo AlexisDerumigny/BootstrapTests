@@ -126,7 +126,7 @@ Via the \code{bootstrapOptions} argument, the user can specify other
 bootstrap resampling schemes and test statistics.
 }
 \examples{
-n <- 10
+n <- 100
 
 # Under H1
 X1 <- rnorm(n)
