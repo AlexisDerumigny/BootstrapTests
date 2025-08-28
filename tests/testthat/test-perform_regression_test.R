@@ -101,3 +101,27 @@ test_that("Different types of bootstrap options work as expected", {
 })
 
 
+test_that("Different types of bootstrap options work as expected", {
+
+  set.seed(10)
+  n <- 500
+
+  # Under H1
+  X_data <- rnorm(n)
+  Y_data <-  X_data + rnorm(n)   #Y = X + epsilon
+
+  all_types = c("indep", "NP", "res_bs", "hybrid_null_bs",
+                "fixed_design_bs", "fixed_design_bs_Hnull")
+
+  for (itype in 1:length(all_types)){
+    type = all_types[itype]
+
+    result <- perform_regression_test(X_data, Y_data, nBootstrap = 100,
+                                      bootstrapOptions = list(type_boot = type),
+                                      show_progress = FALSE)
+
+    expect_equal(result$pvals_df$pvalues, 0)
+  }
+})
+
+
