@@ -4,7 +4,13 @@
 \alias{perform_regression_test}
 \title{Perform a test on the slope coefficient of a univariate linear regression}
 \usage{
-perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
+perform_regression_test(
+  X,
+  Y,
+  nBootstrap = 100,
+  show_progress = TRUE,
+  bootstrapOptions = NULL
+)
 }
 \arguments{
 \item{X}{numeric univariate input vector resembling the independent variables}
@@ -12,6 +18,8 @@ perform_regression_test(X, Y, nBootstrap = 100, bootstrapOptions = NULL)
 \item{Y}{numeric univariate input vector the dependent variables}
 
 \item{nBootstrap}{numeric value of the amount of bootstrap resamples}
+
+\item{show_progress}{logical value indicating whether to show a progress bar}
 
 \item{bootstrapOptions}{This can be one of \itemize{
   \item \code{NULL} This uses the default options \code{type_boot = "indep"},

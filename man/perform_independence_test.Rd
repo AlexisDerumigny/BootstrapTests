@@ -9,6 +9,7 @@ perform_independence_test(
   X2,
   my_grid = NULL,
   nBootstrap = 100,
+  show_progress = TRUE,
   bootstrapOptions = NULL
 )
 }
@@ -33,6 +34,8 @@ whether \code{X1} is independent from \code{X2}.}
 }}
 
 \item{nBootstrap}{number of bootstrap repetitions.}
+
+\item{show_progress}{logical value indicating whether to show a progress bar}
 
 \item{bootstrapOptions}{This can be one of \itemize{
   \item \code{NULL} This uses the default options \code{type_boot = "indep"},

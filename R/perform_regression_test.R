@@ -124,6 +124,9 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @param X numeric univariate input vector resembling the independent variables
 #' @param Y numeric univariate input vector the dependent variables
 #' @param nBootstrap numeric value of the amount of bootstrap resamples
+#'
+#' @param show_progress logical value indicating whether to show a progress bar
+#'
 #' @param bootstrapOptions This can be one of \itemize{
 #'   \item \code{NULL} This uses the default options \code{type_boot = "indep"},
 #'   \code{type_stat = "eq"}.
@@ -214,6 +217,7 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @export
 perform_regression_test <- function(X, Y,
                                     nBootstrap = 100,
+                                    show_progress = TRUE,
                                     bootstrapOptions = NULL)
 {
 
@@ -348,10 +352,11 @@ perform_regression_test <- function(X, Y,
     valid_bootstrap_names <- c("indep", "NP",
                                "res_bs", "hybrid_null_bs")
     # Progress bar
-    total_steps <- length(bootstrap_names) * nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
-
+    if (show_progress){
+      total_steps <- length(bootstrap_names) * nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+    }
 
     # For all possible bootstrap resampling schemes, perform the bootstrap
     # regression test.
@@ -402,9 +407,11 @@ perform_regression_test <- function(X, Y,
 
         }
 
-        # Update progress bar
-        step <- step + 1
-        pbapply::setpb(pb, step)
+        if (show_progress){
+          # Update progress bar
+          step <- step + 1
+          pbapply::setpb(pb, step)
+        }
 
       }
       # End of bootstrap ======================================================
@@ -519,10 +526,13 @@ perform_regression_test <- function(X, Y,
     # initialisation of the bootstrap test statistics values
     stat_st = rep(NA,nBootstrap)
 
-    # Progress bar
-    total_steps <- nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+
+    if (show_progress){
+      # Progress bar
+      total_steps <- nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+    }
 
     for (iBootstrap in 1:nBootstrap){
 
@@ -557,9 +567,11 @@ perform_regression_test <- function(X, Y,
               }
       )
 
-      # Update progress bar
-      step <- step + 1
-      pbapply::setpb(pb, step)
+      if (show_progress){
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
+      }
     }
 
     # After bootstrapping - add test statistics to the dataframe ================
@@ -574,6 +586,11 @@ perform_regression_test <- function(X, Y,
     # add bootstrapped test statistics to dataframe
     pvals_df$list_stat_st[pvals_df$type_boot == type_boot &
                                   pvals_df$type_stat == type_stat_user ] <- list(stat_st)
+  }
+
+  if (show_progress){
+    # close progress bar
+    pbapply::closepb(pb)
   }
 
   # post-processing ================================================
@@ -607,8 +624,6 @@ perform_regression_test <- function(X, Y,
     nameMethod = "Bootstrap Regression Test"
   )
 
-  # close progress bar
-  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_regression", "bootstrapTest")

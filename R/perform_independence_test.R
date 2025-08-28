@@ -93,6 +93,8 @@ compute_joint_ecdf <- function(X1, X2, my_grid1, my_grid2) {
 #'
 #' @param nBootstrap number of bootstrap repetitions.
 #'
+#' @param show_progress logical value indicating whether to show a progress bar
+#'
 #' @param bootstrapOptions This can be one of \itemize{
 #'   \item \code{NULL} This uses the default options \code{type_boot = "indep"},
 #'   \code{type_stat = "eq"} and \code{type_norm = "KS"}.
@@ -200,6 +202,7 @@ perform_independence_test <- function(
     X1, X2,
     my_grid = NULL,
     nBootstrap = 100,
+    show_progress = TRUE,
     bootstrapOptions = NULL)
 {
 
@@ -344,10 +347,12 @@ perform_independence_test <- function(
     list_results = list()
     vec_type_boot = c("indep", "NP")
 
-    # Progress bar
-    total_steps <- length(vec_type_boot) * nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+    if (show_progress){
+      # Progress bar
+      total_steps <- length(vec_type_boot) * nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+    }
 
     for (iBoot in 1:length(vec_type_boot)){
       type_boot = vec_type_boot[iBoot]
@@ -403,9 +408,11 @@ perform_independence_test <- function(
 
         }
 
-        # Update progress bar
-        step <- step + 1
-        pbapply::setpb(pb, step)
+        if (show_progress){
+          # Update progress bar
+          step <- step + 1
+          pbapply::setpb(pb, step)
+        }
       }
 
 
@@ -461,10 +468,12 @@ perform_independence_test <- function(
     # Check the user-specified bootstrap options
     type_boot = type_boot_user
 
-    # Progress bar
-    total_steps <-  nBootstrap
-    pb <- pbapply::startpb(min = 0, max = total_steps)
-    step <- 0
+    if (show_progress){
+      # Progress bar
+      total_steps <-  nBootstrap
+      pb <- pbapply::startpb(min = 0, max = total_steps)
+      step <- 0
+    }
 
     #initialisation
     stat_st = rep(NA, nBootstrap)
@@ -542,6 +551,11 @@ perform_independence_test <- function(
     list_results <- append(list_results, list(df_new))
   }
 
+  if (show_progress){
+    # close progress bar
+    pbapply::closepb(pb)
+  }
+
   # Post-processing ========================================================
 
   # Rowbind the dataframes in `list_results` into a large dataframe
@@ -578,9 +592,6 @@ perform_independence_test <- function(
 
     nameMethod = "Bootstrap Independence Test"
   ) )
-
-  # close progress bar
-  pbapply::closepb(pb)
 
   # make a class for the result object
   class(result) <- c("bootstrapTest_independence", "bootstrapTest")
