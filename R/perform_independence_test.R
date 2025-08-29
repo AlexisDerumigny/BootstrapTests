@@ -534,10 +534,11 @@ perform_independence_test <- function(
                 stop("Unknown type_norm_user. Please choose either 'L2' or 'KS'.")
               }
       )
-
-      # Update progress bar
-      step <- step + 1
-      pbapply::setpb(pb, step)
+      if (show_progress){
+        # Update progress bar
+        step <- step + 1
+        pbapply::setpb(pb, step)
+      }
 
     }
 
