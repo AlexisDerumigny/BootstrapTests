@@ -4,7 +4,6 @@
 # Package BootstrapTests
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 This package BootstrapTests implements several methods to perform
@@ -62,8 +61,8 @@ result <- perform_independence_test(
                           type_stat = "eq",
                           type_norm = "KS") )
 print(result)
-#>          🎯Bootstrap Independence Test Results 🎯
-#>  ======================================================== 
+#>          🎯Bootstrap Independence Test Results🎯
+#>  ===================================================== 
 #> 
 #> Performed test:
 #>   Bootstrap type           : indep
@@ -71,7 +70,7 @@ print(result)
 #>   Type of test statistic   : eq
 #>   Type of norm used        : KS
 #>   p-value                  : 0
-#>   True test statistic      : 0.1595
+#>   True test statistic      : 1.5250
 plot(result)
 ```
 
@@ -84,8 +83,8 @@ X1 <- rnorm(n)
 X2 <- rnorm(n)
 result <- perform_independence_test(X1, X2)
 print(result)
-#>          🎯Bootstrap Independence Test Results 🎯
-#>  ======================================================== 
+#>          🎯Bootstrap Independence Test Results🎯
+#>  ===================================================== 
 #> 
 #> Performed test:
 #>   Bootstrap type           : indep
@@ -93,7 +92,7 @@ print(result)
 #>   Type of test statistic   : eq
 #>   Type of norm used        : KS
 #>   p-value                  : 0.17
-#>   True test statistic      : 0.0640
+#>   True test statistic      : 0.5470
 plot(result)
 ```
 
@@ -105,20 +104,20 @@ plot(result)
 # Showing all theoretically valid options:
 result_valid <- perform_independence_test(X1, X2, bootstrapOptions = "all")
 print(result_valid)
-#>          🎯Bootstrap Independence Test Results 🎯
-#>  ======================================================== 
+#>          🎯Bootstrap Independence Test Results🎯
+#>  ===================================================== 
 #> 
 #> All test results:
 #> 
 #>  type_boot type_stat type_norm list_stat_st pvalues theoretically_valid quantile_95 quantile_99
-#>      indep        eq        L2 6.896435....    0.09                TRUE   19.383776   28.521103
-#>      indep        eq        KS 0.0498, ....    0.16                TRUE    0.077435    0.102921
-#>         NP      cent        L2 4.616682....    0.15                TRUE   15.241156   18.208424
-#>         NP      cent        KS 0.0371, ....    0.15                TRUE    0.069505    0.076838
+#>      indep        eq        L2 0.240672....    0.07                TRUE   0.7654325   1.2052494
+#>      indep        eq        KS 0.406, 0....    0.17                TRUE   0.6782000   0.8444500
+#>         NP      cent        L2 0.195994....    0.06                TRUE   0.6414353   0.8860504
+#>         NP      cent        KS 0.266, 0....    0.17                TRUE   0.6462000   0.7602500
 #> 
 #> True test statistics:
 #>       L2       KS 
-#> 12.54544  0.06400
+#> 0.627692 0.547000
 ```
 
 ### Slope testing in linear regression setting
@@ -150,15 +149,15 @@ result <- perform_regression_test(X_data, Y_data, nBootstrap = 100,
                        bootstrapOptions =  list(type_boot = "indep",
                                                 type_stat = "eq"))
 print(result)
-#>          🎯Bootstrap Regression Test Results 🎯
-#>  ====================================================== 
+#>          🎯Bootstrap Regression Test Results🎯
+#>  =================================================== 
 #> 
 #> Performed test:
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Slope coefficient β      : 1.063313 
-#>   p-value                  : 0.52
+#>   p-value                  : 0
 #>   True test statistic      : 10.6331
 plot(result)
 ```
@@ -172,15 +171,15 @@ X_data <- rnorm(n)
 Y_data <- 0 * X_data + rnorm(n) 
 result <- perform_regression_test(X_data, Y_data, nBootstrap = 100)
 print(result)
-#>          🎯Bootstrap Regression Test Results 🎯
-#>  ====================================================== 
+#>          🎯Bootstrap Regression Test Results🎯
+#>  =================================================== 
 #> 
 #> Performed test:
 #>   Bootstrap type           : indep
 #>   Bootstrap repetitions    : 100
 #>   Type of test statistic   : eq
 #>   Slope coefficient β      : 0.1073819 
-#>   p-value                  : 0.47
+#>   p-value                  : 0.24
 #>   True test statistic      : 1.0738
 plot(result)
 ```
@@ -192,8 +191,8 @@ plot(result)
 # Showing all theoretically valid options:
 result_valid <- perform_regression_test(X_data, Y_data, bootstrapOptions = "all")
 print(result_valid)
-#>          🎯Bootstrap Regression Test Results 🎯
-#>  ====================================================== 
+#>          🎯Bootstrap Regression Test Results🎯
+#>  =================================================== 
 #> 
 #> All test results:
 #> 
@@ -240,8 +239,8 @@ result <- perform_GoF_test(X_data,
                                                  type_estimator_bootstrap = "MLE")
                         )
 print(result)
-#>          🎯Bootstrap GoF Test Results 🎯
-#>  =============================================== 
+#>          🎯Bootstrap GoF Test Results🎯
+#>  ============================================ 
 #> 
 #> Performed test:
 #>   Bootstrap type           : param
@@ -261,8 +260,8 @@ plot(result)
 X_data <- rnorm(n)
 result <- perform_GoF_test(X_data, nBootstrap = 100)
 print(result)
-#>          🎯Bootstrap GoF Test Results 🎯
-#>  =============================================== 
+#>          🎯Bootstrap GoF Test Results🎯
+#>  ============================================ 
 #> 
 #> Performed test:
 #>   Bootstrap type           : param
@@ -281,14 +280,14 @@ plot(result)
 # Showing all theoretically valid options:
 result_valid <- perform_GoF_test(X_data, bootstrapOptions = "all")
 print(result_valid)
-#>          🎯Bootstrap GoF Test Results 🎯
-#>  =============================================== 
+#>          🎯Bootstrap GoF Test Results🎯
+#>  ============================================ 
 #> 
 #> All test results:
 #> 
 #>  type_boot type_stat type_estimator_bootstrap list_stat_st pvalues theoretically_valid quantile_95 quantile_99
 #>      param        eq                      MLE 0.451881....    0.87                TRUE   0.8199992   0.9566776
-#>      param        eq                       MD 0.345201....    0.79                TRUE   0.5972507   0.6779756
+#>      param        eq                    MD-eq 0.345201....    0.79                TRUE   0.5972507   0.6779756
 #>         NP      cent                      MLE 0.522512....    0.85                TRUE   0.8179136   1.0207223
 #>         NP      cent                  MD-cent 0.509454....    0.74                TRUE   0.6017127   0.6678917
 #> 
