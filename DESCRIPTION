@@ -6,8 +6,11 @@ Version: 0.1.0
 Authors@R: c(
     person("Alexis", "Derumigny", , "A.F.F.Derumigny@tudelft.nl", role = "aut",
            comment = c(ORCID = "0000-0002-6163-8097")),
-    person("Wieger", "Schipper", , "W.R.Schipper@tudelft.nl", role = c("aut", "cre")),
-    person("Miltiadis", "Galanis", , "mgalan@di.uoa.gr", role = "aut")
+    person("Miltiadis", "Galanis", , "mgalan@di.uoa.gr", role = "aut"),       
+    person("Wieger", "Schipper", , "W.R.Schipper@tudelft.nl", role = c("aut", "cre"),
+          comment = c(ORCID = "0009-0004-5661-4949")),
+    person("Aad", "van der Vaart", , "A.W.vanderVaart@tudelft.nl", role = "aut",
+           comment = c(ORCID = "0000-0002-8074-2375"))
   )
 Description: Perform bootstrap-based hypothesis testing procedures on
     three statistical problems. In particular, it covers independence
