@@ -1,6 +1,6 @@
 Type: Package
 Package: BootstrapTests
-Title: Use Several Methods To Perform Bootstrap-based Hypothesis Testing
+Title: Use Several Methods to Perform Bootstrap-Based Hypothesis Testing
     Procedures
 Version: 0.1.0
 Authors@R: c(
