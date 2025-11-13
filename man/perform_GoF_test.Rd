@@ -2,7 +2,7 @@
 % Please edit documentation in R/perform_GoF_test.R
 \name{perform_GoF_test}
 \alias{perform_GoF_test}
-\title{Perform a univariate GoF hypothesis test via bootstrap resampling}
+\title{Perform a univariate goodness-of-fit (GoF) hypothesis test via bootstrap resampling}
 \usage{
 perform_GoF_test(
   X_data,
@@ -134,7 +134,7 @@ This function performs a bootstrap goodness-of-fit hypothesis test for a
 specific univariate parametric family. The null hypothesis corresponds to the
 sample coming from the specified parametric family, while the alternative
 hypothesis corresponds to the sample not coming from the specified
-parametric family. This function implements a param bootstrap and
+parametric family. This function implements a parametric bootstrap and
 a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
 statistic. To estimate the parameters of the parametric family, either a minimum
 distance estimator, or a MLE estimator (the sample mean and variance)
@@ -142,7 +142,7 @@ is used. On the bootstrap sample, we have also implemented a centered MD estimat
 as in the paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. The default (and valid) method implemented
-in this function is the param bootstrap, together with the equivalent test statistic
+in this function is the parametric bootstrap, together with the equivalent test statistic
 and the MLE parameter estimator. Via the \code{bootstrapOptions}
 argument, the user can specify other bootstrap resampling schemes,
 test statistics, and parameter estimators.

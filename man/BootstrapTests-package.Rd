@@ -4,7 +4,7 @@
 \name{BootstrapTests-package}
 \alias{BootstrapTests}
 \alias{BootstrapTests-package}
-\title{BootstrapTests: Use Several Methods To Perform Bootstrap-based Hypothesis Testing Procedures}
+\title{BootstrapTests: Use Several Methods to Perform Bootstrap-Based Hypothesis Testing Procedures}
 \description{
 Perform bootstrap-based hypothesis testing procedures on three statistical problems. In particular, it covers independence testing, testing the slope in a linear regression setting, and goodness-of-fit testing.
 }
@@ -17,11 +17,13 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Wieger Schipper \email{W.R.Schipper@tudelft.nl}
+\strong{Maintainer}: Wieger Schipper \email{W.R.Schipper@tudelft.nl} (\href{https://orcid.org/0009-0004-5661-4949}{ORCID})
 
 Authors:
 \itemize{
   \item Alexis Derumigny \email{A.F.F.Derumigny@tudelft.nl} (\href{https://orcid.org/0000-0002-6163-8097}{ORCID})
+  \item Miltiadis Galanis \email{mgalan@di.uoa.gr}
+  \item Aad van der Vaart \email{A.W.vanderVaart@tudelft.nl} (\href{https://orcid.org/0000-0002-8074-2375}{ORCID})
 }
 
 }
