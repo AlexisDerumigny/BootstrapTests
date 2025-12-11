@@ -1,7 +1,6 @@
 Type: Package
 Package: BootstrapTests
-Title: Use Several Methods to Perform Bootstrap-Based Hypothesis Testing
-    Procedures
+Title: Bootstrap-Based Hypothesis Testing using Different Resampling Schemes
 Version: 0.1.0
 Authors@R: c(
     person("Alexis", "Derumigny", , "A.F.F.Derumigny@tudelft.nl", role = "aut",
