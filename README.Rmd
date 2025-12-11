@@ -19,9 +19,6 @@ set.seed(1)
 
 # Package BootstrapTests
 
-<!-- badges: start -->
-<!-- badges: end -->
-
 This package BootstrapTests implements several methods to perform bootstrap-based 
 hypothesis testing procedures on three statistical problems: independence testing,
 testing the slope in a linear regression setting, and goodness-of-fit testing.
