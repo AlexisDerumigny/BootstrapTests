@@ -440,14 +440,14 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #'            is necessary in this case to use an equivalent bootstrap
 #'            estimator to match the equivalent bootstrap test statistic. This
 #'            bootstrap parameter estimator is given as:
-#'            \eqn{\theta_n^{*,MD}=\argmin_{\theta} ||  \hat{F}^* - F_{\theta} ||}
+#'            \eqn{\theta_n^{*,MD}=\arg\min_{\theta} ||  \hat{F}^* - F_{\theta} ||}
 #'
 #'            \item \code{"MD-cent"} for the centered Minimum Distance estimator.
 #'            This is a valid choice if and only if \code{type_stat = "cent"}. It
 #'            is necessary in this case to perform a centering on the bootstrap
 #'            estimator to match the centered bootstrap test statistic. This
 #'            bootstrap parameter estimator is given as:
-#'            \eqn{\theta_n^{*,MD, cent}=\argmin_{\theta}
+#'            \eqn{\theta_n^{*,MD, cent}=\arg\min_{\theta}
 #'            || \hat{F}^* - F_{\theta}- \hat{F} + F_{\hat\theta} ||}
 #'
 #'         }
