@@ -195,6 +195,11 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}.
 #' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 #'
+#' @references
+#' Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+#' Bootstrapping not under the null?
+#' ArXiv preprint, \doi{10.48550/arXiv.2512.10546}
+#'
 #' @examples
 #' n <- 100
 #'

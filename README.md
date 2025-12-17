@@ -3,9 +3,6 @@
 
 # Package BootstrapTests
 
-<!-- badges: start -->
-<!-- badges: end -->
-
 This package BootstrapTests implements several methods to perform
 bootstrap-based hypothesis testing procedures on three statistical
 problems: independence testing, testing the slope in a linear regression
@@ -298,4 +295,6 @@ print(result_valid)
 
 ## References
 
-To be included
+Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+Bootstrapping not under the null? ArXiv preprint,
+[arXiv:2512.10546](https://arxiv.org/pdf/2512.10546)

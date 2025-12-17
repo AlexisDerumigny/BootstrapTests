@@ -54,6 +54,11 @@ as a histogram, with the true test statistic and the 95% quantile of the
 bootstrapped test statistics highlighted. In the regression test case, the
 estimated regression line is plotted as well.
 }
+\references{
+Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+Bootstrapping not under the null?
+ArXiv preprint, \doi{10.48550/arXiv.2512.10546}
+}
 \seealso{
 The functions that generate such object \code{x}:
 \code{\link{perform_independence_test}, \link{perform_GoF_test},

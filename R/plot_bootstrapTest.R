@@ -34,6 +34,11 @@
 #' \code{\link{perform_independence_test}, \link{perform_GoF_test},
 #' \link{perform_regression_test}}.
 #'
+#' @references
+#' Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+#' Bootstrapping not under the null?
+#' ArXiv preprint, \doi{10.48550/arXiv.2512.10546}
+#'
 #' @export
 plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
                                legend.x = NULL, legend.y = NULL,

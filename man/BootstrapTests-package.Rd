@@ -4,9 +4,9 @@
 \name{BootstrapTests-package}
 \alias{BootstrapTests}
 \alias{BootstrapTests-package}
-\title{BootstrapTests: Use Several Methods to Perform Bootstrap-Based Hypothesis Testing Procedures}
+\title{BootstrapTests: Bootstrap-Based Hypothesis Testing using Different Resampling Schemes}
 \description{
-Perform bootstrap-based hypothesis testing procedures on three statistical problems. In particular, it covers independence testing, testing the slope in a linear regression setting, and goodness-of-fit testing.
+Perform bootstrap-based hypothesis testing procedures on three statistical problems. In particular, it covers independence testing, testing the slope in a linear regression setting, and goodness-of-fit testing, following (Derumigny, Galanis, Schipper and Van der Vaart, 2025) \doi{10.48550/arXiv.2512.10546}.
 }
 \seealso{
 Useful links:

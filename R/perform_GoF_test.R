@@ -491,6 +491,11 @@ warningInvalidCombination <- function(type_boot, type_stat, type_stat_valid){
 #' @seealso \code{\link{perform_regression_test},\link{perform_independence_test}}.
 #' The print and plot methods, such as \code{\link{plot.bootstrapTest}}.
 #'
+#' @references
+#' Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+#' Bootstrapping not under the null?
+#' ArXiv preprint, \doi{10.48550/arXiv.2512.10546}
+#'
 #' @examples
 #' n <- 100
 #' # Under H1
