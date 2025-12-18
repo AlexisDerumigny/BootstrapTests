@@ -30,9 +30,10 @@
 #' @returns These functions have no return value and are called solely for their
 #' side effects.
 #'
-#' @seealso The functions that generate such object \code{x}:
+#' @seealso
 #' \code{\link{perform_independence_test}, \link{perform_GoF_test},
-#' \link{perform_regression_test}}.
+#' \link{perform_regression_test}},
+#' which are the functions that generate such object \code{x}.
 #'
 #' @references
 #' Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).

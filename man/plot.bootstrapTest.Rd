@@ -60,7 +60,7 @@ Bootstrapping not under the null?
 ArXiv preprint, \doi{10.48550/arXiv.2512.10546}
 }
 \seealso{
-The functions that generate such object \code{x}:
 \code{\link{perform_independence_test}, \link{perform_GoF_test},
-\link{perform_regression_test}}.
+\link{perform_regression_test}},
+which are the functions that generate such object \code{x}.
 }
