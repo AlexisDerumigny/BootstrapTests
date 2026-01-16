@@ -42,10 +42,28 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            any::V8
           needs: check
 
+      - uses: r-lib/actions/setup-tinytex@v2
+
+      - name: Install LaTeX packages 'courier' (font) and 'makeindex' on Windows
+        # to fix PDF error "Cannot find pcrr8t.mf."
+        # and:
+        # * checking PDF version of manual ... WARNING
+        #   LaTeX errors when creating PDF version.
+        #   This typically indicates Rd problems.
+        #   LaTeX errors found:
+        # * checking PDF version of manual without index ... OK
+        if: runner.os == 'Windows'
+        run: |
+          tlmgr --version
+          tlmgr install courier makeindex
+                    
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          build_args: 'c("--compact-vignettes=gs+qpdf")'
+          args: 'c("--as-cran")'
