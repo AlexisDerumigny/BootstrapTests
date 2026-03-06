@@ -25,6 +25,12 @@ testing the slope in a linear regression setting, and goodness-of-fit testing.
 
 ## Installation
 
+The release version on CRAN can be downloaded in R via the following command:
+
+``` r
+install.packages("BootstrapTests")
+```
+
 You can install the development version of BootstrapTests from [GitHub](https://github.com/)
 using the `devtools` package with:
 

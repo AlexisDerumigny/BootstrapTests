@@ -10,6 +10,13 @@ setting, and goodness-of-fit testing.
 
 ## Installation
 
+The release version on CRAN can be downloaded in R via the following
+command:
+
+``` r
+install.packages("BootstrapTests")
+```
+
 You can install the development version of BootstrapTests from
 [GitHub](https://github.com/) using the `devtools` package with:
 
@@ -71,7 +78,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_independence-1.png" width="100%" />
+<img src="man/figures/README-example_independence-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -93,7 +100,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_independence-2.png" width="100%" />
+<img src="man/figures/README-example_independence-2.png" alt="" width="100%" />
 
 ``` r
 
@@ -159,7 +166,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_linear_regression-1.png" width="100%" /><img src="man/figures/README-example_linear_regression-2.png" width="100%" />
+<img src="man/figures/README-example_linear_regression-1.png" alt="" width="100%" /><img src="man/figures/README-example_linear_regression-2.png" alt="" width="100%" />
 
 ``` r
 
@@ -181,7 +188,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_linear_regression-3.png" width="100%" /><img src="man/figures/README-example_linear_regression-4.png" width="100%" />
+<img src="man/figures/README-example_linear_regression-3.png" alt="" width="100%" /><img src="man/figures/README-example_linear_regression-4.png" alt="" width="100%" />
 
 ``` r
 
@@ -249,7 +256,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_GOF-1.png" width="100%" />
+<img src="man/figures/README-example_GOF-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -270,7 +277,7 @@ print(result)
 plot(result)
 ```
 
-<img src="man/figures/README-example_GOF-2.png" width="100%" />
+<img src="man/figures/README-example_GOF-2.png" alt="" width="100%" />
 
 ``` r
 
