@@ -9,9 +9,9 @@ test_that("GoF test output is well formatted", {
 
   expect_true(is.data.frame(result$pvals_df))
 
-  expect_true(all(result$pvals_df$pval >= 0))
+  expect_true(all(result$pvals_df$pvalues >= 0))
 
-  expect_true(all(result$pvals_df$pval <= 1))
+  expect_true(all(result$pvals_df$pvalues <= 1))
 
   # Under H0
   X_data = rnorm(n)
@@ -19,9 +19,9 @@ test_that("GoF test output is well formatted", {
 
   expect_true(is.data.frame(result$pvals_df))
 
-  expect_true(all(result$pvals_df$pval >= 0))
+  expect_true(all(result$pvals_df$pvalues >= 0))
 
-  expect_true(all(result$pvals_df$pval <= 1))
+  expect_true(all(result$pvals_df$pvalues <= 1))
 
 })
 

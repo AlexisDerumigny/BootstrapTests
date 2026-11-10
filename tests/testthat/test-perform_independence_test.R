@@ -8,9 +8,9 @@ test_that("independence test output is well formatted", {
 
   expect_true(is.data.frame(result$pvals_df))
 
-  expect_true(all(result$pvals_df$pval >= 0))
+  expect_true(all(result$pvals_df$pvalues >= 0))
 
-  expect_true(all(result$pvals_df$pval <= 1))
+  expect_true(all(result$pvals_df$pvalues <= 1))
 
 
   # Under H0
@@ -21,9 +21,9 @@ test_that("independence test output is well formatted", {
 
   expect_true(is.data.frame(result$pvals_df))
 
-  expect_true(all(result$pvals_df$pval >= 0))
+  expect_true(all(result$pvals_df$pvalues >= 0))
 
-  expect_true(all(result$pvals_df$pval <= 1))
+  expect_true(all(result$pvals_df$pvalues <= 1))
 })
 
 test_that("Independence test throws errors for wrong input", {
