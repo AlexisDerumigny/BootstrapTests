@@ -60,8 +60,8 @@ print.bootstrapTest <- function(x, ...){
     cat( paste0("  p-value                  : ", row$pvalues,"\n"))
     #cat(sprintf("  p-value                  : %.4f\n", row$pvalues))
     cat(sprintf("  True test statistic      : %.4f\n", true_stat))
-    cat(sprintf("  Critical value at 5%%     : %.4f\n", row$ci_upper_95))
-    cat(sprintf("  Critical value at 1%%     : %.4f\n", row$ci_upper_99))
+    cat(sprintf("  Critical value at 5%%     : %.4f\n", row$quantile_95))
+    cat(sprintf("  Critical value at 1%%     : %.4f\n", row$quantile_99))
     cat("\n")
   } else if ( nrow(x$pvals_df) >= 1 ) {
     # Print all testing information
