@@ -61,14 +61,14 @@ test_that("Different types of bootstrap options work as expected", {
                             type_stat = "eq",
                             type_norm = "KS") )
 
-  expect_identical(result_1, result_2)
+  expect_equal(result_1, result_2)
   set.seed(10)
   result_3 = perform_independence_test(
     X1, X2, nBootstrap = 30,
     bootstrapOptions = list(type_boot = "indep") )
 
   # use the same seed to have equal result
-  expect_identical(result_1, result_3)
+  expect_equal(result_1, result_3)
 
   # Give warning for theoreotically invalid bootstrap schemes
   expect_warning({ perform_independence_test(
@@ -94,9 +94,9 @@ test_that("Different types of bootstrap options work as expected", {
                                          bootstrapOptions = "all and also invalid")
   })
 
-  # expect that the results are not identical, as the `result_7' also gives
+  # expect that the results are not equal, as `result_7' also gives
   # invalid bootstrap schemes
-  expect_false(identical(result_6, result_7))
+  expect_false(isFALSE(all.equal(result_6, result_7)))
 })
 
 

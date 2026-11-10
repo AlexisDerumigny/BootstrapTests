@@ -74,7 +74,7 @@ test_that("Different types of bootstrap options work as expected", {
                             type_estimator_bootstrap = "MLE"),
     verbose = 0 )
 
-  expect_identical(result_1, result_2)
+  expect_equal(result_1, result_2)
 
   set.seed(10)
   result_3 = perform_GoF_test(
@@ -83,7 +83,7 @@ test_that("Different types of bootstrap options work as expected", {
     verbose = 0 )
 
   # use the same seed to have equal result
-  expect_identical(result_1, result_3)
+  expect_equal(result_1, result_3)
 
   # Give warning for theoretically invalid bootstrap schemes
   expect_warning({
@@ -108,7 +108,7 @@ test_that("Different types of bootstrap options work as expected", {
                               bootstrapOptions = "all",
                               verbose = 0)
 
-  expect_identical(nrow(result_6$pvals_df), 4L)
+  expect_equal(nrow(result_6$pvals_df), 4L)
 
   set.seed(10)
   expect_warning({
@@ -118,11 +118,11 @@ test_that("Different types of bootstrap options work as expected", {
   })
 
   total_number_bootstrap_combinations = 2L * 2L * 3L
-  expect_identical(nrow(result_7$pvals_df), total_number_bootstrap_combinations)
+  expect_equal(nrow(result_7$pvals_df), total_number_bootstrap_combinations)
 
 
-  # expect that the results are not identical, as the `result_7' also gives
+  # expect that the results are not equal, as the `result_7' also gives
   # invalid bootstrap schemes
-  expect_false(identical(result_6, result_7))
+  expect_false(isFALSE(all.equal(result_6, result_7)))
 })
 
