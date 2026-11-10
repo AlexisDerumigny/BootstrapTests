@@ -48,19 +48,11 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/setup-tinytex@v2
+        env:
+          TINYTEX_INSTALLER: TinyTeX
 
-      - name: Install LaTeX packages 'courier' (font) and 'makeindex' on Windows
-        # to fix PDF error "Cannot find pcrr8t.mf."
-        # and:
-        # * checking PDF version of manual ... WARNING
-        #   LaTeX errors when creating PDF version.
-        #   This typically indicates Rd problems.
-        #   LaTeX errors found:
-        # * checking PDF version of manual without index ... OK
-        if: runner.os == 'Windows'
-        run: |
-          tlmgr --version
-          tlmgr install courier makeindex
+      - name: Show TeX Live version
+        run: tlmgr --version
                     
       - uses: r-lib/actions/check-r-package@v2
         with:
