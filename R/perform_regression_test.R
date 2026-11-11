@@ -140,9 +140,14 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'            \item \code{"NP"} for the non-parametric bootstrap
 #'            (i.e. n out of n bootstrap).
 #'            \item \code{"res_bs"} for the residual bootstrap.
-#'            \item \code{"hybrid_null_bs"} for the hybrid null bootstrap
-#'            \item \code{"fixed_design_bs"} for the fixed design bootstrap
+#'            \item \code{"hybrid_null_bs"} for the hybrid null bootstrap, i.e.
+#'            using the non-parametric bootstrap on pairs \eqn{(X_i, \hat{\epsilon_i})}.
+#'            \item \code{"fixed_design_bs"} for the fixed design bootstrap. Its
+#'            theoretically valid usage is valid for fixed design and some
+#'            conditions on the residuals. See @references for more details.
 #'            \item \code{"fixed_design_bs_Hnull"} for the fixed design null bootstrap.
+#'            Its theoretically valid usage is valid for fixed design and some
+#'            conditions on the residuals. See @references for more details.
 #'         }
 #'
 #'         \item \code{type_stat} type of test statistic to be used.  It must be
@@ -359,7 +364,8 @@ perform_regression_test <- function(X, Y,
                          "fixed_design_bs", "hybrid_null_bs")
 
     valid_bootstrap_names <- c("indep", "NP",
-                               "res_bs", "hybrid_null_bs")
+                               "res_bs", "hybrid_null_bs",
+                                "fixed_design_bs", "fixed_design_bs_Hnull")
     # Progress bar
     if (show_progress){
       total_steps <- length(bootstrap_names) * nBootstrap
@@ -398,14 +404,16 @@ perform_regression_test <- function(X, Y,
 
 
         if (bootstrapOptions == "all" && (type_boot %in% valid_bootstrap_names) ) {
-          if (type_boot %in% c("indep", "hybrid_null_bs") ) {
+          if (type_boot %in% c("indep",
+                               "hybrid_null_bs",
+                               "fixed_design_bs_Hnull") ) {
 
             stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
             if (is.na(stat_st_eq[iBootstrap])) {
               stop("Test statistic computation failed: NA")
             }
 
-          } else if ( type_boot %in% c("NP", "res_bs") ){
+          } else if ( type_boot %in% c("NP", "res_bs", "fixed_design_bs") ){
 
             stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
             if (is.na(stat_st_cent[iBootstrap])) {
@@ -444,7 +452,7 @@ perform_regression_test <- function(X, Y,
           list_results = list()
         }
 
-        if (type_boot %in% c("indep", "hybrid_null_bs") )
+        if (type_boot %in% c("indep", "hybrid_null_bs", "fixed_design_bs_Hnull"))
         {
           # Calculate pval
           p_val_eq = mean(as.numeric(true_stat < stat_st_eq))
@@ -457,7 +465,7 @@ perform_regression_test <- function(X, Y,
           # Append new dataframe to the list
           list_results <- append(list_results, list(df_new))
 
-        }  else if ( type_boot %in% c("NP", "res_bs") ){
+        }  else if ( type_boot %in% c("NP", "res_bs", "fixed_design_bs")){
 
           p_val_cent = mean(as.numeric(true_stat < stat_st_cent))
 
@@ -630,8 +638,10 @@ perform_regression_test <- function(X, Y,
   pvals_df$theoretically_valid =
     (pvals_df$type_boot == "indep" & pvals_df$type_stat == "eq")  |
     (pvals_df$type_boot == "hybrid_null_bs" & pvals_df$type_stat == "eq") |
-    (pvals_df$type_boot == "NP"    & pvals_df$type_stat == "cent") |
-  (pvals_df$type_boot == "res_bs"    & pvals_df$type_stat == "cent")
+    (pvals_df$type_boot == "NP" & pvals_df$type_stat == "cent") |
+  (pvals_df$type_boot == "res_bs" & pvals_df$type_stat == "cent") |
+    (pvals_df$type_boot == "fixed_design_bs" & pvals_df$type_stat == "cent") |
+    (pvals_df$type_boot == "fixed_design_bs_Hnull" & pvals_df$type_stat == "eq")
 
   # No rownames for the moment (maybe later if needed?)
   row.names(pvals_df) <- NULL

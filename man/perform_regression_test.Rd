@@ -34,9 +34,14 @@ perform_regression_test(
            \item \code{"NP"} for the non-parametric bootstrap
            (i.e. n out of n bootstrap).
            \item \code{"res_bs"} for the residual bootstrap.
-           \item \code{"hybrid_null_bs"} for the hybrid null bootstrap
-           \item \code{"fixed_design_bs"} for the fixed design bootstrap
+           \item \code{"hybrid_null_bs"} for the hybrid null bootstrap, i.e.
+           using the non-parametric bootstrap on pairs \eqn{(X_i, \hat{\epsilon_i})}.
+           \item \code{"fixed_design_bs"} for the fixed design bootstrap. Its
+           theoretically valid usage is valid for fixed design and some
+           conditions on the residuals. See @references for more details.
            \item \code{"fixed_design_bs_Hnull"} for the fixed design null bootstrap.
+           Its theoretically valid usage is valid for fixed design and some
+           conditions on the residuals. See @references for more details.
         }
 
         \item \code{type_stat} type of test statistic to be used.  It must be
