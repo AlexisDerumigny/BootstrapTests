@@ -1,7 +1,7 @@
 Type: Package
 Package: BootstrapTests
 Title: Bootstrap-Based Hypothesis Testing using Different Resampling Schemes
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Alexis", "Derumigny", , "A.F.F.Derumigny@tudelft.nl", role = "aut",
            comment = c(ORCID = "0000-0002-6163-8097")),
