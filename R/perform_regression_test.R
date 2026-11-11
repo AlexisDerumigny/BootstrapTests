@@ -190,6 +190,8 @@ generate_bootstrap_data <- function(X, Y, a_hat = NA, b_hat = NA,
 #'    \item \code{nameMethod} string for the name of the method used.
 #'
 #'    \item \code{beta} numeric value of the estimated slope of the regression model.
+#'
+#'    \item \code{intercept} numeric value of the estimated intercept of the regression model.
 #' }
 #'
 #' @seealso \code{\link{perform_GoF_test},\link{perform_independence_test}}.
@@ -332,7 +334,9 @@ perform_regression_test <- function(X, Y,
   epsilon_hat = model$residuals
 
   # Check for NA
-  stopifnot(!is.na(a_hat) & !is.na(b_hat) & !is.na(epsilon_hat))
+  if (any(is.na(a_hat) | is.na(b_hat) | is.na(epsilon_hat))) {
+    stop("Regression model fitting failed: NA values in estimates or residuals")
+  }
 
   # calculate T_n = sqrt(n) * |b_hat|
   true_stat = sqrt(n) * abs(b_hat)
@@ -388,27 +392,37 @@ perform_regression_test <- function(X, Y,
 
         # Calculate bootstrap test statistics T_n_^*, centered and equivalent
         b_hat_st = bootstrap_model$coefficients[[2]]
-        stopifnot(!is.na(b_hat_st))
+        if (is.na(b_hat_st)) {
+          stop("Regression model fitting failed: slope estimate is NA")
+        }
+
 
         if (bootstrapOptions == "all" && (type_boot %in% valid_bootstrap_names) ) {
           if (type_boot %in% c("indep", "hybrid_null_bs") ) {
 
             stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
-            stopifnot( !is.na(stat_st_eq[iBootstrap]) )
+            if (is.na(stat_st_eq[iBootstrap])) {
+              stop("Test statistic computation failed: NA")
+            }
 
           } else if ( type_boot %in% c("NP", "res_bs") ){
 
             stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
-            stopifnot( !is.na(stat_st_cent[iBootstrap]) )
+            if (is.na(stat_st_cent[iBootstrap])) {
+              stop("Test statistic computation failed: NA")
+            }
 
           } else {
-            stop("Unknown type_boot in the `b`")
+            stop("Unexpected type_boot value: ", type_boot)
           }
         } else if (bootstrapOptions == "all and also invalid") {
 
           stat_st_cent[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
           stat_st_eq[iBootstrap] = abs(b_hat_st) * sqrt(n)
-          stopifnot(!is.na(stat_st_cent[iBootstrap])  || !is.na(stat_st_eq[iBootstrap]) )
+          if (is.na(stat_st_cent[iBootstrap]) ||
+              is.na(stat_st_eq[iBootstrap])) {
+            stop("Test statistic computation failed: NA")
+          }
 
         }
 
@@ -554,18 +568,28 @@ perform_regression_test <- function(X, Y,
 
       # Calculate bootstrap test statistics T_n_^*, centered and equivalent
       b_hat_st = bootstrap_model$coefficients[[2]]
-      stopifnot(!is.na(b_hat_st))
+      if (is.na(b_hat_st)) {
+        stop("Regression model fitting failed: slope estimate is NA")
+      }
+
 
       switch (type_stat_user,
               "cent" = {
                 # centered test statistic
                 stat_st[iBootstrap] = abs(b_hat_st-b_hat) * sqrt(n)
-                stopifnot( !is.na(stat_st[iBootstrap]) )
+                if (is.na(stat_st[iBootstrap])) {
+                  stop("Test statistic computation failed: NA")
+                }
+
+
               },
               "eq" = {
                 # equivalent test statistic
                 stat_st[iBootstrap] = abs(b_hat_st) * sqrt(n)
-                stopifnot( !is.na(stat_st[iBootstrap]) )
+                if (is.na(stat_st[iBootstrap])) {
+                  stop("Test statistic computation failed: NA")
+                }
+
               },
               {
                 stop("Unknown type_stat_user. Please choose either 'cent' or 'eq'.")
@@ -619,8 +643,10 @@ perform_regression_test <- function(X, Y,
     pvals_df = pvals_df,
     # true test statistics
     true_stats = true_stat,
-    # beta
+    # estimated beta
     beta = b_hat,
+    # estimated intercept
+    intercept = a_hat,
     # Include number of bootstrap repetitions
     nBootstrap = nBootstrap,
     # Include the input data
