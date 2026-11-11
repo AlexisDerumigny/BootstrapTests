@@ -163,8 +163,7 @@ plot.bootstrapTest <- function(x, xlim = NULL, breaks = NULL,
          ylab = "Y",)
 
     # add regression line
-    linear_model <- stats::lm(Y ~ X, data = data)
-    graphics::abline(a = linear_model$coefficients["(Intercept)"] ,
+    graphics::abline(a = x$intercept,
                      b = x$beta,
                      col = "darkorange",
                      lwd = 2,
