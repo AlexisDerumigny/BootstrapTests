@@ -84,6 +84,8 @@ A class object with components \itemize{
    \item \code{nameMethod} string for the name of the method used.
 
    \item \code{beta} numeric value of the estimated slope of the regression model.
+
+   \item \code{intercept} numeric value of the estimated intercept of the regression model.
 }
 }
 \description{

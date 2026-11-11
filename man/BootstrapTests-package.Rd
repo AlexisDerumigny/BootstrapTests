@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Wieger Schipper \email{W.R.Schipper@tudelft.nl} (\href{https://orcid.org/0009-0004-5661-4949}{ORCID})
   \item Alexis Derumigny \email{A.F.F.Derumigny@tudelft.nl} (\href{https://orcid.org/0000-0002-6163-8097}{ORCID})
   \item Miltiadis Galanis \email{mgalan@di.uoa.gr}
   \item Aad van der Vaart \email{A.W.vanderVaart@tudelft.nl} (\href{https://orcid.org/0000-0002-8074-2375}{ORCID})
