@@ -1,7 +1,7 @@
 ## Submission 
 
-This is an update from version 0.1.0 to 0.1.1, which fixes a CRAN bug report 
-regarding MKL issues.
+This is an update from version 0.1.0 to 0.1.1, which fixes a bug reported by CRAN
+regarding MKL issues caused by unit tests that were too strict.
 
 ## Test environments
 
