@@ -56,9 +56,9 @@ testing whether or not the slope is zero in a linear regression setting,
 and goodness-of-fit testing. In particular, we will show the use of the
 functions that implement these:
 
-- `perform_independence_test.R`
-- `perform_regression_test.R`
-- `perform_GoF_test.R`
+- `perform_independence_test()`
+- `perform_regression_test()`
+- `perform_GoF_test()`
 
 ### Independence testing
 
