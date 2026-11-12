@@ -19,6 +19,9 @@ set.seed(1)
 
 # Package BootstrapTests
 
+<!-- Adding `R-CMD-check.yaml` status badge  -->
+[![R-CMD-check.yaml](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml)
+
 This package BootstrapTests implements several methods to perform bootstrap-based 
 hypothesis testing procedures on three statistical problems: independence testing,
 testing the slope in a linear regression setting, and goodness-of-fit testing.

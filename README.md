@@ -3,6 +3,10 @@
 
 # Package BootstrapTests
 
+<!-- Adding `R-CMD-check.yaml` status badge  -->
+
+[![R-CMD-check.yaml](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml)
+
 This package BootstrapTests implements several methods to perform
 bootstrap-based hypothesis testing procedures on three statistical
 problems: independence testing, testing the slope in a linear regression
@@ -75,6 +79,8 @@ print(result)
 #>   Type of norm used        : KS
 #>   p-value                  : 0
 #>   True test statistic      : 1.5250
+#>   Critical value at 5%     : 0.5952
+#>   Critical value at 1%     : 0.6913
 plot(result)
 ```
 
@@ -97,6 +103,8 @@ print(result)
 #>   Type of norm used        : KS
 #>   p-value                  : 0.17
 #>   True test statistic      : 0.5470
+#>   Critical value at 5%     : 0.6896
+#>   Critical value at 1%     : 0.7912
 plot(result)
 ```
 
@@ -163,6 +171,8 @@ print(result)
 #>   Slope coefficient β      : 1.063313 
 #>   p-value                  : 0
 #>   True test statistic      : 10.6331
+#>   Critical value at 5%     : 2.5578
+#>   Critical value at 1%     : 2.9963
 plot(result)
 ```
 
@@ -185,6 +195,8 @@ print(result)
 #>   Slope coefficient β      : 0.1073819 
 #>   p-value                  : 0.24
 #>   True test statistic      : 1.0738
+#>   Critical value at 5%     : 1.5767
+#>   Critical value at 1%     : 2.2522
 plot(result)
 ```
 
@@ -200,11 +212,13 @@ print(result_valid)
 #> 
 #> All test results:
 #> 
-#>       type_boot type_stat pvalues list_stat_st theoretically_valid quantile_95 quantile_99
-#>           indep        eq    0.17 1.609890....                TRUE    1.483089    1.849676
-#>              NP      cent    0.21 1.077185....                TRUE    1.677740    1.924484
-#>          res_bs      cent    0.21 1.021042....                TRUE    1.755715    2.304829
-#>  hybrid_null_bs        eq    0.27 1.213092....                TRUE    1.691101    2.324841
+#>              type_boot type_stat pvalues list_stat_st theoretically_valid quantile_95 quantile_99
+#>                  indep        eq    0.17 1.609890....                TRUE    1.483089    1.849676
+#>                     NP      cent    0.21 1.077185....                TRUE    1.677740    1.924484
+#>                 res_bs      cent    0.21 1.021042....                TRUE    1.755715    2.304829
+#>  fixed_design_bs_Hnull        eq    0.20 0.796904....                TRUE    1.624719    2.150240
+#>        fixed_design_bs      cent    0.25 1.115427....                TRUE    1.762968    2.040776
+#>         hybrid_null_bs        eq    0.27 1.213092....                TRUE    1.691101    2.324841
 #> 
 #> True test statistics:
 #> [1] 1.073819
@@ -253,6 +267,8 @@ print(result)
 #>   Bootstrap estimator used : MLE 
 #>   p-value                  : 0
 #>   True test statistic      : 1.5039
+#>   Critical value at 5%     : 0.7642
+#>   Critical value at 1%     : 0.8353
 plot(result)
 ```
 
@@ -274,6 +290,8 @@ print(result)
 #>   Bootstrap estimator used : MLE 
 #>   p-value                  : 0.85
 #>   True test statistic      : 0.3931
+#>   Critical value at 5%     : 0.7455
+#>   Critical value at 1%     : 0.8832
 plot(result)
 ```
 
