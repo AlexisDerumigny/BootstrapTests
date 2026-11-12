@@ -1,5 +1,8 @@
 ---
 output: github_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -20,22 +23,25 @@ set.seed(1)
 # Package BootstrapTests
 
 <!-- Adding `R-CMD-check.yaml` status badge  -->
+
 [![R-CMD-check.yaml](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AlexisDerumigny/BootstrapTests/actions/workflows/R-CMD-check.yaml)
 
-This package BootstrapTests implements several methods to perform bootstrap-based 
-hypothesis testing procedures on three statistical problems: independence testing,
-testing the slope in a linear regression setting, and goodness-of-fit testing.
+This package BootstrapTests implements several methods to perform
+bootstrap-based hypothesis testing procedures on three statistical
+problems: independence testing, testing the slope in a linear regression
+setting, and goodness-of-fit testing.
 
 ## Installation
 
-The release version on CRAN can be downloaded in R via the following command:
+The release version on CRAN can be downloaded in R via the following
+command:
 
 ``` r
 install.packages("BootstrapTests")
 ```
 
-You can install the development version of BootstrapTests from [GitHub](https://github.com/)
-using the `devtools` package with:
+You can install the development version of BootstrapTests from
+[GitHub](https://github.com/) using the `devtools` package with:
 
 ``` r
 # install.packages("devtools")
@@ -44,10 +50,11 @@ devtools::install_github("AlexisDerumigny/BootstrapTests")
 
 ## Examples
 
-The following three subsections will showcase the use of the 'BootstrapTests'
-package for the independence hypothesis testing, testing whether or not the slope 
-is zero in a linear regression setting, and goodness-of-fit testing. 
-In particular, we will show the use of the functions that implement these:
+The following three subsections will showcase the use of the
+'BootstrapTests' package for the independence hypothesis testing,
+testing whether or not the slope is zero in a linear regression setting,
+and goodness-of-fit testing. In particular, we will show the use of the
+functions that implement these:
 
 - `perform_independence_test.R`
 - `perform_regression_test.R`
@@ -55,18 +62,18 @@ In particular, we will show the use of the functions that implement these:
 
 ### Independence testing
 
-We perform a hypothesis test of statistical independence by means of bootstrapping.
-The null hypothesis is that of independence between the two random variables,
-versus the alternative of dependence between them.
-This procedure gives a total of 8 combinations of bootstrap resampling schemes
-(nonparametric and independent), test statistics (centered and equivalent),
-and Kolmogorov-Smirnov or L2-type of true test statistic. This function
-gives the corresponding p-values, the true test statistic and the
-bootstrap-version test statistics. The default (and valid) method implemented
-in this function is the null bootstrap, together with the equivalent test
-statistic and Kolmogorov-Smirnov test statistic.
-Via the `bootstrapOptions` argument, the user can specify other
-bootstrap resampling schemes and test statistics.
+We perform a hypothesis test of statistical independence by means of
+bootstrapping. The null hypothesis is that of independence between the
+two random variables, versus the alternative of dependence between them.
+This procedure gives a total of 8 combinations of bootstrap resampling
+schemes (nonparametric and independent), test statistics (centered and
+equivalent), and Kolmogorov-Smirnov or L2-type of true test statistic.
+This function gives the corresponding p-values, the true test statistic
+and the bootstrap-version test statistics. The default (and valid)
+method implemented in this function is the null bootstrap, together with
+the equivalent test statistic and Kolmogorov-Smirnov test statistic. Via
+the `bootstrapOptions` argument, the user can specify other bootstrap
+resampling schemes and test statistics.
 
 ```{r example_independence}
 library(BootstrapTests)
@@ -96,22 +103,22 @@ result_valid <- perform_independence_test(X1, X2, bootstrapOptions = "all")
 print(result_valid)
 ```
 
-
 ### Slope testing in linear regression setting
 
 This function performs a bootstrap regression test for given data X,Y.
-The null hypothesis corresponds of a slope coefficient of zero, versus the
-alternative hypothesis of a non-zero slope coefficient.
-It uses an independence/null bootstrap `"indep"`, a non-parametric `"NP"`,
-a residual bootstrap `"res_bs"`, a fixed design bootstrap `"fixed_design_bs"`,
-a fixed design null bootstrap `"fixed_design_bs_Hnull"`, a hybrid null
-bootstrap `"hybrid_null_bs"` as bootstrap resampling schemes to perform
-the bootstrap. This function gives the corresponding p-values, the true test
-statistic and the bootstrap-version test statistics. Furthermore, it also
-gives the estimated slope.The default (and valid) method implemented
-in this function is the null bootstrap, together with the equivalent test
-statistic. Via the `bootstrapOptions` argument, the user can specify other
-bootstrap resampling schemes and test statistics.
+The null hypothesis corresponds of a slope coefficient of zero, versus
+the alternative hypothesis of a non-zero slope coefficient. It uses an
+independence/null bootstrap `"indep"`, a non-parametric `"NP"`, a
+residual bootstrap `"res_bs"`, a fixed design bootstrap
+`"fixed_design_bs"`, a fixed design null bootstrap
+`"fixed_design_bs_Hnull"`, a hybrid null bootstrap `"hybrid_null_bs"` as
+bootstrap resampling schemes to perform the bootstrap. This function
+gives the corresponding p-values, the true test statistic and the
+bootstrap-version test statistics. Furthermore, it also gives the
+estimated slope.The default (and valid) method implemented in this
+function is the null bootstrap, together with the equivalent test
+statistic. Via the `bootstrapOptions` argument, the user can specify
+other bootstrap resampling schemes and test statistics.
 
 ```{r example_linear_regression}
 library(BootstrapTests)
@@ -139,25 +146,25 @@ result_valid <- perform_regression_test(X_data, Y_data, bootstrapOptions = "all"
 print(result_valid)
 ```
 
-
 ### Goodness-of-fit testing
 
 This function performs a bootstrap goodness-of-fit hypothesis test for a
-specific univariate parametric family. The null hypothesis corresponds to the
-sample coming from the specified parametric family, while the alternative
-hypothesis corresponds to the sample not coming from the specified
-parametric family. This function implements a null bootstrap and
-a non-parametric bootstrap. The test statistic is the Kolmogorov-Smirnov test
-statistic. To estimate the parameters of the parametric family, either a minimum
-distance estimator, or a MLE estimator (the sample mean and variance)
-is used. On the bootstrap sample, we have also implemented a centered MD estimator,
-as in the paper. For now, only a test of normality is implemented. This function
+specific univariate parametric family. The null hypothesis corresponds
+to the sample coming from the specified parametric family, while the
+alternative hypothesis corresponds to the sample not coming from the
+specified parametric family. This function implements a null bootstrap
+and a non-parametric bootstrap. The test statistic is the
+Kolmogorov-Smirnov test statistic. To estimate the parameters of the
+parametric family, either a minimum distance estimator, or a MLE
+estimator (the sample mean and variance) is used. On the bootstrap
+sample, we have also implemented a centered MD estimator, as in the
+paper. For now, only a test of normality is implemented. This function
 gives the corresponding p-values, the true test statistic and the
-bootstrap-version test statistics. The default (and valid) method implemented
-in this function is the null bootstrap, together with the equivalent test statistic
-and the MLE parameter estimator. Via the `bootstrapOptions`
-argument, the user can specify other bootstrap resampling schemes,
-test statistics, and parameter estimators.
+bootstrap-version test statistics. The default (and valid) method
+implemented in this function is the null bootstrap, together with the
+equivalent test statistic and the MLE parameter estimator. Via the
+`bootstrapOptions` argument, the user can specify other bootstrap
+resampling schemes, test statistics, and parameter estimators.
 
 ```{r example_GOF}
 library(BootstrapTests)
@@ -185,12 +192,8 @@ result_valid <- perform_GoF_test(X_data, bootstrapOptions = "all")
 print(result_valid)
 ```
 
-
 ## References
 
-
-Derumigny, A., Galanis, M., Schipper, W., \& van der Vaart, A. (2025).
-Bootstrapping not under the null?
-ArXiv preprint, [arXiv:2512.10546](https://arxiv.org/pdf/2512.10546)
-
-
+Derumigny, A., Galanis, M., Schipper, W., & van der Vaart, A. (2025).
+Bootstrapping not under the null? ArXiv preprint,
+[arXiv:2512.10546](https://arxiv.org/pdf/2512.10546)
