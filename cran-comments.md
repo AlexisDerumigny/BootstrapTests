@@ -1,6 +1,7 @@
 ## Submission 
 
-This is an update from version 0.1.0 to 0.1.1.
+This is an update from version 0.1.0 to 0.1.1, which fixes a CRAN bug report 
+regarding MKL issues.
 
 ## Test environments
 
@@ -16,6 +17,8 @@ This is an update from version 0.1.0 to 0.1.1.
 
 * checking HTML version of manual ... NOTE
   Skipping checking HTML validation: no command 'tidy' found.
+  
+  This only occurs on Linux and macOS systems.
 
 ## Reverse dependencies
 There are no reverse dependencies.
