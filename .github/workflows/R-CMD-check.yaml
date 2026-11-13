@@ -54,7 +54,7 @@ jobs:
       - name: Show TeX Live version
         run: tlmgr --version
 
-       - name: Install HTML Tidy (Ubuntu)
+      - name: Install HTML Tidy (Ubuntu)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
