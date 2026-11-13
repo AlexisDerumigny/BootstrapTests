@@ -144,7 +144,7 @@ residual bootstrap `"res_bs"`, a fixed design bootstrap
 bootstrap resampling schemes to perform the bootstrap. This function
 gives the corresponding p-values, the true test statistic and the
 bootstrap-version test statistics. Furthermore, it also gives the
-estimated slope.The default (and valid) method implemented in this
+estimated slope. The default (and valid) method implemented in this
 function is the null bootstrap, together with the equivalent test
 statistic. Via the `bootstrapOptions` argument, the user can specify
 other bootstrap resampling schemes and test statistics.

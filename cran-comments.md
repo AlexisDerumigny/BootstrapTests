@@ -7,18 +7,14 @@ regarding MKL issues caused by unit tests that were too strict.
 
 * Windows 11 (release)
 * Windows Server 2025 (release)
-* Ubuntu 26.04.1 (release, devel, oldrel-1)
+* Ubuntu 26.04.1 (release, devel)
 * macOS 26.7.2 (release)
 
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
-* checking HTML version of manual ... NOTE
-  Skipping checking HTML validation: no command 'tidy' found.
-  
-  This only occurs on Linux and macOS systems.
 
 ## Reverse dependencies
 There are no reverse dependencies.
